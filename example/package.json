@@ -1,0 +1,19 @@
+{
+  "name": "phaser-pixui-example",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --config vite/config.dev.mjs",
+    "build": "tsc && vite build --config vite/config.prod.mjs"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3",
+    "vite": "^5.4.8"
+  },
+  "dependencies": {
+    "phaser": "^4.0.0-rc.6",
+    "phaser-pixui": "file:..",
+    "terser": "^5.46.0"
+  }
+}

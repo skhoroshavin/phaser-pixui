@@ -1,0 +1,121 @@
+{
+  "meta": {
+    "image": "mana_soul.png",
+    "format": "RGBA8888",
+    "size": {
+      "w": 128,
+      "h": 128
+    },
+    "scale": "1"
+  },
+  "frames": [
+    {
+      "filename": "button_up",
+      "frame": { "x": 0, "y": 80, "w": 95, "h": 22 },
+      "scale9Borders": { "x": 10, "y": 0, "w": 70, "h": 22 }
+    },
+    {
+      "filename": "button_hover",
+      "frame": { "x": 0, "y": 102, "w": 95, "h": 22 },
+      "scale9Borders": { "x": 10, "y": 0, "w": 70, "h": 22 }
+    },
+    {
+      "filename": "button_down",
+      "frame": { "x": 0, "y": 124, "w": 95, "h": 22 },
+      "scale9Borders": { "x": 10, "y": 0, "w": 70, "h": 22 }
+    },
+    {
+      "filename": "button_disabled",
+      "frame": { "x": 0, "y": 146, "w": 95, "h": 22 },
+      "scale9Borders": { "x": 10, "y": 0, "w": 70, "h": 22 }
+    },
+    {
+      "filename": "button_plus_up",
+      "frame": { "x": 0, "y": 0, "w": 24, "h": 24 }
+    },
+    {
+      "filename": "button_plus_hover",
+      "frame": { "x": 24, "y": 0, "w": 24, "h": 24 }
+    },
+    {
+      "filename": "button_plus_down",
+      "frame": { "x": 48, "y": 0, "w": 24, "h": 24 }
+    },
+    {
+      "filename": "button_plus_disabled",
+      "frame": { "x": 72, "y": 0, "w": 24, "h": 24 }
+    },
+    {
+      "filename": "button_minus_up",
+      "frame": { "x": 0, "y": 24, "w": 24, "h": 24 }
+    },
+    {
+      "filename": "button_minus_hover",
+      "frame": { "x": 24, "y": 24, "w": 24, "h": 24 }
+    },
+    {
+      "filename": "button_minus_down",
+      "frame": { "x": 48, "y": 24, "w": 24, "h": 24 }
+    },
+    {
+      "filename": "button_minus_disabled",
+      "frame": { "x": 72, "y": 24, "w": 24, "h": 24 }
+    },
+    {
+      "filename": "button_settings_up",
+      "frame": { "x": 192, "y": 256, "w": 32, "h": 32 }
+    },
+    {
+      "filename": "button_settings_hover",
+      "frame": { "x": 224, "y": 256, "w": 32, "h": 32 }
+    },
+    {
+      "filename": "button_settings_down",
+      "frame": { "x": 192, "y": 288, "w": 32, "h": 32 }
+    },
+    {
+      "filename": "button_settings_disabled",
+      "frame": { "x": 224, "y": 288, "w": 32, "h": 32 }
+    },
+    {
+      "filename": "progress_curly",
+      "frame": { "x": 96, "y": 31, "w": 95, "h": 17 },
+      "scale9Borders": { "x": 22, "y": 4, "w": 51, "h": 3 }
+    },
+    {
+      "filename": "bar_green",
+      "frame": { "x": 176, "y": 48, "w": 8, "h": 8 },
+      "scale9Borders": { "x": 2, "y": 2, "w": 4, "h": 4 }
+    },
+    {
+      "filename": "frame_bright",
+      "frame": { "x": 0, "y": 176, "w": 96, "h": 96 },
+      "scale9Borders": { "x": 32, "y": 32, "w": 32, "h": 32 }
+    },
+    {
+      "filename": "frame_dark",
+      "frame": { "x": 0, "y": 272, "w": 96, "h": 96 },
+      "scale9Borders": { "x": 32, "y": 32, "w": 32, "h": 32 }
+    },
+    {
+      "filename": "frame_light",
+      "frame": { "x": 0, "y": 368, "w": 96, "h": 96 },
+      "scale9Borders": { "x": 30, "y": 20, "w": 36, "h": 60 }
+    },
+    {
+      "filename": "frame_blue",
+      "frame": { "x": 160, "y": 320, "w": 96, "h": 96 },
+      "scale9Borders": { "x": 32, "y": 32, "w": 32, "h": 32 }
+    },
+    {
+      "filename": "frame_yellow",
+      "frame": { "x": 160, "y": 416, "w": 96, "h": 96 },
+      "scale9Borders": { "x": 32, "y": 32, "w": 32, "h": 32 }
+    },
+    {
+      "filename": "header_scroll",
+      "frame": { "x": 96, "y": 80, "w": 96, "h": 32 },
+      "scale9Borders": { "x": 30, "y": 13, "w": 38, "h": 9 }
+    }
+  ]
+}

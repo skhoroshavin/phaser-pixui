@@ -1,0 +1,54 @@
+{
+  "name": "phaser-pixui",
+  "version": "0.1.0",
+  "description": "A UI library for Phaser game engine that provides responsive and customizable UI components, tailored specifically for pixel art games",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "clean": "rm -rf dist",
+    "example": "cd example && npm run dev",
+    "example:install": "cd example && npm install"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/skhoroshavin/phaser-pixui.git"
+  },
+  "homepage": "https://skhoroshavin.itch.io/phaser-pixui",
+  "bugs": {
+    "url": "https://github.com/skhoroshavin/phaser-pixui/issues"
+  },
+  "keywords": [
+    "phaser",
+    "phaser4",
+    "ui",
+    "pixui",
+    "pixel-art",
+    "game-ui",
+    "webgl",
+    "canvas",
+    "typescript",
+    "responsive",
+    "pixel-perfect"
+  ],
+  "author": "Sergei Khoroshavin",
+  "license": "MIT",
+  "type": "commonjs",
+  "peerDependencies": {
+    "phaser": "^4.0.0-rc.6"
+  },
+  "devDependencies": {
+    "phaser": "^4.0.0-rc.6",
+    "tsup": "^8.5.1",
+    "typescript": "^5.9.3"
+  }
+}
