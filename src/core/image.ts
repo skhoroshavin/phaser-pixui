@@ -6,6 +6,8 @@ import { Renderable, RenderableConfig } from './renderable.ts'
 export type ImageConfig = {
     texture: string
     frame: string
+    tileX?: boolean
+    tileY?: boolean
 } & RenderableConfig
 
 export class Image extends Renderable<GameObjects.Sprite | GameObjects.NineSlice> {
@@ -49,6 +51,8 @@ export class Image extends Renderable<GameObjects.Sprite | GameObjects.NineSlice
         return scene.make.nineslice({
             key: cfg.texture,
             frame: cfg.frame,
+            tileX: cfg.tileX,
+            tileY: cfg.tileY,
             visible: false,
         })
     }

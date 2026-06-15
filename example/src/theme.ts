@@ -25,6 +25,8 @@ export const uiTheme: ThemeConfig = {
         frame: 'button',
         defaultWidth: 128,
         fontTintDisabled: 'disabled',
+        tileX: true,
+        tileY: true,
 
         styles: {
             settings: {
@@ -55,6 +57,8 @@ export const uiTheme: ThemeConfig = {
         frame: 'frame_light',
         paddingX: 12,
         paddingY: 14,
+        tileX: true,
+        tileY: true,
 
         styles: {
             header_scroll: {
@@ -69,6 +73,8 @@ export const uiTheme: ThemeConfig = {
         frame: 'frame_bright',
         paddingX: 16,
         paddingY: 16,
+        tileX: true,
+        tileY: true,
         backdropColor: 0x000000,
         backdropAlpha: 0.5,
     },

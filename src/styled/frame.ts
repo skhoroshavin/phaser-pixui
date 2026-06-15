@@ -16,6 +16,8 @@ export class Frame extends StyledComponent {
         this._image = this.insert.image({
             texture: ctx.theme.resources.atlas,
             frame: style.frame!,
+            tileX: style.tileX,
+            tileY: style.tileY,
         })
 
         const paddingX = style.paddingX ?? 0

@@ -15,6 +15,8 @@ export type ButtonStyle = {
     defaultWidth?: number
     defaultHeight?: number
     shape?: Shape
+    tileX?: boolean
+    tileY?: boolean
     fontTintDisabled?: string
 } & FontStyle
 
@@ -25,6 +27,8 @@ export function initButtonStyle(base: StyleList<ButtonStyle>, theme: ThemeConfig
     base.frameHover ??= base.frameUp
     base.frameDisabled ??= base.frameUp
     base.shape ??= 'rect'
+    base.tileX ??= false
+    base.tileY ??= false
     initFontStyle(base, theme)
     base.fontTintDisabled ??= base.fontTint
 
@@ -38,6 +42,8 @@ export function initButtonStyle(base: StyleList<ButtonStyle>, theme: ThemeConfig
         style.frameHover ??= base.frameHover
         style.frameDisabled ??= base.frameDisabled
         style.shape ??= base.shape
+        style.tileX ??= base.tileX
+        style.tileY ??= base.tileY
         style.defaultWidth ??= base.defaultWidth
         style.defaultHeight ??= base.defaultHeight
         style.fontTintDisabled ??= base.fontTintDisabled
