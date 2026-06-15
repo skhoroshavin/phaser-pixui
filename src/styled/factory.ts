@@ -48,7 +48,7 @@ export class StyledComponentFactory extends ComponentFactory {
         return this.createStyled(Dialog, cfg)
     }
 
-    protected createStyled<T extends StyledComponent, Cfg>(
+    createStyled<T extends StyledComponent, Cfg>(
         Ctor: new (ctx: InsertContext, cfg: Cfg) => T,
         cfg: Cfg
     ): T {
