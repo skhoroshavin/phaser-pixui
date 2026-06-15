@@ -25,6 +25,8 @@ export const uiTheme: ThemeConfig = {
         frame: 'button',
         defaultWidth: 128,
         fontTintDisabled: 'disabled',
+        tileX: true,
+        tileY: true,
 
         styles: {
             settings: {

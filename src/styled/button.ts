@@ -29,10 +29,14 @@ export class Button extends StyledComponent {
         this._buttonUp = this.insert.image({
             texture: ctx.theme.resources.atlas,
             frame: style.frameUp!,
+            tileX: style.tileX,
+            tileY: style.tileY,
         })
         this._buttonDown = this.insert.image({
             texture: ctx.theme.resources.atlas,
             frame: style.frameDown!,
+            tileX: style.tileX,
+            tileY: style.tileY,
         })
         if (!this._buttonUp.scalableX) this.setWidth(this._buttonUp.width)
         if (!this._buttonUp.scalableY) this.setHeight(this._buttonUp.height)
@@ -41,12 +45,16 @@ export class Button extends StyledComponent {
             this._buttonHover = this.insert.image({
                 texture: ctx.theme.resources.atlas,
                 frame: style.frameHover,
+                tileX: style.tileX,
+                tileY: style.tileY,
             })
         }
         if (style.frameDisabled) {
             this._buttonDisabled = this.insert.image({
                 texture: ctx.theme.resources.atlas,
                 frame: style.frameDisabled,
+                tileX: style.tileX,
+                tileY: style.tileY,
             })
         }
 
