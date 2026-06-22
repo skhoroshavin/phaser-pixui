@@ -2,9 +2,9 @@
  * Size in pixels.
  */
 export type Size = {
-    width: number
-    height: number
-}
+  width: number;
+  height: number;
+};
 
 /**
  * {@link Size} that can be relative to a parent.
@@ -16,6 +16,6 @@ export type Size = {
  * - **Undefined**: Treated as zero, which means the same size as the parent.
  */
 export type RelativeSize = {
-    width?: number
-    height?: number
-}
+  width?: number;
+  height?: number;
+};

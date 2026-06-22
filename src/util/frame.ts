@@ -1,4 +1,4 @@
-import { Textures } from 'phaser'
+import { Textures } from "phaser";
 
 /**
  * Extracts layout dimensions from a Phaser texture frame's metadata.
@@ -14,26 +14,26 @@ import { Textures } from 'phaser'
  * @returns {@link FrameDimensions} with width, height, and scalability flags
  */
 export function frameDimensions(frame: Textures.Frame): FrameDimensions {
-    type size = { w: number; h: number }
-    const data = frame.customData as
-        | {
-              frame: size
-              scale9Borders?: size
-              sourceSize?: size
-          }
-        | undefined
+  type size = { w: number; h: number };
+  const data = frame.customData as
+    | {
+        frame: size;
+        scale9Borders?: size;
+        sourceSize?: size;
+      }
+    | undefined;
 
-    const frameSize = data?.sourceSize ?? data?.frame
-    const width = frameSize?.w ?? frame.width
-    const height = frameSize?.h ?? frame.height
-    const scalableSize = data?.scale9Borders ?? { w: width, h: height }
+  const frameSize = data?.sourceSize ?? data?.frame;
+  const width = frameSize?.w ?? frame.width;
+  const height = frameSize?.h ?? frame.height;
+  const scalableSize = data?.scale9Borders ?? { w: width, h: height };
 
-    return {
-        width: width,
-        height: height,
-        scalableX: scalableSize.w < width,
-        scalableY: scalableSize.h < height,
-    }
+  return {
+    width: width,
+    height: height,
+    scalableX: scalableSize.w < width,
+    scalableY: scalableSize.h < height,
+  };
 }
 
 /**
@@ -45,8 +45,8 @@ export function frameDimensions(frame: Textures.Frame): FrameDimensions {
  * @property scalableY - `true` if the frame supports 9-slice scaling vertically
  */
 export type FrameDimensions = {
-    width: number
-    height: number
-    scalableX: boolean
-    scalableY: boolean
-}
+  width: number;
+  height: number;
+  scalableX: boolean;
+  scalableY: boolean;
+};

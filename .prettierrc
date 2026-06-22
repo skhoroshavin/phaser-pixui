@@ -1,17 +1,1 @@
-{
-  "semi": false,
-  "trailingComma": "es5",
-  "singleQuote": false,
-  "printWidth": 100,
-  "tabWidth": 2,
-  "plugins": ["prettier-plugin-organize-imports"],
-  "overrides": [
-    {
-      "files": ["*.js", "*.ts"],
-      "options": {
-        "tabWidth": 4,
-        "singleQuote": true
-      }
-    }
-  ]
-}
+{ "printWidth": 100 }

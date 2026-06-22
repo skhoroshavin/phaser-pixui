@@ -4,4 +4,4 @@ export const assetsConfig = {
   copy: [{ source: "bg_plains00.png" }],
   fonts: [{ source: "fonts.yaml" }],
   atlases: [{ source: "ui.yaml", target: "mana_soul" }],
-}
+};
