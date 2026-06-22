@@ -1,5 +1,6 @@
 import { CANVAS, HEADLESS, VERSION, WEBGL } from "phaser";
-import { ConstraintMode, TextArea, UiScene } from "phaser-pixui";
+import { ConstraintMode, TextArea, UiScene } from "../../src";
+import { BitmapText } from "../../src/core2/bitmap-text.ts";
 import { resolveColor } from "../../src";
 import { GameWorld } from "./game.ts";
 import { uiTheme } from "./theme.ts";
@@ -49,9 +50,9 @@ export class Ui extends UiScene {
 
     const loadDialog = load_dialog(this.insert);
 
-    this.insert.bottomRight.bitmapText({
-      x: 4,
-      y: 88,
+    new BitmapText(this.mount, {
+      right: 4,
+      bottom: 88,
       font: "mana_branches",
       tint: resolveColor("dark", this.theme.palette),
       text: `Phaser PixUI v${PHASER_PIXUI_VERSION}`,

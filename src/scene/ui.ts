@@ -15,7 +15,7 @@ export class UiScene extends ResponsiveScene {
 
     this.theme = cfg.theme;
 
-    this._viewportMount = new ViewportMount(this);
+    this._mount = new ViewportMount(this);
 
     const ctx = new InsertContext(this, this.theme);
     this._root = new StyledComponent(ctx);
@@ -35,8 +35,8 @@ export class UiScene extends ResponsiveScene {
   get insert() {
     return this._root.insert;
   }
-  get viewportMount(): ViewportMount {
-    return this._viewportMount;
+  get mount(): ViewportMount {
+    return this._mount;
   }
 
   create() {
@@ -44,7 +44,7 @@ export class UiScene extends ResponsiveScene {
     initTheme(this.theme, this.textures.get(this.theme.resources.atlas));
     this.events.once("create", () => {
       this._root.initialize();
-      this._viewportMount.layout();
+      this._mount.layout();
       this.game.scale.refresh();
       this.game.scale.on("resize", this._updateRoot, this);
     });
@@ -61,8 +61,8 @@ export class UiScene extends ResponsiveScene {
       },
       this.zoom,
     );
-    this._viewportMount.resize(this.viewport.width, this.viewport.height);
+    this._mount.resize(this.viewport.width, this.viewport.height);
   }
   private readonly _root: StyledComponent;
-  private readonly _viewportMount: ViewportMount;
+  private readonly _mount: ViewportMount;
 }
