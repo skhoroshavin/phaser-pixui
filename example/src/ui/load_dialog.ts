@@ -1,5 +1,5 @@
-import { InsertContext } from "phaser-pixui";
 import { TextAlign } from "../../../src";
+import type { InsertContext } from "../../../src";
 
 export function load_dialog(ctx: InsertContext) {
   const dialog = ctx.dialog({

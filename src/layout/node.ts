@@ -1,41 +1,67 @@
-export type Rect = { x: number; y: number; w: number; h: number };
-export type Size = { w: number; h: number };
+export function createNode(node: Partial<Omit<Node, "rect">>): Node {
+  return {
+    box: node.box ?? {},
+    children: node.children ?? [],
+    rect: { x: NaN, y: NaN, w: NaN, h: NaN },
+    intrinsic: node.intrinsic,
+    onLayout: node.onLayout,
+  };
+}
 
 export interface Node {
-  box: { right?: number; bottom?: number };
+  box: BoxConfig;
   children: Node[];
   rect: Rect;
   intrinsic?: Size;
   onLayout?: (rect: Rect) => void;
 }
 
-export function createNode(partial: Partial<Omit<Node, "rect">>): Node {
-  return {
-    box: partial.box ?? {},
-    children: partial.children ?? [],
-    rect: { x: NaN, y: NaN, w: NaN, h: NaN },
-    intrinsic: partial.intrinsic,
-    onLayout: partial.onLayout,
-  };
-}
+export type Rect = { x: number; y: number; w: number; h: number };
+export type Size = { w: number; h: number };
+
+export type BoxConfig = {
+  right?: number;
+  bottom?: number;
+  width?: number;
+  height?: number;
+};
 
 export function resolve(root: Node): void {
-  for (const child of root.children) {
-    const w = child.intrinsic?.w ?? 0;
-    const h = child.intrinsic?.h ?? 0;
+  resolveNode(root, undefined);
+}
 
-    const x = child.box.right !== undefined ? root.rect.w - child.box.right - w : 0;
-    const y = child.box.bottom !== undefined ? root.rect.h - child.box.bottom - h : 0;
-
-    const rect = { x, y, w, h };
-    if (
-      rect.x !== child.rect.x ||
-      rect.y !== child.rect.y ||
-      rect.w !== child.rect.w ||
-      rect.h !== child.rect.h
-    ) {
-      child.rect = rect;
-      child.onLayout?.(child.rect);
+function resolveNode(node: Node, parentRect: Rect | undefined): void {
+  if (parentRect === undefined) {
+    if (node.box.width !== undefined || node.box.height !== undefined) {
+      setRect(node, { x: 0, y: 0, w: nodeSize(node, "w"), h: nodeSize(node, "h") });
     }
+  } else {
+    setRect(node, {
+      x: node.box.right !== undefined ? parentRect.w - node.box.right - nodeSize(node, "w") : 0,
+      y: node.box.bottom !== undefined ? parentRect.h - node.box.bottom - nodeSize(node, "h") : 0,
+      w: nodeSize(node, "w"),
+      h: nodeSize(node, "h"),
+    });
+  }
+
+  for (const child of node.children) {
+    resolveNode(child, node.rect);
+  }
+}
+
+function nodeSize(node: Node, axis: "w" | "h"): number {
+  const explicit = axis === "w" ? node.box.width : node.box.height;
+  return explicit ?? node.intrinsic?.[axis] ?? 0;
+}
+
+function setRect(node: Node, rect: Rect): void {
+  if (
+    rect.x !== node.rect.x ||
+    rect.y !== node.rect.y ||
+    rect.w !== node.rect.w ||
+    rect.h !== node.rect.h
+  ) {
+    node.rect = rect;
+    node.onLayout?.(node.rect);
   }
 }
