@@ -60,6 +60,7 @@
     "@typescript-eslint/parser": "^8.56.1",
     "eslint": "^10.0.2",
     "eslint-config-prettier": "^10.1.8",
+    "phaser": "^4.2.0",
     "prettier": "3.8.1",
     "prettier-plugin-organize-imports": "^4.3.0",
     "tsup": "^6.5.0",

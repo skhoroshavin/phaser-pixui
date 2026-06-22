@@ -1,16 +1,16 @@
-import { TextAlign } from '../util/align.ts'
-import { FontStyle, initFontStyle } from './font.ts'
-import type { StyleList, ThemeConfig } from './theme.ts'
+import { TextAlign } from "../util/align.ts";
+import { FontStyle, initFontStyle } from "./font.ts";
+import type { StyleList, ThemeConfig } from "./theme.ts";
 
 export type TextAreaStyle = {
-    defaultAlign?: TextAlign
-} & FontStyle
+  defaultAlign?: TextAlign;
+} & FontStyle;
 
 export function initTextAreaStyle(base: StyleList<TextAreaStyle>, theme: ThemeConfig) {
-    initFontStyle(base, theme)
+  initFontStyle(base, theme);
 
-    if (!base.styles) return
-    for (const style of Object.values(base.styles)) {
-        initFontStyle(style, base)
-    }
+  if (!base.styles) return;
+  for (const style of Object.values(base.styles)) {
+    initFontStyle(style, base);
+  }
 }

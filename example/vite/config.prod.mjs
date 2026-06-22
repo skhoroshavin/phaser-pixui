@@ -1,7 +1,7 @@
-import { processAssetsProd } from "pixel-tools"
-import { defineConfig } from "vite"
-import pkg from "../../package.json" with { type: "json" }
-import { assetsConfig } from "./assets.mjs"
+import { processAssetsProd } from "pixel-tools";
+import { defineConfig } from "vite";
+import pkg from "../../package.json" with { type: "json" };
+import { assetsConfig } from "./assets.mjs";
 
 export default defineConfig({
   base: "./",
@@ -16,4 +16,4 @@ export default defineConfig({
     port: 8080,
   },
   plugins: [processAssetsProd(assetsConfig)],
-})
+});
