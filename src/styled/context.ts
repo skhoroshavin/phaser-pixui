@@ -38,16 +38,8 @@ export class InsertContext extends StyledComponentFactory {
         return this.at(OriginX.Left, OriginY.Center)
     }
 
-    get right(): StyledComponentFactory {
-        return this.at(OriginX.Right, OriginY.Center)
-    }
-
     get top(): StyledComponentFactory {
         return this.at(OriginX.Center, OriginY.Top)
-    }
-
-    get bottom(): StyledComponentFactory {
-        return this.at(OriginX.Center, OriginY.Bottom)
     }
 
     get topLeft(): StyledComponentFactory {
@@ -58,8 +50,8 @@ export class InsertContext extends StyledComponentFactory {
         return this.at(OriginX.Right, OriginY.Top)
     }
 
-    get bottomLeft(): StyledComponentFactory {
-        return this.at(OriginX.Left, OriginY.Bottom)
+    get bottom(): StyledComponentFactory {
+        return this.at(OriginX.Center, OriginY.Bottom)
     }
 
     get bottomRight(): StyledComponentFactory {

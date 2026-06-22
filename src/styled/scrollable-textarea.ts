@@ -38,9 +38,6 @@ export class ScrollableTextArea extends TextArea {
     scrollTo(pos: number) {
         this._scroller.scrollTo(0, pos)
     }
-    scrollToStart() {
-        this._scroller.scrollToStart()
-    }
     scrollToEnd() {
         this._scroller.scrollToEnd()
     }

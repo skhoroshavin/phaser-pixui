@@ -46,19 +46,9 @@ export class Scrollable extends Interactive {
         })
     }
 
-    setContentWidth(contentWidth: number) {
-        this._maxScrollPosition.x = Math.max(0, contentWidth - this.width)
-        this.scrollX = this._scrollPosition.x
-    }
-
     setContentHeight(contentHeight: number) {
         this._maxScrollPosition.y = Math.max(0, contentHeight - this.height)
         this.scrollY = this._scrollPosition.y
-    }
-
-    setContentSize(width: number, height: number) {
-        this.setContentWidth(width)
-        this.setContentHeight(height)
     }
 
     get scrollX() {
@@ -85,9 +75,6 @@ export class Scrollable extends Interactive {
         this._updateContentPosition()
     }
 
-    get maxScrollPositionX() {
-        return this._maxScrollPosition.x
-    }
     get maxScrollPositionY() {
         return this._maxScrollPosition.y
     }
@@ -100,9 +87,6 @@ export class Scrollable extends Interactive {
             duration: 400,
             ease: 'Cubic.easeOut',
         })
-    }
-    scrollToStart() {
-        this.scrollTo(0, 0)
     }
     scrollToEnd() {
         this.scrollTo(this._maxScrollPosition.x, this._maxScrollPosition.y)
