@@ -2,13 +2,13 @@ import { createNode, resolve, type Node } from "../layout/node";
 import type { ResponsiveScene } from "../scene/responsive";
 
 export class ViewportMount {
-  readonly root: Node;
-  readonly scene: ResponsiveScene;
-
   constructor(scene: ResponsiveScene) {
     this.scene = scene;
     this.root = createNode({ box: { width: scene.viewport.width, height: scene.viewport.height } });
   }
+
+  readonly root: Node;
+  readonly scene: ResponsiveScene;
 
   layout(): void {
     resolve(this.root);
