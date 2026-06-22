@@ -12,7 +12,6 @@ export class Renderable<T extends GameObject & Transform & Origin> extends Compo
     super(mount, cfg);
     this.inner = inner;
     inner.setOrigin(0, 0);
-    mount.scene.add.existing(inner);
     this.node.onLayout = (rect) => {
       inner.setPosition(rect.x, rect.y);
     };
