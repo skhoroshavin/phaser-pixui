@@ -1,3 +1,4 @@
+import { ViewportMount } from "../core2/viewport-mount.ts";
 import { InsertContext } from "../styled/context.ts";
 import { StyledComponent } from "../styled/styled.ts";
 import { ThemeConfig, initTheme } from "../theme/theme.ts";
@@ -13,6 +14,8 @@ export class UiScene extends ResponsiveScene {
     super(cfg);
 
     this.theme = cfg.theme;
+
+    this._viewportMount = new ViewportMount(this);
 
     const ctx = new InsertContext(this, this.theme);
     this._root = new StyledComponent(ctx);
@@ -32,12 +35,16 @@ export class UiScene extends ResponsiveScene {
   get insert() {
     return this._root.insert;
   }
+  get viewportMount(): ViewportMount {
+    return this._viewportMount;
+  }
 
   create() {
     super.create();
     initTheme(this.theme, this.textures.get(this.theme.resources.atlas));
     this.events.once("create", () => {
       this._root.initialize();
+      this._viewportMount.layout();
       this.game.scale.refresh();
       this.game.scale.on("resize", this._updateRoot, this);
     });
@@ -54,6 +61,8 @@ export class UiScene extends ResponsiveScene {
       },
       this.zoom,
     );
+    this._viewportMount.resize(this.viewport.width, this.viewport.height);
   }
   private readonly _root: StyledComponent;
+  private readonly _viewportMount: ViewportMount;
 }

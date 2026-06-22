@@ -7,6 +7,8 @@ describe("createNode", () => {
 
     expect(node.box.right).toBeUndefined();
     expect(node.box.bottom).toBeUndefined();
+    expect(node.box.width).toBeUndefined();
+    expect(node.box.height).toBeUndefined();
     expect(node.children).toEqual([]);
     expect(node.rect.x).toBeNaN();
     expect(node.rect.y).toBeNaN();
@@ -18,10 +20,8 @@ describe("createNode", () => {
 });
 
 describe("resolve", () => {
-  function createViewport(w: number, h: number): Node {
-    const root = createNode({});
-    root.rect = { x: 0, y: 0, w, h };
-    return root;
+  function createViewport(width: number, height: number): Node {
+    return createNode({ box: { width, height } });
   }
 
   it("positions leaf from right edge using intrinsic width", () => {
@@ -49,6 +49,24 @@ describe("resolve", () => {
     resolve(root);
 
     expect(root.children[0].rect).toEqual({ x: 216, y: 216, w: 100, h: 16 });
+  });
+
+  it("uses explicit width over intrinsic", () => {
+    const root = createViewport(320, 240);
+    root.children = [createNode({ box: { right: 4, width: 200 }, intrinsic: { w: 100, h: 16 } })];
+
+    resolve(root);
+
+    expect(root.children[0].rect).toEqual({ x: 116, y: 0, w: 200, h: 16 });
+  });
+
+  it("uses explicit height over intrinsic", () => {
+    const root = createViewport(320, 240);
+    root.children = [createNode({ box: { bottom: 8, height: 50 }, intrinsic: { w: 100, h: 16 } })];
+
+    resolve(root);
+
+    expect(root.children[0].rect).toEqual({ x: 0, y: 182, w: 100, h: 50 });
   });
 
   it("fires onLayout only when rect changes", () => {
