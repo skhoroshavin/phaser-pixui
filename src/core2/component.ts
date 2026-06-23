@@ -1,15 +1,19 @@
-import { createNode, type BoxConfig, type Node } from "../layout/node";
+import { createNode, type BoxConfig, type Node } from "../layout";
 import type { ViewportMount } from "./viewport-mount";
 
 export class Component {
-  constructor(mount: ViewportMount, cfg?: BoxConfig) {
+  constructor(parent: Component | undefined, cfg?: BoxConfig) {
     this.node = createNode({ box: cfg });
-    this.mount = mount;
-    mount.root.children.push(this.node);
+    if (parent) {
+      this.mount = parent.mount;
+      parent.add(this);
+    }
   }
 
   readonly node: Node;
-  readonly mount: ViewportMount;
+  mount!: ViewportMount;
 
-  markDirty(): void {}
+  add(child: Component): void {
+    this.node.children.push(child.node);
+  }
 }
