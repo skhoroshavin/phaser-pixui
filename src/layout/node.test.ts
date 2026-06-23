@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createNode, type Node } from "./";
+import { createNode } from "./";
 
 describe("createNode", () => {
   it("creates node with defaults when called without arguments", () => {
