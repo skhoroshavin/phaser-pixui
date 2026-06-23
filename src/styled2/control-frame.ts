@@ -4,7 +4,6 @@ import { Frame } from "./frame.js";
 
 export type ControlFrameConfig = BoxConfig & {
   style: ControlFrameStyle;
-  state?: ControlState;
 };
 
 export type ControlState = "normal" | "hover" | "pressed" | "disabled";
@@ -20,27 +19,24 @@ export class ControlFrame extends Component {
   constructor(parent: Component, cfg: ControlFrameConfig) {
     super(parent, cfg);
 
-    const normalStyle = cfg.style.normal ?? "";
-    const fill = { left: 0, top: 0, right: 0, bottom: 0 };
-
-    const normal = new Frame(this, { style: normalStyle, ...fill });
+    const baseStyle = cfg.style.normal ?? "";
+    const normal = new Frame(this, { style: baseStyle, inset: 0 });
     this._frames = [normal];
     this._stateFrames = { normal, hover: normal, pressed: normal, disabled: normal };
 
-    if (cfg.style.hover && cfg.style.hover !== normalStyle) {
-      this._stateFrames.hover = new Frame(this, { style: cfg.style.hover, ...fill });
+    if (cfg.style.hover && cfg.style.hover !== baseStyle) {
+      this._stateFrames.hover = new Frame(this, { style: cfg.style.hover, inset: 0 });
       this._frames.push(this._stateFrames.hover);
     }
-    if (cfg.style.pressed && cfg.style.pressed !== normalStyle) {
-      this._stateFrames.pressed = new Frame(this, { style: cfg.style.pressed, ...fill });
+    if (cfg.style.pressed && cfg.style.pressed !== baseStyle) {
+      this._stateFrames.pressed = new Frame(this, { style: cfg.style.pressed, inset: 0 });
       this._frames.push(this._stateFrames.pressed);
     }
-    if (cfg.style.disabled && cfg.style.disabled !== normalStyle) {
-      this._stateFrames.disabled = new Frame(this, { style: cfg.style.disabled, ...fill });
+    if (cfg.style.disabled && cfg.style.disabled !== baseStyle) {
+      this._stateFrames.disabled = new Frame(this, { style: cfg.style.disabled, inset: 0 });
       this._frames.push(this._stateFrames.disabled);
     }
 
-    this._state = cfg.state ?? "normal";
     this._update();
   }
 
@@ -60,7 +56,7 @@ export class ControlFrame extends Component {
     }
   }
 
-  private _state: ControlState;
+  private _state: ControlState = "normal";
   private readonly _frames: Frame[];
   private readonly _stateFrames: Record<ControlState, Frame>;
 }

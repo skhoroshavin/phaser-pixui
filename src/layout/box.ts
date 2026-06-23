@@ -1,10 +1,14 @@
-export function createBox({ margin, marginX, marginY, ...box }: BoxConfig = {}): BoxConfig {
+export function createBox({ margin, marginX, marginY, inset, ...box }: BoxConfig = {}): BoxConfig {
   return {
     ...box,
     marginLeft: box.marginLeft ?? marginX ?? margin,
     marginRight: box.marginRight ?? marginX ?? margin,
     marginTop: box.marginTop ?? marginY ?? margin,
     marginBottom: box.marginBottom ?? marginY ?? margin,
+    left: box.left ?? inset,
+    top: box.top ?? inset,
+    right: box.right ?? inset,
+    bottom: box.bottom ?? inset,
   };
 }
 
@@ -15,6 +19,7 @@ export type BoxConfig = {
   bottom?: number;
   width?: number;
   height?: number;
+  inset?: number;
   margin?: number | "auto";
   marginX?: number | "auto";
   marginY?: number | "auto";
