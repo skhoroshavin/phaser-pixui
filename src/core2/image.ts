@@ -1,4 +1,4 @@
-import { type BoxConfig } from "../layout/node";
+import { type BoxConfig } from "../layout";
 import { frameDimensions } from "../util/frame";
 import { Component } from "./component";
 import { Renderable } from "./renderable";

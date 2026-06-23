@@ -1,7 +1,7 @@
 import { TextAlign } from "../util/align.js";
 import { Component } from "../core2/component.js";
 import { BitmapText } from "../core2/bitmap-text.js";
-import type { BoxConfig } from "../layout/node.js";
+import type { BoxConfig } from "../layout/index.js";
 import type {
   ComponentTheme,
   ResolvedComponentTheme,

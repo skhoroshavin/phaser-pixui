@@ -1,5 +1,5 @@
 import type { GameObjects } from "phaser";
-import { type BoxConfig } from "../layout/node";
+import { type BoxConfig } from "../layout";
 import { Component } from "./component";
 
 type GameObject = GameObjects.GameObject;

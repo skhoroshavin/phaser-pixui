@@ -1,6 +1,8 @@
 import { CANVAS, HEADLESS, VERSION, WEBGL } from "phaser";
 import { ConstraintMode, TextArea, UiScene } from "../../src";
 import { BitmapText } from "../../src/core2/bitmap-text.ts";
+import { Frame } from "../../src/styled2/frame.ts";
+import { Text } from "../../src/styled2/text.ts";
 import { resolveColor } from "../../src";
 import { GameWorld } from "./game.ts";
 import { uiTheme, uiTheme2 } from "./theme.ts";
@@ -59,15 +61,21 @@ export class Ui extends UiScene {
       text: `Phaser PixUI v${PHASER_PIXUI_VERSION}`,
     });
 
-    const headerFrame = this.insert.top.frame({
+    const headerFrame = new Frame(this.root, {
       style: "header_scroll",
-      y: 64,
+      top: 64,
       width: 224,
       height: 32,
+      marginLeft: "auto",
+      marginRight: "auto",
     });
-    headerFrame.insert.textArea({
+    new Text(headerFrame, {
       style: "header_scroll",
       text: "Phaser-PixUI demo",
+      marginLeft: "auto",
+      marginRight: "auto",
+      marginTop: "auto",
+      marginBottom: "auto",
     });
 
     this.insert.center.button({

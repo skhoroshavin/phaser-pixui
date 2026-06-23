@@ -1,4 +1,4 @@
-import { resolve } from "../layout/node";
+import { resolve } from "../layout";
 import { Component } from "./component";
 import type { ResponsiveScene } from "../scene/responsive";
 import type { ResolvedTheme } from "../styled2/theme.js";

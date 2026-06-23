@@ -1,4 +1,4 @@
-import type { BoxConfig } from "../layout/node.js";
+import type { BoxConfig } from "../layout/index.js";
 import type { ComponentTheme, ResolvedComponentTheme } from "./theme.js";
 import { Component } from "../core2/component.js";
 import { Image } from "../core2/image.js";

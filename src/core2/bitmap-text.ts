@@ -1,5 +1,5 @@
 import { TintModes } from "phaser";
-import { type BoxConfig } from "../layout/node";
+import { type BoxConfig } from "../layout";
 import { Component } from "./component";
 import { Renderable } from "./renderable";
 

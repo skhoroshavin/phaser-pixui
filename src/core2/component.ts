@@ -1,4 +1,4 @@
-import { createNode, type BoxConfig, type Node } from "../layout/node";
+import { createNode, type BoxConfig, type Node } from "../layout";
 import type { ViewportMount } from "./viewport-mount";
 
 export class Component {
