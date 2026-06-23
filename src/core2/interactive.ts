@@ -66,7 +66,7 @@ export class Interactive extends Component {
     this._zone.setInteractive(hitArea, callback);
   }
 
-  private _zone: Phaser.GameObjects.Zone;
+  protected _zone: Phaser.GameObjects.Zone;
   private _shape: HitShape;
   private _enabled: boolean;
 }
