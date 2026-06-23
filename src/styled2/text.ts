@@ -1,22 +1,31 @@
 import { TextAlign } from "../util/align.js";
-import type { ComponentTheme, ResolvedComponentTheme } from "./theme.js";
+import type {
+  ComponentTheme,
+  ResolvedComponentTheme,
+  ThemeColor,
+  ResolvedPalette,
+} from "./theme.js";
 
 export type TextStyle = {
   font: string;
-  tint: number;
+  tint: ThemeColor;
   align: TextAlign;
 };
 
 export type TextTheme = ComponentTheme<TextStyle>;
 export type ResolvedTextTheme = ResolvedComponentTheme<TextStyle>;
 
-export function resolveTextTheme(
-  def: TextTheme,
-  palette: Record<string, number>,
-): ResolvedTextTheme {
+function resolveColor(color: ThemeColor | undefined, palette: ResolvedPalette): number {
+  if (color === undefined) return palette.default ?? 0;
+  if (typeof color === "number") return color;
+  if (color in palette) return palette[color]!;
+  return palette.default ?? 0;
+}
+
+export function resolveTextTheme(def: TextTheme, palette: ResolvedPalette): ResolvedTextTheme {
   const defaults: TextStyle = {
     font: def.font ?? "",
-    tint: def.tint ?? palette.default ?? 0,
+    tint: resolveColor(def.tint, palette),
     align: def.align ?? TextAlign.Left,
   };
 
@@ -25,7 +34,7 @@ export function resolveTextTheme(
     for (const [name, s] of Object.entries(def.styles)) {
       styles[name] = {
         font: s.font ?? defaults.font,
-        tint: s.tint ?? defaults.tint,
+        tint: resolveColor(s.tint ?? def.tint, palette),
         align: s.align ?? defaults.align,
       };
     }

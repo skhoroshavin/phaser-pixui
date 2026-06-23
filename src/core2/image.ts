@@ -1,7 +1,7 @@
 import { type BoxConfig } from "../layout/node";
 import { frameDimensions } from "../util/frame";
+import { Component } from "./component";
 import { Renderable } from "./renderable";
-import type { ViewportMount } from "./viewport-mount";
 
 export type ImageConfig = {
   texture: string;
@@ -11,30 +11,31 @@ export type ImageConfig = {
 } & BoxConfig;
 
 export class Image extends Renderable<Phaser.GameObjects.Sprite | Phaser.GameObjects.NineSlice> {
-  constructor(mount: ViewportMount, cfg: ImageConfig) {
-    const dims = frameDimensions(mount.scene.textures.getFrame(cfg.texture, cfg.frame));
+  constructor(parent: Component, cfg: ImageConfig) {
+    const scene = parent.mount.scene;
+    const dims = frameDimensions(scene.textures.getFrame(cfg.texture, cfg.frame));
     const scalable = dims.scalableX || dims.scalableY;
 
     if (scalable) {
-      const inner = Image._createNineSlice(mount, cfg);
-      super(mount, inner, cfg);
+      const inner = Image._createNineSlice(scene, cfg);
+      super(parent, inner, cfg);
       Image._wireNineSlice(this, inner, dims.scalableX, dims.scalableY);
     } else {
-      super(mount, mount.scene.add.sprite(0, 0, cfg.texture, cfg.frame), cfg);
+      super(parent, scene.add.sprite(0, 0, cfg.texture, cfg.frame), cfg);
     }
   }
 
   private static _createNineSlice(
-    mount: ViewportMount,
+    scene: Phaser.Scene,
     cfg: ImageConfig,
   ): Phaser.GameObjects.NineSlice {
-    const inner = mount.scene.make.nineslice({
+    const inner = scene.make.nineslice({
       key: cfg.texture,
       frame: cfg.frame,
       tileX: cfg.tileX,
       tileY: cfg.tileY,
     });
-    mount.scene.displayList.add(inner);
+    scene.children.add(inner);
     return inner;
   }
 

@@ -1,22 +1,30 @@
-import { createNode, resolve, type Node } from "../layout/node";
+import { resolve } from "../layout/node";
+import { Component } from "./component";
 import type { ResponsiveScene } from "../scene/responsive";
+import type { ResolvedTheme } from "../styled2/theme.js";
 
 export class ViewportMount {
-  constructor(scene: ResponsiveScene) {
+  constructor(scene: ResponsiveScene, theme: ResolvedTheme) {
     this.scene = scene;
-    this.root = createNode({ box: { width: scene.viewport.width, height: scene.viewport.height } });
+    this.theme = theme;
+    this.root = new Component(undefined, {
+      width: scene.viewport.width,
+      height: scene.viewport.height,
+    });
+    this.root.mount = this;
   }
 
-  readonly root: Node;
+  readonly root: Component;
   readonly scene: ResponsiveScene;
+  readonly theme: ResolvedTheme;
 
   layout(): void {
-    resolve(this.root);
+    resolve(this.root.node);
   }
 
   resize(w: number, h: number): void {
-    this.root.box.width = w;
-    this.root.box.height = h;
-    resolve(this.root);
+    this.root.node.box.width = w;
+    this.root.node.box.height = h;
+    resolve(this.root.node);
   }
 }

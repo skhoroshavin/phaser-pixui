@@ -3,7 +3,7 @@ import { ConstraintMode, TextArea, UiScene } from "../../src";
 import { BitmapText } from "../../src/core2/bitmap-text.ts";
 import { resolveColor } from "../../src";
 import { GameWorld } from "./game.ts";
-import { uiTheme } from "./theme.ts";
+import { uiTheme, uiTheme2 } from "./theme.ts";
 import { load_dialog } from "./ui/load_dialog.ts";
 
 export class Ui extends UiScene {
@@ -16,6 +16,7 @@ export class Ui extends UiScene {
         height: 320,
       },
       theme: uiTheme,
+      theme2: uiTheme2,
     });
   }
 
@@ -50,7 +51,7 @@ export class Ui extends UiScene {
 
     const loadDialog = load_dialog(this.insert);
 
-    new BitmapText(this.mount, {
+    new BitmapText(this.root, {
       right: 4,
       bottom: 88,
       font: "mana_branches",
