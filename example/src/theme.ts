@@ -44,15 +44,7 @@ export const uiTheme: ThemeConfig = {
     paddingY: 3,
   },
 
-  textArea: {
-    styles: {
-      header_scroll: {
-        fontName: "mana_trunk",
-        fontTint: "dark",
-        defaultAlign: TextAlign.Center,
-      },
-    },
-  },
+  textArea: {},
 
   frame: {
     frame: "frame_light",
@@ -60,14 +52,6 @@ export const uiTheme: ThemeConfig = {
     paddingY: 14,
     tileX: true,
     tileY: true,
-
-    styles: {
-      header_scroll: {
-        frame: "header_scroll",
-        paddingX: 30,
-        paddingY: 8,
-      },
-    },
   },
 
   dialog: {
