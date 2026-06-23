@@ -66,16 +66,12 @@ export class Ui extends UiScene {
       top: 64,
       width: 224,
       height: 32,
-      marginLeft: "auto",
-      marginRight: "auto",
+      marginX: "auto",
     });
     new Text(headerFrame, {
       style: "header_scroll",
       text: "Phaser-PixUI demo",
-      marginLeft: "auto",
-      marginRight: "auto",
-      marginTop: "auto",
-      marginBottom: "auto",
+      margin: "auto",
     });
 
     this.insert.center.button({
