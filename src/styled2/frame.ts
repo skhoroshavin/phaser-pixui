@@ -4,13 +4,19 @@ import { Component } from "../core2/component.js";
 import { Image } from "../core2/image.js";
 
 export type FrameStyle = {
+  frame?: string;
+  tileX?: boolean;
+  tileY?: boolean;
+};
+
+export type ResolvedFrameStyle = {
   frame: string;
   tileX: boolean;
   tileY: boolean;
 };
 
 export type FrameTheme = ComponentTheme<FrameStyle>;
-export type ResolvedFrameTheme = ResolvedComponentTheme<FrameStyle>;
+export type ResolvedFrameTheme = ResolvedComponentTheme<ResolvedFrameStyle>;
 
 export type FrameConfig = BoxConfig & {
   style?: string;
@@ -34,22 +40,22 @@ export class Frame extends Image {
 }
 
 export function resolveFrameTheme(def: FrameTheme): ResolvedFrameTheme {
-  const defaults: FrameStyle = {
+  const resolvedDefault: ResolvedFrameStyle = {
     frame: def.frame ?? "",
     tileX: def.tileX ?? false,
     tileY: def.tileY ?? false,
   };
 
-  const styles: Record<string, FrameStyle> = {};
+  const resolvedStyles: Record<string, ResolvedFrameStyle> = {};
   if (def.styles) {
     for (const [name, s] of Object.entries(def.styles)) {
-      styles[name] = {
-        frame: s.frame ?? defaults.frame,
-        tileX: s.tileX ?? defaults.tileX,
-        tileY: s.tileY ?? defaults.tileY,
+      resolvedStyles[name] = {
+        frame: s.frame ?? resolvedDefault.frame,
+        tileX: s.tileX ?? resolvedDefault.tileX,
+        tileY: s.tileY ?? resolvedDefault.tileY,
       };
     }
   }
 
-  return { default: defaults, styles };
+  return { default: resolvedDefault, styles: resolvedStyles };
 }

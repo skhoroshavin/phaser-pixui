@@ -1,14 +1,14 @@
 import { resolveTextTheme, type TextTheme, type ResolvedTextTheme } from "./text.js";
 import { resolveFrameTheme, type FrameTheme, type ResolvedFrameTheme } from "./frame.js";
 
-export type { FrameStyle, FrameTheme, ResolvedFrameTheme } from "./frame.js";
+export type { FrameStyle, ResolvedFrameStyle, FrameTheme, ResolvedFrameTheme } from "./frame.js";
 export { resolveFrameTheme } from "./frame.js";
-export type { TextStyle, TextTheme, ResolvedTextTheme } from "./text.js";
+export type { TextStyle, ResolvedTextStyle, TextTheme, ResolvedTextTheme } from "./text.js";
 
 export type ThemeColor = string | number;
 
-export type ComponentTheme<T> = Partial<T> & {
-  styles?: Record<string, Partial<T>>;
+export type ComponentTheme<T> = T & {
+  styles?: Record<string, T>;
 };
 
 export type ResolvedComponentTheme<T> = {
