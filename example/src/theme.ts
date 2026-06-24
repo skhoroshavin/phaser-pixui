@@ -1,5 +1,5 @@
 import { TextAlign, ThemeConfig } from "../../src";
-import type { ThemeDefinition } from "../../src/styled2/theme.js";
+import type { ThemeConfig } from "../../src/styled2/theme.js";
 
 export const uiTheme: ThemeConfig = {
   resources: {
@@ -65,7 +65,7 @@ export const uiTheme: ThemeConfig = {
   },
 };
 
-export const uiTheme2: ThemeDefinition = {
+export const uiTheme2: ThemeConfig = {
   resources: {
     basePath: "packed_assets",
     atlas: "mana_soul",

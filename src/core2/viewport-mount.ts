@@ -1,10 +1,10 @@
 import { resolve } from "../layout";
 import { Component } from "./component";
 import type { ResponsiveScene } from "../scene/responsive";
-import type { ResolvedTheme } from "../styled2/theme.js";
+import type { Theme } from "../styled2/theme.js";
 
 export class ViewportMount {
-  constructor(scene: ResponsiveScene, theme: ResolvedTheme) {
+  constructor(scene: ResponsiveScene, theme: Theme) {
     this.scene = scene;
     this.theme = theme;
     this.root = new Component(undefined, {
@@ -16,7 +16,7 @@ export class ViewportMount {
 
   readonly root: Component;
   readonly scene: ResponsiveScene;
-  readonly theme: ResolvedTheme;
+  readonly theme: Theme;
 
   layout(): void {
     resolve(this.root.node);

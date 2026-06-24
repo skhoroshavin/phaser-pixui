@@ -9,7 +9,7 @@ export type ControlFrameConfig = BoxConfig & {
 export type ControlState = "normal" | "hover" | "pressed" | "disabled";
 
 export type ControlFrameStyle = {
-  normal?: string;
+  normal: string;
   hover?: string;
   pressed?: string;
   disabled?: string;
@@ -19,20 +19,19 @@ export class ControlFrame extends Component {
   constructor(parent: Component, cfg: ControlFrameConfig) {
     super(parent, cfg);
 
-    const baseStyle = cfg.style.normal ?? "";
-    const normal = new Frame(this, { style: baseStyle, inset: 0 });
+    const normal = new Frame(this, { style: cfg.style.normal, inset: 0 });
     this._frames = [normal];
     this._stateFrames = { normal, hover: normal, pressed: normal, disabled: normal };
 
-    if (cfg.style.hover && cfg.style.hover !== baseStyle) {
+    if (cfg.style.hover && cfg.style.hover !== cfg.style.normal) {
       this._stateFrames.hover = new Frame(this, { style: cfg.style.hover, inset: 0 });
       this._frames.push(this._stateFrames.hover);
     }
-    if (cfg.style.pressed && cfg.style.pressed !== baseStyle) {
+    if (cfg.style.pressed && cfg.style.pressed !== cfg.style.normal) {
       this._stateFrames.pressed = new Frame(this, { style: cfg.style.pressed, inset: 0 });
       this._frames.push(this._stateFrames.pressed);
     }
-    if (cfg.style.disabled && cfg.style.disabled !== baseStyle) {
+    if (cfg.style.disabled && cfg.style.disabled !== cfg.style.normal) {
       this._stateFrames.disabled = new Frame(this, { style: cfg.style.disabled, inset: 0 });
       this._frames.push(this._stateFrames.disabled);
     }

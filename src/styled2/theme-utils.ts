@@ -1,10 +1,14 @@
 export type ThemeColor = string | number;
 
-export type ComponentTheme<T> = T & {
-  styles?: Record<string, T>;
+export type Variants<T> = T & {
+  styles?: Record<string, Partial<T>>;
 };
 
-export class ResolvedComponentTheme<TStyle> {
+export type StyleResolver<TInput, TResolved> = {
+  resolve(cfg: TInput, palette: Palette): TResolved;
+};
+
+export class StyleRegistry<TStyle> {
   protected _default!: TStyle;
   protected _styles!: Record<string, TStyle>;
 
@@ -14,18 +18,18 @@ export class ResolvedComponentTheme<TStyle> {
   }
 }
 
-export type Palette = Record<string, ThemeColor>;
+export type PaletteConfig = Record<string, ThemeColor>;
 
-export class ResolvedPalette {
+export class Palette {
   private readonly _map: Record<string, number>;
 
-  constructor(def: Palette) {
+  constructor(cfg: PaletteConfig) {
     this._map = {};
-    for (const [key, value] of Object.entries(def)) {
+    for (const [key, value] of Object.entries(cfg)) {
       if (typeof value === "number") {
         this._map[key] = value;
-      } else if (value in def) {
-        const ref = def[value];
+      } else if (value in cfg) {
+        const ref = cfg[value];
         this._map[key] = typeof ref === "number" ? ref : 0;
       } else {
         this._map[key] = 0;

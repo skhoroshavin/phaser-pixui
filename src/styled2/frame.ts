@@ -1,5 +1,5 @@
 import type { BoxConfig } from "../layout";
-import { ResolvedComponentTheme, type ComponentTheme } from "./theme-utils.js";
+import { StyleRegistry, type Variants } from "./theme-utils.js";
 import { Component } from "../core2/component.js";
 import { Image } from "../core2/image.js";
 
@@ -8,12 +8,12 @@ export type FrameConfig = BoxConfig & {
 };
 
 export type FrameStyle = {
-  frame?: string;
+  frame: string;
   tileX?: boolean;
   tileY?: boolean;
 };
 
-export type FrameTheme = ComponentTheme<FrameStyle>;
+export type FrameThemeConfig = Variants<FrameStyle>;
 
 export class Frame extends Image {
   constructor(parent: Component, cfg: FrameConfig) {
@@ -36,17 +36,17 @@ export type ResolvedFrameStyle = {
   tileY: boolean;
 };
 
-export class ResolvedFrameTheme extends ResolvedComponentTheme<ResolvedFrameStyle> {
-  constructor(def: FrameTheme) {
+export class FrameTheme extends StyleRegistry<ResolvedFrameStyle> {
+  constructor(cfg: FrameThemeConfig) {
     super();
     this._default = {
-      frame: def.frame ?? "",
-      tileX: def.tileX ?? false,
-      tileY: def.tileY ?? false,
+      frame: cfg.frame,
+      tileX: cfg.tileX ?? false,
+      tileY: cfg.tileY ?? false,
     };
     this._styles = {};
-    if (def.styles) {
-      for (const [name, s] of Object.entries(def.styles)) {
+    if (cfg.styles) {
+      for (const [name, s] of Object.entries(cfg.styles)) {
         this._styles[name] = {
           frame: s.frame ?? this._default.frame,
           tileX: s.tileX ?? this._default.tileX,
