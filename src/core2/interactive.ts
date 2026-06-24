@@ -1,3 +1,4 @@
+import { Geom, type Types } from "phaser";
 import { type BoxConfig } from "../layout";
 import { Component } from "./component";
 
@@ -17,6 +18,7 @@ export class Interactive extends Component {
     this._enabled = cfg.enabled ?? true;
 
     this._zone = scene.add.zone(0, 0, 0, 0);
+    this._zone.setOrigin(0, 0);
     this._updateHitArea(0, 0);
 
     this.node.onLayout = (rect) => {
@@ -41,29 +43,34 @@ export class Interactive extends Component {
 
   private _updateHitArea(w: number, h: number): void {
     let hitArea: Phaser.Geom.Rectangle | Phaser.Geom.Polygon | Phaser.Geom.Ellipse;
-    let callback: Phaser.Types.Input.HitAreaCallback;
+    let callback: Types.Input.HitAreaCallback;
 
     switch (this._shape) {
       case "diamond": {
         const hw = w / 2;
         const hh = h / 2;
-        hitArea = new Phaser.Geom.Polygon([hw, 0, w, hh, hw, h, 0, hh]);
-        callback = Phaser.Geom.Polygon.Contains;
+        hitArea = new Geom.Polygon([hw, 0, w, hh, hw, h, 0, hh]);
+        callback = Geom.Polygon.Contains;
         break;
       }
       case "ellipse": {
-        hitArea = new Phaser.Geom.Ellipse(w / 2, h / 2, w, h);
-        callback = Phaser.Geom.Ellipse.Contains;
+        hitArea = new Geom.Ellipse(w / 2, h / 2, w, h);
+        callback = Geom.Ellipse.Contains;
         break;
       }
       default: {
-        hitArea = new Phaser.Geom.Rectangle(0, 0, w, h);
-        callback = Phaser.Geom.Rectangle.Contains;
+        hitArea = new Geom.Rectangle(0, 0, w, h);
+        callback = Geom.Rectangle.Contains;
         break;
       }
     }
 
-    this._zone.setInteractive(hitArea, callback);
+    if (this._zone.input) {
+      this._zone.input.hitArea = hitArea;
+      this._zone.input.hitAreaCallback = callback;
+    } else {
+      this._zone.setInteractive(hitArea, callback);
+    }
   }
 
   protected _zone: Phaser.GameObjects.Zone;

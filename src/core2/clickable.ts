@@ -1,17 +1,12 @@
 import { Interactive, type InteractiveConfig } from "./interactive";
-import { Component } from "./component.ts";
+import { Component } from "./component";
 
 export type ClickableConfig = InteractiveConfig & {
   onClick?: () => void;
-  onUpdate?: () => void;
+  onUpdate?: (state: ClickableState) => void;
 };
 
-export enum ClickState {
-  Default,
-  Hovered,
-  Pressed,
-  Disabled,
-}
+export type ClickableState = "normal" | "pressed" | "hover" | "disabled";
 
 export class Clickable extends Interactive {
   constructor(parent: Component, cfg: ClickableConfig = {}) {
@@ -24,45 +19,45 @@ export class Clickable extends Interactive {
 
     this._zone.on("pointerdown", () => {
       if (!this.enabled) return;
-      this._setState(ClickState.Pressed);
+      this._setState("pressed");
     });
 
     this._zone.on("pointerup", () => {
       if (!this.enabled) return;
-      if (this.state === ClickState.Pressed && this._onClick) {
+      if (this.state === "pressed" && this._onClick) {
         this._onClick();
       }
-      this._setState(isDesktop ? ClickState.Hovered : ClickState.Default);
+      this._setState(isDesktop ? "hover" : "normal");
     });
 
     this._zone.on("pointerover", () => {
       if (!this.enabled) return;
       if (!isDesktop) return;
-      this._setState(ClickState.Hovered);
+      this._setState("hover");
     });
 
     this._zone.on("pointerout", () => {
       if (!this.enabled) return;
-      this._setState(ClickState.Default);
+      this._setState("normal");
     });
   }
 
-  get state(): ClickState {
-    return this.enabled ? this._state : ClickState.Disabled;
+  get state(): ClickableState {
+    return this.enabled ? this._state : "disabled";
   }
 
   set visible(v: boolean) {
     super.visible = v;
-    this._setState(ClickState.Default);
+    this._setState("normal");
   }
 
-  private _setState(s: ClickState): void {
+  private _setState(s: ClickableState): void {
     if (this._state === s) return;
     this._state = s;
-    this._onUpdate?.();
+    this._onUpdate?.(this._state);
   }
 
-  private _state: ClickState = ClickState.Default;
+  private _state: ClickableState = "normal";
   private readonly _onClick?: () => void;
-  private readonly _onUpdate?: () => void;
+  private readonly _onUpdate?: (state: ClickableState) => void;
 }

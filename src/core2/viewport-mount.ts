@@ -1,21 +1,17 @@
 import { resolve } from "../layout";
 import { Component } from "./component";
-import type { ResponsiveScene } from "../scene/responsive";
-import type { Theme } from "../styled2/theme.js";
+import type { Theme } from "../theme2";
 
 export class ViewportMount {
-  constructor(scene: ResponsiveScene, theme: Theme) {
+  constructor(scene: Phaser.Scene, theme: Theme, width: number, height: number) {
     this.scene = scene;
     this.theme = theme;
-    this.root = new Component(undefined, {
-      width: scene.viewport.width,
-      height: scene.viewport.height,
-    });
+    this.root = new Component(undefined, { width, height });
     this.root.mount = this;
   }
 
   readonly root: Component;
-  readonly scene: ResponsiveScene;
+  readonly scene: Phaser.Scene;
   readonly theme: Theme;
 
   layout(): void {

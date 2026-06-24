@@ -1,5 +1,5 @@
 import { ViewportMount } from "../core2/viewport-mount.ts";
-import { Theme, type ThemeConfig as Theme2Config } from "../styled2/theme.ts";
+import { Theme, type ThemeConfig as Theme2Config } from "../theme2";
 import { InsertContext } from "../styled/context.ts";
 import { StyledComponent } from "../styled/styled.ts";
 import { ThemeConfig, initTheme } from "../theme/theme.ts";
@@ -18,7 +18,7 @@ export class UiScene extends ResponsiveScene {
     this.theme = cfg.theme;
 
     const theme = new Theme(cfg.theme2);
-    this._mount = new ViewportMount(this, theme);
+    this._mount = new ViewportMount(this, theme, this.viewport.width, this.viewport.height);
 
     const ctx = new InsertContext(this, this.theme);
     this._root = new StyledComponent(ctx);

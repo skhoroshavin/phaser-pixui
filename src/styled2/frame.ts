@@ -1,10 +1,10 @@
 import type { BoxConfig } from "../layout";
-import { StyleRegistry, type Variants, inherit, fallback } from "./theme-utils.js";
-import { Component } from "../core2/component.js";
-import { Image } from "../core2/image.js";
+import { themeBinding, type StyleResolver, type ResolvedStyle } from "../theme2";
+import { Component } from "../core2/component";
+import { Image } from "../core2/image";
 
 export type FrameConfig = BoxConfig & {
-  style?: string;
+  style?: string | FrameStyle;
 };
 
 export type FrameStyle = {
@@ -13,12 +13,23 @@ export type FrameStyle = {
   tileY?: boolean;
 };
 
-export type FrameThemeConfig = Variants<FrameStyle>;
+export const FrameStyleResolver = {
+  frame: (_ctx, raw, def) => raw ?? def,
+  tileX: (_ctx, raw, def) => raw ?? def ?? false,
+  tileY: (_ctx, raw, def) => raw ?? def ?? false,
+} satisfies StyleResolver<FrameStyle>;
+
+export type ResolvedFrameStyle = ResolvedStyle<FrameStyle, typeof FrameStyleResolver>;
 
 export class Frame extends Image {
+  static readonly binding = themeBinding<FrameStyle>()("frame", FrameStyleResolver);
+
   constructor(parent: Component, cfg: FrameConfig) {
     const theme = parent.mount.theme;
-    const s = theme.frame.resolve(cfg.style);
+    const s =
+      cfg.style === undefined || typeof cfg.style === "string"
+        ? theme.resolve(Frame, cfg.style as string | undefined)
+        : cfg.style;
 
     super(parent, {
       texture: theme.resources.atlas,
@@ -26,23 +37,6 @@ export class Frame extends Image {
       tileX: s.tileX,
       tileY: s.tileY,
       ...cfg,
-    });
-  }
-}
-
-export type ResolvedFrameStyle = {
-  frame: string;
-  tileX: boolean;
-  tileY: boolean;
-};
-
-export class FrameTheme extends StyleRegistry<ResolvedFrameStyle> {
-  static readonly key = "frame";
-  constructor(cfg: FrameThemeConfig) {
-    super(cfg, {
-      frame: inherit(),
-      tileX: fallback(false),
-      tileY: fallback(false),
     });
   }
 }

@@ -3,6 +3,7 @@ import { ConstraintMode, TextArea, UiScene } from "../../src";
 import { BitmapText } from "../../src/core2/bitmap-text.ts";
 import { Frame } from "../../src/styled2/frame.ts";
 import { Text } from "../../src/styled2/text.ts";
+import { Button } from "../../src/styled2/button.ts";
 import { resolveColor } from "../../src";
 import { GameWorld } from "./game.ts";
 import { uiTheme, uiTheme2 } from "./theme.ts";
@@ -90,10 +91,12 @@ export class Ui extends UiScene {
       onClick: () => this.log("There is no escape :)"),
     });
 
-    this.insert.topRight.button({
+    new Button(this.root, {
       style: "settings",
-      x: 4,
-      y: 4,
+      right: 4,
+      top: 4,
+      width: 32,
+      height: 32,
       onClick: () => this.log("What do you want to customize here?"),
     });
 

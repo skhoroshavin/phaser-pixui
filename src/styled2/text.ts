@@ -1,14 +1,7 @@
-import {
-  StyleRegistry,
-  Palette,
-  type Variants,
-  type ThemeColor,
-  inherit,
-  color,
-} from "./theme-utils.js";
-import { TextAlign } from "../util/align.js";
-import { Component } from "../core2/component.js";
-import { BitmapText } from "../core2/bitmap-text.js";
+import { themeBinding, type StyleResolver, type ThemeColor } from "../theme2";
+import { TextAlign } from "../util/align";
+import { Component } from "../core2/component";
+import { BitmapText } from "../core2/bitmap-text";
 import type { BoxConfig } from "../layout";
 
 export type TextConfig = BoxConfig & {
@@ -23,30 +16,19 @@ export type TextStyle = {
   align?: TextAlign;
 };
 
-export type TextThemeConfig = Variants<TextStyle>;
+const TextStyleResolver = {
+  font: (_ctx, raw, def) => raw ?? def,
+  tint: (ctx, raw, def) => ctx.palette.resolve(raw ?? def),
+  align: (_ctx, raw, def) => raw ?? def ?? TextAlign.Left,
+} satisfies StyleResolver<TextStyle>;
 
 export class Text extends BitmapText {
+  static readonly binding = themeBinding<TextStyle>()("text", TextStyleResolver);
+
   constructor(parent: Component, cfg: TextConfig) {
     const theme = parent.mount.theme;
-    const s = theme.text.resolve(cfg.style);
+    const s = theme.resolve(Text, cfg.style);
 
     super(parent, { font: s.font, tint: s.tint, ...cfg });
-  }
-}
-
-export type ResolvedTextStyle = {
-  font: string;
-  tint: number;
-  align: TextAlign;
-};
-
-export class TextTheme extends StyleRegistry<ResolvedTextStyle> {
-  static readonly key = "text";
-  constructor(cfg: TextThemeConfig, palette: Palette) {
-    super(cfg, {
-      font: inherit(),
-      tint: color(palette),
-      align: (raw, def) => raw ?? def ?? TextAlign.Left,
-    });
   }
 }
