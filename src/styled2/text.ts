@@ -1,4 +1,11 @@
-import { StyleRegistry, Palette, type Variants, type ThemeColor } from "./theme-utils.js";
+import {
+  StyleRegistry,
+  Palette,
+  type Variants,
+  type ThemeColor,
+  inherit,
+  color,
+} from "./theme-utils.js";
 import { TextAlign } from "../util/align.js";
 import { Component } from "../core2/component.js";
 import { BitmapText } from "../core2/bitmap-text.js";
@@ -34,22 +41,12 @@ export type ResolvedTextStyle = {
 };
 
 export class TextTheme extends StyleRegistry<ResolvedTextStyle> {
+  static readonly key = "text";
   constructor(cfg: TextThemeConfig, palette: Palette) {
-    super();
-    this._default = {
-      font: cfg.font,
-      tint: palette.resolve(cfg.tint),
-      align: cfg.align ?? TextAlign.Left,
-    };
-    this._styles = {};
-    if (cfg.styles) {
-      for (const [name, s] of Object.entries(cfg.styles)) {
-        this._styles[name] = {
-          font: s.font ?? this._default.font,
-          tint: palette.resolve(s.tint ?? cfg.tint),
-          align: s.align ?? this._default.align,
-        };
-      }
-    }
+    super(cfg, {
+      font: inherit(),
+      tint: color(palette),
+      align: (raw, def) => raw ?? def ?? TextAlign.Left,
+    });
   }
 }

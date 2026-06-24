@@ -1,5 +1,5 @@
 import type { BoxConfig } from "../layout";
-import { StyleRegistry, type Variants } from "./theme-utils.js";
+import { StyleRegistry, type Variants, inherit, fallback } from "./theme-utils.js";
 import { Component } from "../core2/component.js";
 import { Image } from "../core2/image.js";
 
@@ -37,22 +37,12 @@ export type ResolvedFrameStyle = {
 };
 
 export class FrameTheme extends StyleRegistry<ResolvedFrameStyle> {
+  static readonly key = "frame";
   constructor(cfg: FrameThemeConfig) {
-    super();
-    this._default = {
-      frame: cfg.frame,
-      tileX: cfg.tileX ?? false,
-      tileY: cfg.tileY ?? false,
-    };
-    this._styles = {};
-    if (cfg.styles) {
-      for (const [name, s] of Object.entries(cfg.styles)) {
-        this._styles[name] = {
-          frame: s.frame ?? this._default.frame,
-          tileX: s.tileX ?? this._default.tileX,
-          tileY: s.tileY ?? this._default.tileY,
-        };
-      }
-    }
+    super(cfg, {
+      frame: inherit(),
+      tileX: fallback(false),
+      tileY: fallback(false),
+    });
   }
 }
