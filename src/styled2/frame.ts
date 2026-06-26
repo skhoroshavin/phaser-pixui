@@ -1,9 +1,8 @@
-import type { BoxConfig } from "../layout";
 import { themeBinding, type StyleResolver, type ResolvedStyle } from "../theme2";
-import { Component } from "../core2/component";
 import { Image } from "../core2/image";
+import { Component, type ComponentConfig } from "../core2/component";
 
-export type FrameConfig = BoxConfig & {
+export type FrameConfig = ComponentConfig & {
   style?: string | FrameStyle;
 };
 

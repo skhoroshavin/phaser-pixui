@@ -1,10 +1,9 @@
 import { themeBinding, type StyleResolver, type ThemeColor } from "../theme2";
 import { TextAlign } from "../util/align";
-import { Component } from "../core2/component";
+import { Component, type ComponentConfig } from "../core2/component";
 import { BitmapText } from "../core2/bitmap-text";
-import type { BoxConfig } from "../layout";
 
-export type TextConfig = BoxConfig & {
+export type TextConfig = ComponentConfig & {
   style?: string;
   text?: string;
   tint?: number;

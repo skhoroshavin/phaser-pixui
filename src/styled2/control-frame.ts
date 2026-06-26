@@ -1,10 +1,9 @@
-import type { BoxConfig } from "../layout";
-import { Component } from "../core2/component";
+import { Component, type ComponentConfig } from "../core2/component";
 import { Frame, FrameStyleResolver, type FrameStyle, type ResolvedFrameStyle } from "./frame";
 import type { ClickableState } from "../core2/clickable";
 import { resolveStyle, type ResolvedStyle, type StyleResolver } from "../theme2";
 
-export type ControlFrameConfig = BoxConfig & {
+export type ControlFrameConfig = ComponentConfig & {
   style: ResolvedStyle<ControlFrameStyle, typeof ControlFrameStyleResolver>;
 };
 

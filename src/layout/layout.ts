@@ -1,18 +1,18 @@
-export function createBox({ margin, marginX, marginY, inset, ...box }: BoxConfig = {}): BoxConfig {
+export function createLayout({ margin, marginX, marginY, inset, ...rest }: Layout = {}): Layout {
   return {
-    ...box,
-    marginLeft: box.marginLeft ?? marginX ?? margin,
-    marginRight: box.marginRight ?? marginX ?? margin,
-    marginTop: box.marginTop ?? marginY ?? margin,
-    marginBottom: box.marginBottom ?? marginY ?? margin,
-    left: box.left ?? inset,
-    top: box.top ?? inset,
-    right: box.right ?? inset,
-    bottom: box.bottom ?? inset,
+    ...rest,
+    marginLeft: rest.marginLeft ?? marginX ?? margin,
+    marginRight: rest.marginRight ?? marginX ?? margin,
+    marginTop: rest.marginTop ?? marginY ?? margin,
+    marginBottom: rest.marginBottom ?? marginY ?? margin,
+    left: rest.left ?? inset,
+    top: rest.top ?? inset,
+    right: rest.right ?? inset,
+    bottom: rest.bottom ?? inset,
   };
 }
 
-export type BoxConfig = {
+export type Layout = {
   left?: number;
   top?: number;
   right?: number;
@@ -32,18 +32,18 @@ export type BoxConfig = {
 export function resolveAxisX(
   containerStart: number,
   containerLength: number,
-  box: BoxConfig,
+  layout: Layout,
   baseLength: number,
 ): { x: number; w: number } {
   const { pos, len } = resolveAxis(
     containerStart,
     containerLength,
     {
-      start: box.left,
-      end: box.right,
-      length: box.width,
-      marginStart: box.marginLeft,
-      marginEnd: box.marginRight,
+      start: layout.left,
+      end: layout.right,
+      length: layout.width,
+      marginStart: layout.marginLeft,
+      marginEnd: layout.marginRight,
     },
     baseLength,
   );
@@ -53,18 +53,18 @@ export function resolveAxisX(
 export function resolveAxisY(
   containerStart: number,
   containerLength: number,
-  box: BoxConfig,
+  layout: Layout,
   baseLength: number,
 ): { y: number; h: number } {
   const { pos, len } = resolveAxis(
     containerStart,
     containerLength,
     {
-      start: box.top,
-      end: box.bottom,
-      length: box.height,
-      marginStart: box.marginTop,
-      marginEnd: box.marginBottom,
+      start: layout.top,
+      end: layout.bottom,
+      length: layout.height,
+      marginStart: layout.marginTop,
+      marginEnd: layout.marginBottom,
     },
     baseLength,
   );

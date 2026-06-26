@@ -1,11 +1,10 @@
 import { themeBinding, type StyleResolver } from "../theme2";
-import type { BoxConfig } from "../layout";
 import { Clickable } from "../core2/clickable";
 import { ControlFrame, ControlFrameStyleResolver, type ControlFrameStyle } from "./control-frame";
-import type { Component } from "../core2/component";
+import { Component, type ComponentConfig } from "../core2/component";
 import type { HitShape } from "../core2/interactive";
 
-export type ButtonConfig = BoxConfig & {
+export type ButtonConfig = ComponentConfig & {
   style?: string;
   enabled?: boolean;
   onClick?: () => void;

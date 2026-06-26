@@ -3,7 +3,7 @@ import { createNode, resolve, type Node } from "./";
 
 describe("box", () => {
   function viewport(w: number, h: number): Node {
-    return createNode({ box: { width: w, height: h } });
+    return createNode({ layout: { width: w, height: h } });
   }
 
   it.each([
@@ -139,14 +139,14 @@ describe("box", () => {
     },
   ] as const)("$name", ({ box, intrinsic, expected }) => {
     const root = viewport(320, 240);
-    root.children = [createNode({ box, intrinsic })];
+    root.children = [createNode({ layout: box, intrinsic })];
     resolve(root);
     expect(root.children[0]!.rect).toEqual(expected);
   });
 
   it("distributes odd free space with lower slot first", () => {
     const root = viewport(321, 240);
-    root.children = [createNode({ box: { width: 100, marginX: "auto" } })];
+    root.children = [createNode({ layout: { width: 100, marginX: "auto" } })];
     resolve(root);
     expect(root.children[0]!.rect).toEqual({ x: 111, y: 0, w: 100, h: 0 });
   });

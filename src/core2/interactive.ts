@@ -1,8 +1,7 @@
 import { Geom, type Types } from "phaser";
-import { type BoxConfig } from "../layout";
-import { Component } from "./component";
+import { Component, type ComponentConfig } from "./component";
 
-export type InteractiveConfig = BoxConfig & {
+export type InteractiveConfig = ComponentConfig & {
   shape?: HitShape;
   enabled?: boolean;
 };

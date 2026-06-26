@@ -1,4 +1,4 @@
-import { resolveAxisX, resolveAxisY } from "./box";
+import { resolveAxisX, resolveAxisY } from "./layout";
 import { type Node, type Rect } from "./node";
 
 export function resolve(root: Node): void {
@@ -6,17 +6,16 @@ export function resolve(root: Node): void {
 }
 
 function resolveNode(node: Node, parentRect: Rect | undefined): void {
-  const { box } = node;
-  const baseW = node.box.width ?? node.intrinsic?.w ?? 0;
-  const baseH = node.box.height ?? node.intrinsic?.h ?? 0;
+  const baseW = node.layout.width ?? node.intrinsic?.w ?? 0;
+  const baseH = node.layout.height ?? node.intrinsic?.h ?? 0;
 
   if (parentRect === undefined) {
     updateNode(node, { x: 0, y: 0, w: baseW, h: baseH });
     return;
   }
 
-  const { x, w } = resolveAxisX(parentRect.x, parentRect.w, box, baseW);
-  const { y, h } = resolveAxisY(parentRect.y, parentRect.h, box, baseH);
+  const { x, w } = resolveAxisX(parentRect.x, parentRect.w, node.layout, baseW);
+  const { y, h } = resolveAxisY(parentRect.y, parentRect.h, node.layout, baseH);
 
   updateNode(node, { x, y, w, h });
 }
