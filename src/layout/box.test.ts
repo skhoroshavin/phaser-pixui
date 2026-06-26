@@ -137,17 +137,17 @@ describe("box", () => {
       box: { left: 10, width: 80, marginLeft: "auto" },
       expected: { x: 10, y: 0, w: 80, h: 0 },
     },
-  ])("$name", ({ box, intrinsic, expected }) => {
+  ] as const)("$name", ({ box, intrinsic, expected }) => {
     const root = viewport(320, 240);
     root.children = [createNode({ box, intrinsic })];
     resolve(root);
-    expect(root.children[0].rect).toEqual(expected);
+    expect(root.children[0]!.rect).toEqual(expected);
   });
 
   it("distributes odd free space with lower slot first", () => {
     const root = viewport(321, 240);
     root.children = [createNode({ box: { width: 100, marginX: "auto" } })];
     resolve(root);
-    expect(root.children[0].rect).toEqual({ x: 111, y: 0, w: 100, h: 0 });
+    expect(root.children[0]!.rect).toEqual({ x: 111, y: 0, w: 100, h: 0 });
   });
 });

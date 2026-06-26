@@ -1,5 +1,6 @@
 import { TextAlign, ThemeConfig } from "../../src";
-import type { ThemeDefinition } from "../../src/styled2/theme.js";
+import { defineTheme } from "../../src/theme2";
+import { builtinComponents } from "../../src/styled2/theme";
 
 export const uiTheme: ThemeConfig = {
   resources: {
@@ -65,7 +66,7 @@ export const uiTheme: ThemeConfig = {
   },
 };
 
-export const uiTheme2: ThemeDefinition = {
+export const uiTheme2 = defineTheme([...builtinComponents], {
   resources: {
     basePath: "packed_assets",
     atlas: "mana_soul",
@@ -102,4 +103,15 @@ export const uiTheme2: ThemeDefinition = {
       },
     },
   },
-};
+  button: {
+    normal: { frame: "button", tileX: true, tileY: true },
+    styles: {
+      settings: {
+        normal: { frame: "button_settings_up" },
+        pressed: { frame: "button_settings_down" },
+        hover: { frame: "button_settings_hover" },
+        shape: "diamond",
+      },
+    },
+  },
+});

@@ -13,7 +13,7 @@ export class InsertContext extends StyledComponentFactory {
     });
   }
 
-  at(originX: OriginX, originY: OriginY): StyledComponentFactory {
+  private at(originX: OriginX, originY: OriginY): StyledComponentFactory {
     const key = `${originX}-${originY}`;
     let factory = this._factories[key];
     if (!factory) {
@@ -38,10 +38,6 @@ export class InsertContext extends StyledComponentFactory {
     return this.at(OriginX.Left, OriginY.Center);
   }
 
-  get top(): StyledComponentFactory {
-    return this.at(OriginX.Center, OriginY.Top);
-  }
-
   get topLeft(): StyledComponentFactory {
     return this.at(OriginX.Left, OriginY.Top);
   }
@@ -52,9 +48,5 @@ export class InsertContext extends StyledComponentFactory {
 
   get bottom(): StyledComponentFactory {
     return this.at(OriginX.Center, OriginY.Bottom);
-  }
-
-  get bottomRight(): StyledComponentFactory {
-    return this.at(OriginX.Right, OriginY.Bottom);
   }
 }
