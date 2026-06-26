@@ -91,9 +91,6 @@ export const uiTheme2 = defineTheme([...builtinComponents], {
         tint: "dark",
         align: TextAlign.Center,
       },
-      button_disabled: {
-        tint: "disabled",
-      },
     },
   },
   frame: {
@@ -107,10 +104,11 @@ export const uiTheme2 = defineTheme([...builtinComponents], {
     },
   },
   button: {
+    textStyle: "default",
     normal: { frame: "button_up", tileX: true, tileY: true },
     hover: { frame: "button_hover", tileX: true, tileY: true },
     pressed: { frame: "button_down", tileX: true, tileY: true },
-    disabled: { frame: "button_disabled", tileX: true, tileY: true, textStyle: "button_disabled" },
+    disabled: { frame: "button_disabled", tileX: true, tileY: true, textTint: "disabled" },
     styles: {
       settings: {
         normal: { frame: "button_settings_up" },

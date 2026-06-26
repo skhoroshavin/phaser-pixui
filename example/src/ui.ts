@@ -77,7 +77,9 @@ export class Ui extends UiScene {
     });
 
     const buttonStack = new Component(this.root, {
-      direction: "column", gap: 2, margin: "auto",
+      direction: "column",
+      gap: 2,
+      margin: "auto",
     });
 
     new Button(buttonStack, {
