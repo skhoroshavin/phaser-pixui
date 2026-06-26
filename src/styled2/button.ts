@@ -6,6 +6,7 @@ import type { HitShape } from "../core2/interactive";
 
 export type ButtonConfig = ComponentConfig & {
   style?: string;
+  text?: string;
   enabled?: boolean;
   onClick?: () => void;
 };
@@ -36,7 +37,7 @@ export class Button extends Clickable {
       },
     });
 
-    this._frame = new ControlFrame(this, { style: s, inset: 0 });
+    this._frame = new ControlFrame(this, { style: s, inset: 0, text: cfg.text });
     this._frame.state = this.state;
   }
 
