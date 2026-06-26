@@ -19,6 +19,23 @@ describe("flex", () => {
     expect(child2.rect).toEqual({ x: 0, y: 38, w: 80, h: 20 });
   });
 
+  it("auto-sizes column to wrap children", () => {
+    const root = createNode({ layout: { width: 320, height: 240 } });
+    const flex = createNode({
+      layout: { left: 0, top: 0, direction: "column", gap: 4 },
+    });
+    const child1 = createNode({ layout: { width: 100, height: 30 } });
+    const child2 = createNode({ layout: { width: 80, height: 20 } });
+    flex.children = [child1, child2];
+    root.children = [flex];
+
+    resolve(root);
+
+    expect(flex.rect).toEqual({ x: 0, y: 0, w: 100, h: 54 });
+    expect(child1.rect).toEqual({ x: 0, y: 0, w: 100, h: 30 });
+    expect(child2.rect).toEqual({ x: 0, y: 34, w: 80, h: 20 });
+  });
+
   it("places children side by side in a row with gap", () => {
     const root = createNode({ layout: { width: 320, height: 240 } });
     const flex = createNode({
@@ -34,5 +51,22 @@ describe("flex", () => {
     expect(flex.rect).toEqual({ x: 0, y: 0, w: 300, h: 50 });
     expect(child1.rect).toEqual({ x: 0, y: 0, w: 100, h: 30 });
     expect(child2.rect).toEqual({ x: 108, y: 0, w: 80, h: 20 });
+  });
+
+  it("auto-sizes row to wrap children", () => {
+    const root = createNode({ layout: { width: 320, height: 240 } });
+    const flex = createNode({
+      layout: { left: 0, top: 0, direction: "row", gap: 4 },
+    });
+    const child1 = createNode({ layout: { width: 100, height: 30 } });
+    const child2 = createNode({ layout: { width: 80, height: 20 } });
+    flex.children = [child1, child2];
+    root.children = [flex];
+
+    resolve(root);
+
+    expect(flex.rect).toEqual({ x: 0, y: 0, w: 184, h: 30 });
+    expect(child1.rect).toEqual({ x: 0, y: 0, w: 100, h: 30 });
+    expect(child2.rect).toEqual({ x: 104, y: 0, w: 80, h: 20 });
   });
 });
