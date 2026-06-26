@@ -32,7 +32,7 @@ function resolveState(
   self: Partial<ControlFrameStyle>,
   key: keyof ControlFrameStyle,
 ) {
-  const src = raw ?? self[key] ?? {};
+  const src = raw ?? self[key] ?? ({} as StateStyle);
   return {
     frame: src.frame ?? "",
     tileX: src.tileX ?? false,

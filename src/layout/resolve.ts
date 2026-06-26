@@ -81,10 +81,9 @@ function measureFlex(node: Node): Size {
   for (let i = 0; i < node.children.length; i++) {
     const child = node.children[i]!;
     if (i > 0) mainTotal += gap;
-    const baseW = child.layout.width ?? child.intrinsic?.w ?? 0;
-    const baseH = child.layout.height ?? child.intrinsic?.h ?? 0;
-    mainTotal += isColumn ? baseH : baseW;
-    crossMax = Math.max(crossMax, isColumn ? baseW : baseH);
+    const cs = measureNode(child, undefined);
+    mainTotal += isColumn ? cs.h : cs.w;
+    crossMax = Math.max(crossMax, isColumn ? cs.w : cs.h);
   }
 
   const baseW = node.layout.width ?? node.intrinsic?.w ?? 0;
@@ -105,16 +104,15 @@ function placeFlex(container: Node, direction: "row" | "column"): void {
   let pos = direction === "column" ? container.rect.y : container.rect.x;
   const gap = container.layout.gap ?? 0;
   for (const child of container.children) {
-    const baseW = child.layout.width ?? child.intrinsic?.w ?? 0;
-    const baseH = child.layout.height ?? child.intrinsic?.h ?? 0;
+    const cs = measureNode(child, undefined);
     const childRect =
       direction === "column"
-        ? { x: container.rect.x, y: pos, w: baseW, h: baseH }
-        : { x: pos, y: container.rect.y, w: baseW, h: baseH };
+        ? { x: container.rect.x, y: pos, w: cs.w, h: cs.h }
+        : { x: pos, y: container.rect.y, w: cs.w, h: cs.h };
     setNodeRect(child, childRect);
     for (const grandchild of child.children) {
       resolveNode(grandchild, child.rect);
     }
-    pos += (direction === "column" ? baseH : baseW) + gap;
+    pos += (direction === "column" ? cs.h : cs.w) + gap;
   }
 }

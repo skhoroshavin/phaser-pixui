@@ -1,5 +1,6 @@
 import { CANVAS, HEADLESS, VERSION, WEBGL } from "phaser";
 import { ConstraintMode, TextArea, UiScene } from "../../src";
+import { Component } from "../../src/core2/component.ts";
 import { BitmapText } from "../../src/core2/bitmap-text.ts";
 import { Frame } from "../../src/styled2/frame.ts";
 import { Text } from "../../src/styled2/text.ts";
@@ -75,25 +76,23 @@ export class Ui extends UiScene {
       margin: "auto",
     });
 
-    new Button(this.root, {
+    const buttonStack = new Component(this.root, {
+      direction: "column", gap: 2, margin: "auto",
+    });
+
+    new Button(buttonStack, {
       text: "New game",
       width: 128,
-      marginX: "auto",
-      top: 145,
       onClick: () => this.log("New game is already started!"),
     });
-    new Button(this.root, {
+    new Button(buttonStack, {
       text: "Load game",
       width: 128,
-      marginX: "auto",
-      top: 169,
       onClick: () => (loadDialog.visible = true),
     });
-    new Button(this.root, {
+    new Button(buttonStack, {
       text: "Exit",
       width: 128,
-      marginX: "auto",
-      top: 193,
       enabled: false,
       onClick: () => this.log("There is no escape :)"),
     });

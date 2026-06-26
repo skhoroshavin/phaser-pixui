@@ -69,4 +69,53 @@ describe("flex", () => {
     expect(child1.rect).toEqual({ x: 0, y: 0, w: 100, h: 30 });
     expect(child2.rect).toEqual({ x: 104, y: 0, w: 80, h: 20 });
   });
+
+  it("stacks flex children with nested intrinsic sizes", () => {
+    const root = createNode({ layout: { width: 320, height: 240 } });
+    const flex = createNode({
+      layout: { direction: "column", gap: 4 },
+    });
+    const wrapA = createNode({});
+    const leafA = createNode({
+      layout: { width: 80 },
+      intrinsic: { h: 20 },
+    });
+    wrapA.children = [leafA];
+    const wrapB = createNode({});
+    const leafB = createNode({
+      layout: { width: 60 },
+      intrinsic: { h: 15 },
+    });
+    wrapB.children = [leafB];
+
+    flex.children = [wrapA, wrapB];
+    root.children = [flex];
+
+    resolve(root);
+
+    expect(flex.rect).toEqual({ x: 0, y: 0, w: 80, h: 39 });
+    expect(wrapA.rect).toEqual({ x: 0, y: 0, w: 80, h: 20 });
+    expect(wrapB.rect).toEqual({ x: 0, y: 24, w: 60, h: 15 });
+  });
+
+  it("stacks flex child with inset-0 leaf", () => {
+    const root = createNode({ layout: { width: 320, height: 240 } });
+    const flex = createNode({
+      layout: { direction: "column", gap: 2 },
+    });
+    const wrapper = createNode({});
+    const leaf = createNode({
+      layout: { inset: 0 },
+      intrinsic: { h: 22 },
+    });
+    wrapper.children = [leaf];
+    flex.children = [wrapper];
+    root.children = [flex];
+
+    resolve(root);
+
+    expect(flex.rect).toEqual({ x: 0, y: 0, w: 0, h: 22 });
+    expect(wrapper.rect).toEqual({ x: 0, y: 0, w: 0, h: 22 });
+    expect(leaf.rect).toEqual({ x: 0, y: 0, w: 0, h: 22 });
+  });
 });
