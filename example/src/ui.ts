@@ -78,7 +78,6 @@ export class Ui extends UiScene {
     new Button(this.root, {
       text: "New game",
       width: 128,
-      height: 22,
       marginX: "auto",
       top: 145,
       onClick: () => this.log("New game is already started!"),
@@ -86,7 +85,6 @@ export class Ui extends UiScene {
     new Button(this.root, {
       text: "Load game",
       width: 128,
-      height: 22,
       marginX: "auto",
       top: 169,
       onClick: () => (loadDialog.visible = true),
@@ -94,7 +92,6 @@ export class Ui extends UiScene {
     new Button(this.root, {
       text: "Exit",
       width: 128,
-      height: 22,
       marginX: "auto",
       top: 193,
       enabled: false,

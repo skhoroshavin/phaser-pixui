@@ -150,4 +150,53 @@ describe("box", () => {
     resolve(root);
     expect(root.children[0]!.rect).toEqual({ x: 111, y: 0, w: 100, h: 0 });
   });
+
+  it("auto-sizes height from child intrinsic when no explicit height", () => {
+    const root = viewport(320, 240);
+    const container = createNode({
+      layout: { left: 0, top: 0, width: 200 },
+    });
+    const child = createNode({
+      layout: { width: 100 },
+      intrinsic: { w: 80, h: 30 },
+    });
+    container.children = [child];
+    root.children = [container];
+
+    resolve(root);
+
+    expect(container.rect).toEqual({ x: 0, y: 0, w: 200, h: 30 });
+  });
+
+  it("auto-sizes width from child with explicit width", () => {
+    const root = viewport(320, 240);
+    const container = createNode({ layout: {} });
+    const child = createNode({
+      layout: { width: 80 },
+      intrinsic: { h: 50 },
+    });
+    container.children = [child];
+    root.children = [container];
+
+    resolve(root);
+
+    expect(container.rect).toEqual({ x: 0, y: 0, w: 80, h: 50 });
+  });
+
+  it("recursively auto-sizes through nested containers", () => {
+    const root = viewport(320, 240);
+    const outer = createNode({ layout: {} });
+    const inner = createNode({ layout: {} });
+    const leaf = createNode({
+      layout: { width: 50 },
+      intrinsic: { h: 30 },
+    });
+    inner.children = [leaf];
+    outer.children = [inner];
+    root.children = [outer];
+
+    resolve(root);
+
+    expect(outer.rect).toEqual({ x: 0, y: 0, w: 50, h: 30 });
+  });
 });

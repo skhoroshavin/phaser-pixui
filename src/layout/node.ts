@@ -7,7 +7,7 @@ export interface Node {
   layout: Layout;
   children: Node[];
   rect: Rect;
-  intrinsic?: Size;
+  intrinsic?: Partial<Size>;
   onLayout?: (rect: Rect) => void;
 }
 

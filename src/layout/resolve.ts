@@ -45,41 +45,60 @@ function placeChildren(node: Node): void {
   }
 }
 
-function measureNode(node: Node, parentRect: Rect | undefined): Size {
+function measureNode(_node: Node, _parentRect: Rect | undefined): Size {
+  if (_node.layout.direction !== undefined && _node.children.length > 0) {
+    return measureFlex(_node);
+  }
+  return measureBox(_node);
+}
+
+function measureBox(node: Node): Size {
   const baseW = node.layout.width ?? node.intrinsic?.w ?? 0;
   const baseH = node.layout.height ?? node.intrinsic?.h ?? 0;
 
-  if (parentRect === undefined || node.layout.direction === undefined) {
-    return { w: baseW, h: baseH };
-  }
-
-  const { main, cross } = measureFlex(node);
-  if (node.layout.direction === "column") {
+  if (node.children.length > 0) {
+    let maxW = 0;
+    let maxH = 0;
+    for (const child of node.children) {
+      const cs = measureNode(child, undefined);
+      maxW = Math.max(maxW, (child.layout.left ?? 0) + cs.w);
+      maxH = Math.max(maxH, (child.layout.top ?? 0) + cs.h);
+    }
     return {
-      w: node.layout.width === undefined && node.intrinsic?.w === undefined ? cross : baseW,
-      h: node.layout.height === undefined && node.intrinsic?.h === undefined ? main : baseH,
+      w: node.layout.width !== undefined ? baseW : maxW,
+      h: node.layout.height !== undefined ? baseH : maxH,
     };
   }
-  return {
-    w: node.layout.width === undefined && node.intrinsic?.w === undefined ? main : baseW,
-    h: node.layout.height === undefined && node.intrinsic?.h === undefined ? cross : baseH,
-  };
+
+  return { w: baseW, h: baseH };
 }
 
-function measureFlex(container: Node): { main: number; cross: number } {
-  const isColumn = container.layout.direction === "column";
-  const gap = container.layout.gap ?? 0;
+function measureFlex(node: Node): Size {
+  const isColumn = node.layout.direction === "column";
+  const gap = node.layout.gap ?? 0;
   let mainTotal = 0;
   let crossMax = 0;
-  for (let i = 0; i < container.children.length; i++) {
-    const child = container.children[i]!;
+  for (let i = 0; i < node.children.length; i++) {
+    const child = node.children[i]!;
     if (i > 0) mainTotal += gap;
     const baseW = child.layout.width ?? child.intrinsic?.w ?? 0;
     const baseH = child.layout.height ?? child.intrinsic?.h ?? 0;
     mainTotal += isColumn ? baseH : baseW;
     crossMax = Math.max(crossMax, isColumn ? baseW : baseH);
   }
-  return { main: mainTotal, cross: crossMax };
+
+  const baseW = node.layout.width ?? node.intrinsic?.w ?? 0;
+  const baseH = node.layout.height ?? node.intrinsic?.h ?? 0;
+  if (isColumn) {
+    return {
+      w: node.layout.width === undefined && node.intrinsic?.w === undefined ? crossMax : baseW,
+      h: node.layout.height === undefined && node.intrinsic?.h === undefined ? mainTotal : baseH,
+    };
+  }
+  return {
+    w: node.layout.width === undefined && node.intrinsic?.w === undefined ? mainTotal : baseW,
+    h: node.layout.height === undefined && node.intrinsic?.h === undefined ? crossMax : baseH,
+  };
 }
 
 function placeFlex(container: Node, direction: "row" | "column"): void {

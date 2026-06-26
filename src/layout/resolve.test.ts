@@ -75,4 +75,27 @@ describe("resolve", () => {
     };
     resolve(root);
   });
+
+  // ── per-axis intrinsic (e.g. auto-sized Frame from sprite dims) ──
+
+  it("resolves non-scalable axis from intrinsic, scalable axis to 0", () => {
+    // Mirrors a 9-slice Frame scalable on X but fixed on Y.
+    const frame = createNode({ intrinsic: { h: 40 } });
+    const root = viewport(320, 240);
+    root.children = [frame];
+
+    resolve(root);
+
+    expect(frame.rect).toEqual({ x: 0, y: 0, w: 0, h: 40 });
+  });
+
+  it("lets explicit width override an undefined scalable axis", () => {
+    const frame = createNode({ layout: { width: 100 }, intrinsic: { h: 40 } });
+    const root = viewport(320, 240);
+    root.children = [frame];
+
+    resolve(root);
+
+    expect(frame.rect).toEqual({ x: 0, y: 0, w: 100, h: 40 });
+  });
 });
