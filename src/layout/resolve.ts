@@ -48,6 +48,7 @@ function placeChildren(node: Node): void {
 
 function placeFlex(container: Node, direction: "row" | "column"): void {
   let pos = direction === "column" ? container.rect.y : container.rect.x;
+  const gap = container.layout.gap ?? 0;
   for (const child of container.children) {
     const baseW = child.layout.width ?? child.intrinsic?.w ?? 0;
     const baseH = child.layout.height ?? child.intrinsic?.h ?? 0;
@@ -59,6 +60,6 @@ function placeFlex(container: Node, direction: "row" | "column"): void {
     for (const grandchild of child.children) {
       resolveNode(grandchild, child.rect);
     }
-    pos += direction === "column" ? baseH : baseW;
+    pos += (direction === "column" ? baseH : baseW) + gap;
   }
 }

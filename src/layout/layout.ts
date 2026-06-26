@@ -14,6 +14,7 @@ export function createLayout({ margin, marginX, marginY, inset, ...rest }: Layou
 
 export type Layout = {
   direction?: "row" | "column";
+  gap?: number;
   left?: number;
   top?: number;
   right?: number;
