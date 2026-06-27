@@ -1,6 +1,6 @@
 import { GameObjects, type Scene } from "phaser";
 import { Component } from "./component";
-import type { DisplayHost, Mount } from "./mount";
+import type { Mount } from "./mount";
 import type { Rect } from "../layout";
 import type { Theme } from "../theme2";
 
@@ -23,7 +23,7 @@ export class MaskMount implements Mount {
     this.root = new Component(undefined, { mount: this });
   }
 
-  get displayHost(): DisplayHost {
+  get displayHost(): GameObjects.Container {
     return this.host;
   }
 
