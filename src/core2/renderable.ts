@@ -7,7 +7,9 @@ type Origin = GameObjects.Components.Origin;
 type Visible = GameObjects.Components.Visible;
 type Depth = GameObjects.Components.Depth;
 
-export class Renderable<T extends GameObject & Transform & Origin & Visible & Depth> extends Component {
+export class Renderable<
+  T extends GameObject & Transform & Origin & Visible & Depth,
+> extends Component {
   constructor(parent: Component, internal: T, cfg?: ComponentConfig) {
     super(parent, cfg);
     this.internal = internal;
