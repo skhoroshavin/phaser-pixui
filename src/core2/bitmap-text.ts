@@ -1,10 +1,12 @@
 import { TintModes } from "phaser";
-import { type BoxConfig } from "../layout";
-import { Component } from "./component";
+import { Component, type ComponentConfig } from "./component";
 import { Renderable } from "./renderable";
 
 export class BitmapText extends Renderable<Phaser.GameObjects.BitmapText> {
-  constructor(parent: Component, cfg: { font: string; text?: string; tint?: number } & BoxConfig) {
+  constructor(
+    parent: Component,
+    cfg: { font: string; text?: string; tint?: number } & ComponentConfig,
+  ) {
     const scene = parent.mount.scene;
     const inner = scene.add.bitmapText(0, 0, cfg.font, cfg.text ?? "");
     super(parent, inner, cfg);

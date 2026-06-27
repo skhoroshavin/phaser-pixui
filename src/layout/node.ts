@@ -1,19 +1,19 @@
-import { createBox, type BoxConfig } from "./box";
+import { createLayout, type Layout } from "./layout";
 
 export type Rect = { x: number; y: number; w: number; h: number };
 export type Size = { w: number; h: number };
 
 export interface Node {
-  box: BoxConfig;
+  layout: Layout;
   children: Node[];
   rect: Rect;
-  intrinsic?: Size;
+  intrinsic?: Partial<Size>;
   onLayout?: (rect: Rect) => void;
 }
 
 export function createNode(node: Partial<Omit<Node, "rect">>): Node {
   return {
-    box: createBox(node.box),
+    layout: createLayout(node.layout),
     children: node.children ?? [],
     rect: { x: NaN, y: NaN, w: NaN, h: NaN },
     intrinsic: node.intrinsic,

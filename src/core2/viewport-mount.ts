@@ -19,8 +19,8 @@ export class ViewportMount {
   }
 
   resize(w: number, h: number): void {
-    this.root.node.box.width = w;
-    this.root.node.box.height = h;
+    this.root.node.layout.width = w;
+    this.root.node.layout.height = h;
     resolve(this.root.node);
   }
 }

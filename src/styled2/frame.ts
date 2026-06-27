@@ -1,10 +1,9 @@
-import type { BoxConfig } from "../layout";
-import { themeBinding, type StyleResolver, type ResolvedStyle } from "../theme2";
-import { Component } from "../core2/component";
+import { type ThemeContext } from "../theme2";
 import { Image } from "../core2/image";
+import { Component, type ComponentConfig } from "../core2/component";
 
-export type FrameConfig = BoxConfig & {
-  style?: string | FrameStyle;
+export type FrameConfig = ComponentConfig & {
+  style?: string | ResolvedFrameStyle;
 };
 
 export type FrameStyle = {
@@ -13,16 +12,25 @@ export type FrameStyle = {
   tileY?: boolean;
 };
 
-export const FrameStyleResolver = {
-  frame: (_ctx, raw, def) => raw ?? def,
-  tileX: (_ctx, raw, def) => raw ?? def ?? false,
-  tileY: (_ctx, raw, def) => raw ?? def ?? false,
-} satisfies StyleResolver<FrameStyle>;
-
-export type ResolvedFrameStyle = ResolvedStyle<FrameStyle, typeof FrameStyleResolver>;
+export type ResolvedFrameStyle = {
+  frame: string;
+  tileX: boolean;
+  tileY: boolean;
+};
 
 export class Frame extends Image {
-  static readonly binding = themeBinding<FrameStyle>()("frame", FrameStyleResolver);
+  static readonly styleKey = "frame" as const;
+  static resolveStyle(
+    _ctx: ThemeContext,
+    raw: Partial<FrameStyle>,
+    def: FrameStyle,
+  ): ResolvedFrameStyle {
+    return {
+      frame: raw.frame ?? def.frame,
+      tileX: raw.tileX ?? def.tileX ?? false,
+      tileY: raw.tileY ?? def.tileY ?? false,
+    };
+  }
 
   constructor(parent: Component, cfg: FrameConfig) {
     const theme = parent.mount.theme;

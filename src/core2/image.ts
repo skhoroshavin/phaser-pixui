@@ -1,6 +1,5 @@
-import { type BoxConfig } from "../layout";
 import { frameDimensions } from "../util/frame";
-import { Component } from "./component";
+import { Component, type ComponentConfig } from "./component";
 import { Renderable } from "./renderable";
 
 export type ImageConfig = {
@@ -8,7 +7,7 @@ export type ImageConfig = {
   frame: string;
   tileX?: boolean;
   tileY?: boolean;
-} & BoxConfig;
+} & ComponentConfig;
 
 export class Image extends Renderable<Phaser.GameObjects.Sprite | Phaser.GameObjects.NineSlice> {
   constructor(parent: Component, cfg: ImageConfig) {
@@ -23,6 +22,11 @@ export class Image extends Renderable<Phaser.GameObjects.Sprite | Phaser.GameObj
     } else {
       super(parent, scene.add.sprite(0, 0, cfg.texture, cfg.frame), cfg);
     }
+
+    this.node.intrinsic = {
+      w: dims.scalableX ? undefined : dims.width,
+      h: dims.scalableY ? undefined : dims.height,
+    };
   }
 
   private static _createNineSlice(

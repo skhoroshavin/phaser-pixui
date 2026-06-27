@@ -1,9 +1,11 @@
-import { createNode, type BoxConfig, type Node } from "../layout";
+import { createNode, type Layout, type Node } from "../layout";
 import type { ViewportMount } from "./viewport-mount";
 
+export type ComponentConfig = Layout;
+
 export class Component {
-  constructor(parent: Component | undefined, cfg?: BoxConfig) {
-    this.node = createNode({ box: cfg });
+  constructor(parent: Component | undefined, cfg?: ComponentConfig) {
+    this.node = createNode({ layout: cfg });
     if (parent) {
       this.mount = parent.mount;
       parent.add(this);
