@@ -96,7 +96,7 @@ export class ControlFrame extends Component {
   private _update(): void {
     const active = this._stateFrames[this._state];
     for (const f of this._frames) {
-      f.internal.setVisible(f === active);
+      f.visible = f === active;
     }
     if (this._text) {
       this._text.internal.setTint(this._textTints[this._state]);

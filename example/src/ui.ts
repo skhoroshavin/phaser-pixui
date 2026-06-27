@@ -53,7 +53,7 @@ export class Ui extends UiScene {
     });
     this.scene.launch(game);
 
-    const loadDialog = load_dialog(this.insert);
+    const loadDialog = load_dialog(this.root, (msg) => this.log(msg));
 
     new BitmapText(this.root, {
       right: 4,

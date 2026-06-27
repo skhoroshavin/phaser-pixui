@@ -1,6 +1,7 @@
-import { Component, type ComponentConfig } from "./component";
-import { Rectangle } from "./rectangle";
+import type { Component, ComponentConfig } from "./component";
 import { Clickable } from "./clickable";
+import { Rectangle } from "./rectangle";
+import { Interactive } from "./interactive";
 
 export type ModalConfig = ComponentConfig & {
   backdropColor?: number;
@@ -9,9 +10,15 @@ export type ModalConfig = ComponentConfig & {
   onDismiss?: () => void;
 };
 
-export class Modal extends Component {
+export class Modal extends Clickable {
   constructor(parent: Component, cfg?: ModalConfig) {
-    super(parent, { ...cfg, visible: cfg?.visible ?? false });
+    super(parent, {
+      inset: 0,
+      zIndex: 100,
+      ...cfg,
+      onClick: () => this._onBackdropClick(),
+      visible: cfg?.visible ?? false,
+    });
 
     this._onDismiss = cfg?.onDismiss;
     this._dismissOnBackdropClick = cfg?.dismissOnBackdropClick ?? false;
@@ -22,12 +29,10 @@ export class Modal extends Component {
       fillAlpha: cfg?.backdropAlpha ?? 0.5,
     });
 
-    new Clickable(this, {
-      inset: 0,
-      zIndex: 1,
-      onClick: () => this._onBackdropClick(),
-    });
+    this.content = new Interactive(this, { margin: "auto" });
   }
+
+  readonly content: Interactive;
 
   private _onBackdropClick(): void {
     if (this._dismissOnBackdropClick) this._dismiss();
@@ -38,6 +43,6 @@ export class Modal extends Component {
     this._onDismiss?.();
   }
 
-  private _onDismiss?: () => void;
-  private _dismissOnBackdropClick: boolean;
+  private readonly _onDismiss?: () => void;
+  private readonly _dismissOnBackdropClick: boolean;
 }

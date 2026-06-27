@@ -20,8 +20,9 @@ export class Interactive extends Component {
     this._zone.setOrigin(0, 0);
     this._updateHitArea(0, 0);
 
-    this.node.onLayout = (rect) => {
+    this.node.onLayout = (rect, depth) => {
       this._zone.setPosition(rect.x, rect.y);
+      this._zone.setDepth(depth);
       this._updateHitArea(rect.w, rect.h);
     };
 
