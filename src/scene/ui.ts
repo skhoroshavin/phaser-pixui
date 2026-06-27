@@ -45,7 +45,7 @@ export class UiScene extends ResponsiveScene {
 
   create() {
     super.create();
-    initTheme(this.theme, this.textures.get(this.theme.resources.atlas));
+    initTheme(this.theme);
     this.events.once("create", () => {
       this._root.initialize();
       this._mount.layout();

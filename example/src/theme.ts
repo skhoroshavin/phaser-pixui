@@ -23,21 +23,6 @@ export const uiTheme: ThemeConfig = {
   fontSize: 16,
   fontTint: "light",
 
-  button: {
-    frame: "button",
-    defaultWidth: 128,
-    fontTintDisabled: "disabled",
-    tileX: true,
-    tileY: true,
-
-    styles: {
-      settings: {
-        frame: "button_settings",
-        shape: "diamond",
-      },
-    },
-  },
-
   progress: {
     frame: "progress_curly",
     bar: "bar_green",

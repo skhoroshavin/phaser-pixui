@@ -1,6 +1,5 @@
 import { ComponentFactory, ComponentFactoryConfig } from "../core/factory.ts";
 import { ThemeConfig } from "../theme/theme.ts";
-import { Button, ButtonConfig } from "./button.ts";
 import { InsertContext } from "./context.ts";
 import { Frame, FrameConfig } from "./frame.ts";
 import { Progress, ProgressConfig } from "./progress.ts";
@@ -25,10 +24,6 @@ export class StyledComponentFactory extends ComponentFactory {
 
   frame(cfg: FrameConfig): Frame {
     return this.createStyled(Frame, cfg);
-  }
-
-  button(cfg: ButtonConfig): Button {
-    return this.createStyled(Button, cfg);
   }
 
   progress(cfg: ProgressConfig): Progress {
