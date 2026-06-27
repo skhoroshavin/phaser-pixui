@@ -1,12 +1,7 @@
-import { Textures } from "phaser";
-import { ButtonStyle, initButtonStyle } from "./button.ts";
-import { DialogStyle, initDialogStyle } from "./dialog.ts";
 import { FontStyle, initBaseFontStyle } from "./font.ts";
 import { FrameStyle, initFrameStyle } from "./frame.ts";
 import { initProgressStyle, ProgressStyle } from "./progress.ts";
 import { initTextAreaStyle, TextAreaStyle } from "./textarea.ts";
-
-type Texture = Textures.Texture;
 
 export type ThemeConfig = {
   resources: {
@@ -20,10 +15,8 @@ export type ThemeConfig = {
 
   palette: Palette;
 
-  button: StyleList<ButtonStyle>;
   progress: StyleList<ProgressStyle>;
   textArea: StyleList<TextAreaStyle>;
-  dialog: StyleList<DialogStyle>;
   frame: StyleList<FrameStyle>;
 } & FontStyle;
 
@@ -60,11 +53,9 @@ export function findStyle<StyleType extends object>(
   return list.styles![name]!;
 }
 
-export function initTheme(theme: ThemeConfig, atlas: Texture) {
+export function initTheme(theme: ThemeConfig) {
   initBaseFontStyle(theme);
-  initButtonStyle(theme.button, theme, atlas);
   initProgressStyle(theme.progress);
   initTextAreaStyle(theme.textArea, theme);
   initFrameStyle("frame", theme.frame);
-  initDialogStyle(theme.dialog);
 }

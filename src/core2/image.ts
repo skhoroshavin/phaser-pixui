@@ -50,8 +50,8 @@ export class Image extends Renderable<Phaser.GameObjects.Sprite | Phaser.GameObj
     scalableY: boolean,
   ): void {
     const origLayout = image.node.onLayout;
-    image.node.onLayout = (rect) => {
-      origLayout?.(rect);
+    image.node.onLayout = (rect, depth) => {
+      origLayout?.(rect, depth);
       if (scalableX) nineSlice.width = rect.w;
       if (scalableY) nineSlice.height = rect.h;
     };

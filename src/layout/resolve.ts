@@ -2,7 +2,18 @@ import { resolveAxisX, resolveAxisY } from "./layout";
 import { type Node, type Rect, type Size } from "./node";
 
 export function resolve(root: Node): void {
+  assignDepths(root, { next: 0 });
   resolveNode(root, undefined);
+}
+
+// Paint order: negative-z children behind, then the node itself, then non-negative children.
+function assignDepths(node: Node, c: { next: number }): void {
+  const z = (n: Node) => n.layout.zIndex ?? 0;
+  const neg = node.children.filter((ch) => z(ch) < 0).sort((a, b) => z(a) - z(b));
+  const rest = node.children.filter((ch) => z(ch) >= 0).sort((a, b) => z(a) - z(b));
+  neg.forEach((ch) => assignDepths(ch, c));
+  node.depth = c.next++;
+  rest.forEach((ch) => assignDepths(ch, c));
 }
 
 function resolveNode(node: Node, parentRect: Rect | undefined): void {
@@ -29,7 +40,7 @@ function setNodeRect(node: Node, rect: Rect): void {
     rect.h !== node.rect.h
   ) {
     node.rect = rect;
-    node.onLayout?.(node.rect);
+    node.onLayout?.(node.rect, node.depth);
   }
 }
 
@@ -101,18 +112,39 @@ function measureFlex(node: Node): Size {
 }
 
 function placeFlex(container: Node, direction: "row" | "column"): void {
-  let pos = direction === "column" ? container.rect.y : container.rect.x;
+  const isColumn = direction === "column";
   const gap = container.layout.gap ?? 0;
-  for (const child of container.children) {
-    const cs = measureNode(child, undefined);
-    const childRect =
-      direction === "column"
-        ? { x: container.rect.x, y: pos, w: cs.w, h: cs.h }
-        : { x: pos, y: container.rect.y, w: cs.w, h: cs.h };
+
+  const items = container.children.map((c) => ({ child: c, size: measureNode(c, undefined) }));
+  const mainSize = (s: Size) => (isColumn ? s.h : s.w);
+  const crossSize = (s: Size) => (isColumn ? s.w : s.h);
+
+  const mains = items.map((it) => mainSize(it.size));
+  const packed = mains.reduce((a, b) => a + b, 0) + Math.max(0, items.length - 1) * gap;
+
+  const mainLen = isColumn ? container.rect.h : container.rect.w;
+  const crossLen = isColumn ? container.rect.w : container.rect.h;
+  const mainBase = isColumn ? container.rect.y : container.rect.x;
+  const crossBase = isColumn ? container.rect.x : container.rect.y;
+
+  const justify = container.layout.justifyContent ?? "start";
+  const align = container.layout.alignItems ?? "start";
+
+  let pos = mainBase + freeOffset(justify, mainLen - packed);
+  for (const { child, size } of items) {
+    const crossPos = crossBase + freeOffset(align, crossLen - crossSize(size));
+    const childRect = isColumn
+      ? { x: crossPos, y: pos, w: size.w, h: size.h }
+      : { x: pos, y: crossPos, w: size.w, h: size.h };
     setNodeRect(child, childRect);
     for (const grandchild of child.children) {
       resolveNode(grandchild, child.rect);
     }
-    pos += (direction === "column" ? cs.h : cs.w) + gap;
+    pos += mainSize(size) + gap;
   }
+}
+
+/** Distributes free space along an axis: start → 0, end → all, center → half (floored). */
+function freeOffset(mode: "start" | "center" | "end", free: number): number {
+  return mode === "start" ? 0 : mode === "end" ? free : Math.floor(free / 2);
 }

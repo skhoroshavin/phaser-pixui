@@ -70,6 +70,110 @@ describe("flex", () => {
     expect(child2.rect).toEqual({ x: 104, y: 0, w: 80, h: 20 });
   });
 
+  it("centers children on cross-axis when alignItems is center", () => {
+    const root = createNode({ layout: { width: 320, height: 240 } });
+    const flex = createNode({
+      layout: {
+        left: 0,
+        top: 0,
+        width: 200,
+        height: 100,
+        direction: "column",
+        gap: 8,
+        alignItems: "center",
+      },
+    });
+    const child1 = createNode({ layout: { width: 80, height: 30 } });
+    const child2 = createNode({ layout: { width: 60, height: 20 } });
+    flex.children = [child1, child2];
+    root.children = [flex];
+
+    resolve(root);
+
+    // cross-axis: width 80 in 200 → x = floor((200-80)/2) = 60
+    // cross-axis: width 60 in 200 → x = floor((200-60)/2) = 70
+    // main-axis: gap 8 → child2.y = 0 + 30 + 8 = 38
+    expect(child1.rect).toEqual({ x: 60, y: 0, w: 80, h: 30 });
+    expect(child2.rect).toEqual({ x: 70, y: 38, w: 60, h: 20 });
+  });
+
+  it("aligns children to cross-axis end when alignItems is end", () => {
+    const root = createNode({ layout: { width: 320, height: 240 } });
+    const flex = createNode({
+      layout: {
+        left: 0,
+        top: 0,
+        width: 200,
+        height: 100,
+        direction: "column",
+        gap: 8,
+        alignItems: "end",
+      },
+    });
+    const child1 = createNode({ layout: { width: 80, height: 30 } });
+    const child2 = createNode({ layout: { width: 60, height: 20 } });
+    flex.children = [child1, child2];
+    root.children = [flex];
+
+    resolve(root);
+
+    // cross-axis: width 80 in 200 → x = 200 - 80 = 120
+    // cross-axis: width 60 in 200 → x = 200 - 60 = 140
+    // main-axis: gap 8 → child2.y = 0 + 30 + 8 = 38
+    expect(child1.rect).toEqual({ x: 120, y: 0, w: 80, h: 30 });
+    expect(child2.rect).toEqual({ x: 140, y: 38, w: 60, h: 20 });
+  });
+
+  it("centers packed children on main-axis when justifyContent is center", () => {
+    const root = createNode({ layout: { width: 320, height: 240 } });
+    const flex = createNode({
+      layout: {
+        left: 0,
+        top: 0,
+        width: 200,
+        height: 100,
+        direction: "column",
+        gap: 8,
+        justifyContent: "center",
+      },
+    });
+    const child1 = createNode({ layout: { width: 80, height: 30 } });
+    const child2 = createNode({ layout: { width: 60, height: 20 } });
+    flex.children = [child1, child2];
+    root.children = [flex];
+
+    resolve(root);
+
+    // packed = 30 + 8 + 20 = 58; free in 100 → 42; lead = floor(42/2) = 21
+    expect(child1.rect).toEqual({ x: 0, y: 21, w: 80, h: 30 });
+    expect(child2.rect).toEqual({ x: 0, y: 59, w: 60, h: 20 });
+  });
+
+  it("aligns packed children to main-axis end when justifyContent is end", () => {
+    const root = createNode({ layout: { width: 320, height: 240 } });
+    const flex = createNode({
+      layout: {
+        left: 0,
+        top: 0,
+        width: 200,
+        height: 100,
+        direction: "column",
+        gap: 8,
+        justifyContent: "end",
+      },
+    });
+    const child1 = createNode({ layout: { width: 80, height: 30 } });
+    const child2 = createNode({ layout: { width: 60, height: 20 } });
+    flex.children = [child1, child2];
+    root.children = [flex];
+
+    resolve(root);
+
+    // packed = 30 + 8 + 20 = 58; free in 100 → 42; lead = full free space
+    expect(child1.rect).toEqual({ x: 0, y: 42, w: 80, h: 30 });
+    expect(child2.rect).toEqual({ x: 0, y: 80, w: 60, h: 20 });
+  });
+
   it("stacks flex children with nested intrinsic sizes", () => {
     const root = createNode({ layout: { width: 320, height: 240 } });
     const flex = createNode({
