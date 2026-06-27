@@ -1,18 +1,22 @@
 import { resolve } from "../layout";
-import { Component } from "./component";
+import { Component } from "../core2/component";
+import type { DisplayHost, Mount } from "../core2/mount";
 import type { Theme } from "../theme2";
 
-export class ViewportMount {
+export class ViewportMount implements Mount {
+  readonly root: Component;
+  readonly theme: Theme;
+  private readonly scene: Phaser.Scene;
+
   constructor(scene: Phaser.Scene, theme: Theme, width: number, height: number) {
     this.scene = scene;
     this.theme = theme;
-    this.root = new Component(undefined, { width, height });
-    this.root.mount = this;
+    this.root = new Component(undefined, { width, height, mount: this });
   }
 
-  readonly root: Component;
-  readonly scene: Phaser.Scene;
-  readonly theme: Theme;
+  get displayHost(): DisplayHost {
+    return this.scene.children;
+  }
 
   layout(): void {
     resolve(this.root.node);

@@ -1,5 +1,6 @@
-import { Geom, type Types } from "phaser";
+import { GameObjects, Geom, type Types } from "phaser";
 import { Component, type ComponentConfig } from "./component";
+import { Renderable } from "./renderable";
 
 export type InteractiveConfig = ComponentConfig & {
   shape?: HitShape;
@@ -8,25 +9,17 @@ export type InteractiveConfig = ComponentConfig & {
 
 export type HitShape = "rect" | "diamond" | "ellipse";
 
-export class Interactive extends Component {
+export class Interactive extends Renderable<GameObjects.Zone> {
   constructor(parent: Component, cfg: InteractiveConfig = {}) {
-    super(parent, cfg);
+    super(parent, (scene) => new GameObjects.Zone(scene, 0, 0, 0, 0), {
+      ...cfg,
+      onResize: (_zone, w, h) => this._updateHitArea(w, h),
+    });
 
-    const scene = parent.mount.scene;
     this._shape = cfg.shape ?? "rect";
     this._enabled = cfg.enabled ?? true;
 
-    this._zone = scene.add.zone(0, 0, 0, 0);
-    this._zone.setOrigin(0, 0);
     this._updateHitArea(0, 0);
-
-    this.node.onLayout = (rect, depth) => {
-      this._zone.setPosition(rect.x, rect.y);
-      this._zone.setDepth(depth);
-      this._updateHitArea(rect.w, rect.h);
-    };
-
-    this._zone.setVisible(this.visible);
   }
 
   get enabled(): boolean {
@@ -49,7 +42,7 @@ export class Interactive extends Component {
         break;
       }
       case "ellipse": {
-        hitArea = new Geom.Ellipse(w / 2, h / 2, w, h);
+        hitArea = new Geom.Ellipse(w / 2, w / 2, w, h);
         callback = Geom.Ellipse.Contains;
         break;
       }
@@ -60,19 +53,15 @@ export class Interactive extends Component {
       }
     }
 
-    if (this._zone.input) {
-      this._zone.input.hitArea = hitArea;
-      this._zone.input.hitAreaCallback = callback;
+    const zone = this.internal;
+    if (zone.input) {
+      zone.input.hitArea = hitArea;
+      zone.input.hitAreaCallback = callback;
     } else {
-      this._zone.setInteractive(hitArea, callback);
+      zone.setInteractive(hitArea, callback);
     }
   }
 
-  protected onVisibilityChange(v: boolean): void {
-    this._zone.setVisible(v);
-  }
-
-  protected _zone: Phaser.GameObjects.Zone;
   private _shape: HitShape;
   private _enabled: boolean;
 }

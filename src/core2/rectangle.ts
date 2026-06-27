@@ -1,3 +1,4 @@
+import { GameObjects } from "phaser";
 import { Component, type ComponentConfig } from "./component";
 import { Renderable } from "./renderable";
 
@@ -6,19 +7,14 @@ export type RectangleConfig = ComponentConfig & {
   fillAlpha?: number;
 };
 
-export class Rectangle extends Renderable<Phaser.GameObjects.Rectangle> {
+export class Rectangle extends Renderable<GameObjects.Rectangle> {
   constructor(parent: Component, cfg?: RectangleConfig) {
-    const internal = parent.mount.scene.add.rectangle(0, 0, 0, 0);
-    super(parent, internal, cfg);
-
-    const origLayout = this.node.onLayout;
-    this.node.onLayout = (rect, depth) => {
-      origLayout?.(rect, depth);
-      internal.setSize(rect.w, rect.h);
-    };
-
+    super(parent, (scene) => new GameObjects.Rectangle(scene, 0, 0, 0, 0), {
+      ...cfg,
+      onResize: (r, w, h) => r.setSize(w, h),
+    });
     if (cfg?.fillColor !== undefined) {
-      internal.setFillStyle(cfg.fillColor, cfg?.fillAlpha ?? 1);
+      this.internal.setFillStyle(cfg.fillColor, cfg?.fillAlpha ?? 1);
     }
   }
 }

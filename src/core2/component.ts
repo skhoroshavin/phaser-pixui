@@ -1,8 +1,9 @@
 import { createNode, type Layout, type Node } from "../layout";
-import type { ViewportMount } from "./viewport-mount";
+import type { Mount } from "./mount";
 
 export type ComponentConfig = Layout & {
   visible?: boolean;
+  mount?: Mount;
 };
 
 export class Component {
@@ -12,11 +13,13 @@ export class Component {
     if (parent) {
       this.mount = parent.mount;
       parent.addChild(this);
+    } else {
+      this.mount = cfg!.mount!;
     }
   }
 
   readonly node: Node;
-  mount!: ViewportMount;
+  readonly mount: Mount;
 
   get visible(): boolean {
     return this._visible && this._parentVisible;

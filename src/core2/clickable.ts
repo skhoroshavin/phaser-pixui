@@ -15,14 +15,14 @@ export class Clickable extends Interactive {
     this._onClick = cfg.onClick;
     this._onUpdate = cfg.onUpdate;
 
-    const isDesktop = parent.mount.scene.sys.game.device.os.desktop;
+    const isDesktop = this.mount.displayHost.scene!.sys.game.device.os.desktop;
 
-    this._zone.on("pointerdown", () => {
+    this.internal.on("pointerdown", () => {
       if (!this.enabled) return;
       this._setState("pressed");
     });
 
-    this._zone.on("pointerup", () => {
+    this.internal.on("pointerup", () => {
       if (!this.enabled) return;
       if (this.state === "pressed" && this._onClick) {
         this._onClick();
@@ -30,13 +30,13 @@ export class Clickable extends Interactive {
       this._setState(isDesktop ? "hover" : "normal");
     });
 
-    this._zone.on("pointerover", () => {
+    this.internal.on("pointerover", () => {
       if (!this.enabled) return;
       if (!isDesktop) return;
       this._setState("hover");
     });
 
-    this._zone.on("pointerout", () => {
+    this.internal.on("pointerout", () => {
       if (!this.enabled) return;
       this._setState("normal");
     });
