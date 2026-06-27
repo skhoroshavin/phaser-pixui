@@ -24,13 +24,8 @@ export class Interactive extends Component {
       this._zone.setPosition(rect.x, rect.y);
       this._updateHitArea(rect.w, rect.h);
     };
-  }
 
-  get visible(): boolean {
-    return this._zone.visible;
-  }
-  set visible(v: boolean) {
-    this._zone.setVisible(v);
+    this._zone.setVisible(this.visible);
   }
 
   get enabled(): boolean {
@@ -70,6 +65,10 @@ export class Interactive extends Component {
     } else {
       this._zone.setInteractive(hitArea, callback);
     }
+  }
+
+  protected onVisibilityChange(v: boolean): void {
+    this._zone.setVisible(v);
   }
 
   protected _zone: Phaser.GameObjects.Zone;

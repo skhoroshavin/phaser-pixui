@@ -46,9 +46,9 @@ export class Clickable extends Interactive {
     return this.enabled ? this._state : "disabled";
   }
 
-  set visible(v: boolean) {
-    super.visible = v;
-    this._setState("normal");
+  protected onVisibilityChange(v: boolean): void {
+    super.onVisibilityChange(v);
+    if (v) this._setState("normal");
   }
 
   private _setState(s: ClickableState): void {
