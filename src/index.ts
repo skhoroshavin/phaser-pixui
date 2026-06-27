@@ -14,7 +14,6 @@ export * from "./core/scrollable";
 // Styled components
 export * from "./styled/button";
 export * from "./styled/context";
-export * from "./styled/dialog";
 export * from "./styled/factory";
 export * from "./styled/frame";
 export * from "./styled/progress";
@@ -28,7 +27,6 @@ export * from "./scene/ui";
 
 // Theme components
 export * from "./theme/button";
-export * from "./theme/dialog";
 export * from "./theme/font";
 export * from "./theme/frame";
 export * from "./theme/progress";

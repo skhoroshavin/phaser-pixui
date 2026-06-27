@@ -2,7 +2,6 @@ import { ComponentFactory, ComponentFactoryConfig } from "../core/factory.ts";
 import { ThemeConfig } from "../theme/theme.ts";
 import { Button, ButtonConfig } from "./button.ts";
 import { InsertContext } from "./context.ts";
-import { Dialog, DialogConfig } from "./dialog.ts";
 import { Frame, FrameConfig } from "./frame.ts";
 import { Progress, ProgressConfig } from "./progress.ts";
 import { ScrollableTextArea, ScrollableTextAreaConfig } from "./scrollable-textarea.ts";
@@ -42,10 +41,6 @@ export class StyledComponentFactory extends ComponentFactory {
 
   scrollableTextArea(cfg: ScrollableTextAreaConfig): ScrollableTextArea {
     return this.createStyled(ScrollableTextArea, cfg);
-  }
-
-  dialog(cfg: DialogConfig): Dialog {
-    return this.createStyled(Dialog, cfg);
   }
 
   createStyled<T extends StyledComponent, Cfg>(

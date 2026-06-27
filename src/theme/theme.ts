@@ -1,6 +1,5 @@
 import { Textures } from "phaser";
 import { ButtonStyle, initButtonStyle } from "./button.ts";
-import { DialogStyle, initDialogStyle } from "./dialog.ts";
 import { FontStyle, initBaseFontStyle } from "./font.ts";
 import { FrameStyle, initFrameStyle } from "./frame.ts";
 import { initProgressStyle, ProgressStyle } from "./progress.ts";
@@ -23,7 +22,6 @@ export type ThemeConfig = {
   button: StyleList<ButtonStyle>;
   progress: StyleList<ProgressStyle>;
   textArea: StyleList<TextAreaStyle>;
-  dialog: StyleList<DialogStyle>;
   frame: StyleList<FrameStyle>;
 } & FontStyle;
 
@@ -66,5 +64,4 @@ export function initTheme(theme: ThemeConfig, atlas: Texture) {
   initProgressStyle(theme.progress);
   initTextAreaStyle(theme.textArea, theme);
   initFrameStyle("frame", theme.frame);
-  initDialogStyle(theme.dialog);
 }

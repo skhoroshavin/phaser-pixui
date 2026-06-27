@@ -54,16 +54,6 @@ export const uiTheme: ThemeConfig = {
     tileX: true,
     tileY: true,
   },
-
-  dialog: {
-    frame: "frame_bright",
-    paddingX: 16,
-    paddingY: 16,
-    tileX: true,
-    tileY: true,
-    backdropColor: 0x000000,
-    backdropAlpha: 0.5,
-  },
 };
 
 export const uiTheme2 = defineTheme([...builtinComponents], {
