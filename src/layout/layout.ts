@@ -23,6 +23,7 @@ export type Layout = {
   bottom?: number;
   width?: number;
   height?: number;
+  maxWidth?: number;
   inset?: number;
   margin?: number | "auto";
   marginX?: number | "auto";

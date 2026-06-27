@@ -17,7 +17,7 @@ function assignDepths(node: Node, c: { next: number }): void {
 }
 
 function resolveNode(node: Node, parentRect: Rect | undefined): void {
-  const measured = measureNode(node, parentRect);
+  const measured = measureNode(node, parentRect?.w);
 
   if (parentRect === undefined) {
     setNodeRect(node, { x: 0, y: 0, w: measured.w, h: measured.h });
@@ -56,22 +56,45 @@ function placeChildren(node: Node): void {
   }
 }
 
-function measureNode(_node: Node, _parentRect: Rect | undefined): Size {
-  if (_node.layout.direction !== undefined && _node.children.length > 0) {
-    return measureFlex(_node);
+function measureNode(node: Node, containingWidth: number | undefined): Size {
+  if (node.layout.direction !== undefined && node.children.length > 0) {
+    return measureFlex(node);
   }
-  return measureBox(_node);
+  return measureBox(node, containingWidth);
 }
 
-function measureBox(node: Node): Size {
-  const baseW = node.layout.width ?? node.intrinsic?.w ?? 0;
-  const baseH = node.layout.height ?? node.intrinsic?.h ?? 0;
+function definiteWidthOf(node: Node, containingWidth: number | undefined): number | undefined {
+  if (node.layout.width !== undefined) return node.layout.width;
+  if (
+    containingWidth !== undefined &&
+    node.layout.left !== undefined &&
+    node.layout.right !== undefined
+  ) {
+    return containingWidth - node.layout.left - node.layout.right;
+  }
+  return undefined;
+}
+
+function availableWidthFor(node: Node, containingWidth: number | undefined): number | undefined {
+  const definite = definiteWidthOf(node, containingWidth);
+  const max = node.layout.maxWidth;
+  if (definite === undefined && max === undefined) return undefined;
+  return Math.min(definite ?? Infinity, max ?? Infinity);
+}
+
+function measureBox(node: Node, containingWidth: number | undefined): Size {
+  const intrinsic =
+    typeof node.intrinsic === "function"
+      ? node.intrinsic(availableWidthFor(node, containingWidth))
+      : node.intrinsic;
+  const baseW = node.layout.width ?? intrinsic?.w ?? 0;
+  const baseH = node.layout.height ?? intrinsic?.h ?? 0;
 
   if (node.children.length > 0) {
     let maxW = 0;
     let maxH = 0;
     for (const child of node.children) {
-      const cs = measureNode(child, undefined);
+      const cs = measureNode(child, definiteWidthOf(node, containingWidth));
       maxW = Math.max(maxW, (child.layout.left ?? 0) + cs.w);
       maxH = Math.max(maxH, (child.layout.top ?? 0) + cs.h);
     }
@@ -97,17 +120,18 @@ function measureFlex(node: Node): Size {
     crossMax = Math.max(crossMax, isColumn ? cs.w : cs.h);
   }
 
-  const baseW = node.layout.width ?? node.intrinsic?.w ?? 0;
-  const baseH = node.layout.height ?? node.intrinsic?.h ?? 0;
+  const intrinsic = typeof node.intrinsic === "function" ? undefined : node.intrinsic;
+  const baseW = node.layout.width ?? intrinsic?.w ?? 0;
+  const baseH = node.layout.height ?? intrinsic?.h ?? 0;
   if (isColumn) {
     return {
-      w: node.layout.width === undefined && node.intrinsic?.w === undefined ? crossMax : baseW,
-      h: node.layout.height === undefined && node.intrinsic?.h === undefined ? mainTotal : baseH,
+      w: node.layout.width === undefined && intrinsic?.w === undefined ? crossMax : baseW,
+      h: node.layout.height === undefined && intrinsic?.h === undefined ? mainTotal : baseH,
     };
   }
   return {
-    w: node.layout.width === undefined && node.intrinsic?.w === undefined ? mainTotal : baseW,
-    h: node.layout.height === undefined && node.intrinsic?.h === undefined ? crossMax : baseH,
+    w: node.layout.width === undefined && intrinsic?.w === undefined ? mainTotal : baseW,
+    h: node.layout.height === undefined && intrinsic?.h === undefined ? crossMax : baseH,
   };
 }
 

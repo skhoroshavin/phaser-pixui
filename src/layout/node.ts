@@ -7,7 +7,7 @@ export interface Node {
   // inputs (externally-set)
   layout: Layout;
   children: Node[];
-  intrinsic?: Partial<Size>;
+  intrinsic?: Partial<Size> | ((availableWidth?: number) => Size);
   // outputs (engine-written)
   rect: Rect;
   depth: number;
