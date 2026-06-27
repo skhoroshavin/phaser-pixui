@@ -112,18 +112,39 @@ function measureFlex(node: Node): Size {
 }
 
 function placeFlex(container: Node, direction: "row" | "column"): void {
-  let pos = direction === "column" ? container.rect.y : container.rect.x;
+  const isColumn = direction === "column";
   const gap = container.layout.gap ?? 0;
-  for (const child of container.children) {
-    const cs = measureNode(child, undefined);
-    const childRect =
-      direction === "column"
-        ? { x: container.rect.x, y: pos, w: cs.w, h: cs.h }
-        : { x: pos, y: container.rect.y, w: cs.w, h: cs.h };
+
+  const items = container.children.map((c) => ({ child: c, size: measureNode(c, undefined) }));
+  const mainSize = (s: Size) => (isColumn ? s.h : s.w);
+  const crossSize = (s: Size) => (isColumn ? s.w : s.h);
+
+  const mains = items.map((it) => mainSize(it.size));
+  const packed = mains.reduce((a, b) => a + b, 0) + Math.max(0, items.length - 1) * gap;
+
+  const mainLen = isColumn ? container.rect.h : container.rect.w;
+  const crossLen = isColumn ? container.rect.w : container.rect.h;
+  const mainBase = isColumn ? container.rect.y : container.rect.x;
+  const crossBase = isColumn ? container.rect.x : container.rect.y;
+
+  const justify = container.layout.justifyContent ?? "start";
+  const align = container.layout.alignItems ?? "start";
+
+  let pos = mainBase + freeOffset(justify, mainLen - packed);
+  for (const { child, size } of items) {
+    const crossPos = crossBase + freeOffset(align, crossLen - crossSize(size));
+    const childRect = isColumn
+      ? { x: crossPos, y: pos, w: size.w, h: size.h }
+      : { x: pos, y: crossPos, w: size.w, h: size.h };
     setNodeRect(child, childRect);
     for (const grandchild of child.children) {
       resolveNode(grandchild, child.rect);
     }
-    pos += (direction === "column" ? cs.h : cs.w) + gap;
+    pos += mainSize(size) + gap;
   }
+}
+
+/** Distributes free space along an axis: start → 0, end → all, center → half (floored). */
+function freeOffset(mode: "start" | "center" | "end", free: number): number {
+  return mode === "start" ? 0 : mode === "end" ? free : Math.floor(free / 2);
 }

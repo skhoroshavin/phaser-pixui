@@ -15,7 +15,9 @@ export function load_dialog(parent: Component, log: (msg: string) => void) {
     width: 256,
     height: 80,
     direction: "column",
-    gap: 4,
+    gap: 10,
+    justifyContent: "center",
+    alignItems: "center",
   });
 
   new Text(frame, {
