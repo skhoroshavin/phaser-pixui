@@ -60,7 +60,10 @@ describe("measure", () => {
     const root = viewport(200, 200);
     const container = createNode({ layout: { width: 200 } }); // height auto
     container.children = [
-      createNode({ layout: { left: 0, right: 0 }, intrinsic: (aw) => ({ w: 0, h: aw === 200 ? 40 : 0 }) }),
+      createNode({
+        layout: { left: 0, right: 0 },
+        intrinsic: (aw) => ({ w: 0, h: aw === 200 ? 40 : 0 }),
+      }),
     ];
     root.children = [container];
     resolve(root);
