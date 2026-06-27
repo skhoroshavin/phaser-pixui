@@ -12,8 +12,8 @@ export class Rectangle extends Renderable<Phaser.GameObjects.Rectangle> {
     super(parent, internal, cfg);
 
     const origLayout = this.node.onLayout;
-    this.node.onLayout = (rect) => {
-      origLayout?.(rect);
+    this.node.onLayout = (rect, depth) => {
+      origLayout?.(rect, depth);
       internal.setSize(rect.w, rect.h);
     };
 

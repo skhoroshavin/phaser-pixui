@@ -2,7 +2,18 @@ import { resolveAxisX, resolveAxisY } from "./layout";
 import { type Node, type Rect, type Size } from "./node";
 
 export function resolve(root: Node): void {
+  assignDepths(root, { next: 0 });
   resolveNode(root, undefined);
+}
+
+// Paint order: negative-z children behind, then the node itself, then non-negative children.
+function assignDepths(node: Node, c: { next: number }): void {
+  const z = (n: Node) => n.layout.zIndex ?? 0;
+  const neg = node.children.filter((ch) => z(ch) < 0).sort((a, b) => z(a) - z(b));
+  const rest = node.children.filter((ch) => z(ch) >= 0).sort((a, b) => z(a) - z(b));
+  neg.forEach((ch) => assignDepths(ch, c));
+  node.depth = c.next++;
+  rest.forEach((ch) => assignDepths(ch, c));
 }
 
 function resolveNode(node: Node, parentRect: Rect | undefined): void {
@@ -29,7 +40,7 @@ function setNodeRect(node: Node, rect: Rect): void {
     rect.h !== node.rect.h
   ) {
     node.rect = rect;
-    node.onLayout?.(node.rect);
+    node.onLayout?.(node.rect, node.depth);
   }
 }
 

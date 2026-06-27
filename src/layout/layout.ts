@@ -29,6 +29,7 @@ export type Layout = {
   marginTop?: number | "auto";
   marginRight?: number | "auto";
   marginBottom?: number | "auto";
+  zIndex?: number;
 };
 
 export function resolveAxisX(
