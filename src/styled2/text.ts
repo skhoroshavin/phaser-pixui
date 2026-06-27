@@ -1,4 +1,4 @@
-import { themeBinding, type StyleResolver, type ThemeColor } from "../theme2";
+import { type ThemeColor, type ThemeContext } from "../theme2";
 import { TextAlign } from "../util/align";
 import { Component, type ComponentConfig } from "../core2/component";
 import { BitmapText } from "../core2/bitmap-text";
@@ -15,14 +15,26 @@ export type TextStyle = {
   align?: TextAlign;
 };
 
-const TextStyleResolver = {
-  font: (_ctx, raw, def) => raw ?? def,
-  tint: (ctx, raw, def) => ctx.palette.resolve(raw ?? def),
-  align: (_ctx, raw, def) => raw ?? def ?? TextAlign.Left,
-} satisfies StyleResolver<TextStyle>;
+export type ResolvedTextStyle = {
+  font: string;
+  tint: number;
+  align: TextAlign;
+};
 
 export class Text extends BitmapText {
-  static readonly binding = themeBinding<TextStyle>()("text", TextStyleResolver);
+  static readonly styleKey = "text" as const;
+
+  static resolveStyle(
+    ctx: ThemeContext,
+    raw: Partial<TextStyle>,
+    def: TextStyle,
+  ): ResolvedTextStyle {
+    return {
+      font: raw.font ?? def.font,
+      tint: ctx.palette.resolve(raw.tint ?? def.tint),
+      align: raw.align ?? def.align ?? TextAlign.Left,
+    };
+  }
 
   constructor(parent: Component, cfg: TextConfig) {
     const theme = parent.mount.theme;

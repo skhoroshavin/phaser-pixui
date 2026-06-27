@@ -1,7 +1,12 @@
+import type { ThemeContext, ThemeResources } from "./context.ts";
 import type { PaletteConfig } from "./palette.ts";
-import type { ThemeResources } from "./context.ts";
-import type { ThemeBinding, ThemedComponent } from "./binding.ts";
-import { StyleMap } from "./style.ts";
+
+export type StyleMap<T> = T & { styles?: Record<string, Partial<T>> };
+
+export interface ThemedComponent {
+  readonly styleKey: string;
+  resolveStyle(ctx: ThemeContext, raw: unknown, def: unknown): unknown;
+}
 
 export function defineTheme<R extends readonly ThemedComponent[]>(
   components: R,
@@ -17,7 +22,5 @@ type ThemeData<R extends readonly ThemedComponent[]> = {
   resources: ThemeResources;
   palette: PaletteConfig;
 } & {
-  [K in R[number] as K["binding"]["key"]]: BindingCfg<K["binding"]>;
+  [K in R[number] as K["styleKey"]]: StyleMap<Parameters<K["resolveStyle"]>[2]>;
 };
-
-type BindingCfg<E> = E extends ThemeBinding<string, infer T, infer _R> ? StyleMap<T> : never;

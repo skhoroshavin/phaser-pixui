@@ -1,6 +1,10 @@
-import { themeBinding, type StyleResolver } from "../theme2";
+import { type ThemeContext } from "../theme2";
 import { Clickable } from "../core2/clickable";
-import { ControlFrame, ControlFrameStyleResolver, type ControlFrameStyle } from "./control-frame";
+import {
+  ControlFrame,
+  type ControlFrameStyle,
+  type ResolvedControlFrameStyle,
+} from "./control-frame";
 import { Component, type ComponentConfig } from "../core2/component";
 import type { HitShape } from "../core2/interactive";
 
@@ -15,13 +19,23 @@ export type ButtonStyle = ControlFrameStyle & {
   shape?: HitShape;
 };
 
-const ButtonStyleResolver = {
-  ...ControlFrameStyleResolver,
-  shape: (_ctx, raw) => raw ?? "rect",
-} satisfies StyleResolver<ButtonStyle>;
+export type ResolvedButtonStyle = ResolvedControlFrameStyle & {
+  shape: HitShape;
+};
 
 export class Button extends Clickable {
-  static readonly binding = themeBinding<ButtonStyle>()("button", ButtonStyleResolver);
+  static readonly styleKey = "button" as const;
+
+  static resolveStyle(
+    ctx: ThemeContext,
+    raw: Partial<ButtonStyle>,
+    def: ButtonStyle,
+  ): ResolvedButtonStyle {
+    return {
+      ...ControlFrame.resolveStyle(ctx, raw, def),
+      shape: raw.shape ?? def.shape ?? "rect",
+    };
+  }
 
   constructor(parent: Component, cfg: ButtonConfig) {
     const theme = parent.mount.theme;
