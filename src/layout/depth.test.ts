@@ -1,13 +1,13 @@
 import { describe, expect, it } from "vitest";
-import { createNode, resolve } from "./";
+import { Node, resolve } from "./";
 
 describe("depth assignment", () => {
   it("assigns ascending depths by array order when zIndex is default", () => {
-    const root = createNode({ layout: { width: 100, height: 100 } });
-    const a = createNode({});
-    const b = createNode({});
-    const c = createNode({});
-    root.children = [a, b, c];
+    const root = new Node({ layout: { width: 100, height: 100 } });
+    const a = new Node({});
+    const b = new Node({});
+    const c = new Node({});
+    root.add(a, b, c);
 
     resolve(root);
 
@@ -18,12 +18,12 @@ describe("depth assignment", () => {
   });
 
   it("paints negative-z children behind the node, non-negative ahead", () => {
-    const root = createNode({ layout: { width: 100, height: 100 } });
-    const neg = createNode({ layout: { zIndex: -1 } });
-    const zero = createNode({}); // zIndex defaults to 0
-    const pos = createNode({ layout: { zIndex: 5 } });
+    const root = new Node({ layout: { width: 100, height: 100 } });
+    const neg = new Node({ layout: { zIndex: -1 } });
+    const zero = new Node({}); // zIndex defaults to 0
+    const pos = new Node({ layout: { zIndex: 5 } });
     // Array order deliberately out of z-order — proves the walk sorts, not just iterates.
-    root.children = [pos, zero, neg];
+    root.add(pos, zero, neg);
 
     resolve(root);
 

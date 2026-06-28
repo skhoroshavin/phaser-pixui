@@ -68,18 +68,24 @@ export class Ui extends UiScene {
       top: 64,
       width: 224,
       height: 32,
+      left: 0,
+      right: 0,
       marginX: "auto",
+      direction: "column",
+      justifyContent: "center",
+      alignItems: "center",
     });
     new Text(headerFrame, {
       style: "header_scroll",
       text: "Phaser-PixUI demo",
-      margin: "auto",
     });
 
     const buttonStack = new Component(this.root, {
+      inset: 0,
       direction: "column",
       gap: 2,
-      margin: "auto",
+      justifyContent: "center",
+      alignItems: "center",
     });
 
     new Button(buttonStack, {

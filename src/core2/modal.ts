@@ -16,6 +16,9 @@ export class Modal extends Clickable {
       inset: 0,
       zIndex: 100,
       ...cfg,
+      direction: "column",
+      justifyContent: "center",
+      alignItems: "center",
       onClick: () => this._onBackdropClick(),
       visible: cfg?.visible ?? false,
     });
@@ -29,7 +32,7 @@ export class Modal extends Clickable {
       fillAlpha: cfg?.backdropAlpha ?? 0.5,
     });
 
-    this.content = new Interactive(this, { margin: "auto" });
+    this.content = new Interactive(this, {});
   }
 
   readonly content: Interactive;

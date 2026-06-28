@@ -1,4 +1,4 @@
-import { createNode, type Layout, type Node } from "../layout";
+import { Node, type Layout } from "../layout";
 import type { Mount } from "./mount";
 
 export type ComponentConfig = Layout & {
@@ -8,7 +8,7 @@ export type ComponentConfig = Layout & {
 
 export class Component {
   constructor(parent: Component | undefined, cfg?: ComponentConfig) {
-    this.node = createNode({ layout: cfg });
+    this.node = new Node({ layout: cfg });
     this._visible = cfg?.visible ?? true;
     if (parent) {
       this.mount = parent.mount;
@@ -33,7 +33,7 @@ export class Component {
 
   protected addChild(child: Component): void {
     this._children.push(child);
-    this.node.children.push(child.node);
+    this.node.add(child.node);
     child._parentVisible = this.visible;
   }
 

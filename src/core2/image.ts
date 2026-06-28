@@ -48,9 +48,9 @@ export class Image extends Renderable<GameObjects.Sprite | GameObjects.NineSlice
       },
     );
 
-    this.node.intrinsic = {
-      w: dims.scalableX ? undefined : dims.width,
-      h: dims.scalableY ? undefined : dims.height,
-    };
+    this.node.setIntrinsicSize({
+      w: dims.scalableX ? 0 : dims.width,
+      h: dims.scalableY ? 0 : dims.height,
+    });
   }
 }

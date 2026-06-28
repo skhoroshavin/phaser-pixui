@@ -1,78 +1,56 @@
 import { describe, expect, it } from "vitest";
-import { createNode, resolve } from "./";
+import { Node, resolve } from "./";
 
 describe("flex", () => {
-  it("stacks children vertically in a column with gap", () => {
-    const root = createNode({ layout: { width: 320, height: 240 } });
-    const flex = createNode({
-      layout: { left: 0, top: 0, width: 200, height: 200, direction: "column", gap: 8 },
+  it("places children along the main axis with gap (column and row)", () => {
+    const root = new Node({ layout: { width: 320, height: 240 } });
+    const col = new Node({
+      layout: { top: 0, width: 200, height: 58, direction: "column", gap: 8 },
     });
-    const child1 = createNode({ layout: { width: 100, height: 30 } });
-    const child2 = createNode({ layout: { width: 80, height: 20 } });
-    flex.children = [child1, child2];
-    root.children = [flex];
-
+    const row = new Node({
+      layout: { top: 100, width: 188, height: 30, direction: "row", gap: 8 },
+    });
+    const c1 = new Node({ layout: { width: 100, height: 30 } });
+    const c2 = new Node({ layout: { width: 80, height: 20 } });
+    const r1 = new Node({ layout: { width: 100, height: 30 } });
+    const r2 = new Node({ layout: { width: 80, height: 20 } });
+    col.add(c1, c2);
+    row.add(r1, r2);
+    root.add(col, row);
     resolve(root);
 
-    expect(flex.rect).toEqual({ x: 0, y: 0, w: 200, h: 200 });
-    expect(child1.rect).toEqual({ x: 0, y: 0, w: 100, h: 30 });
-    expect(child2.rect).toEqual({ x: 0, y: 38, w: 80, h: 20 });
+    // column: second child offset by first's height + gap
+    expect(c1.rect).toEqual({ x: 0, y: 0, w: 100, h: 30 });
+    expect(c2.rect).toEqual({ x: 0, y: 38, w: 80, h: 20 });
+    // row: second child offset by first's width + gap
+    expect(r1.rect).toEqual({ x: 0, y: 100, w: 100, h: 30 });
+    expect(r2.rect).toEqual({ x: 108, y: 100, w: 80, h: 20 });
   });
 
-  it("auto-sizes column to wrap children", () => {
-    const root = createNode({ layout: { width: 320, height: 240 } });
-    const flex = createNode({
-      layout: { left: 0, top: 0, direction: "column", gap: 4 },
-    });
-    const child1 = createNode({ layout: { width: 100, height: 30 } });
-    const child2 = createNode({ layout: { width: 80, height: 20 } });
-    flex.children = [child1, child2];
-    root.children = [flex];
-
+  it("auto-sizes to wrap children on both directions (column and row)", () => {
+    const root = new Node({ layout: { width: 320, height: 240 } });
+    const col = new Node({ layout: { top: 0, direction: "column", gap: 4 } });
+    const row = new Node({ layout: { top: 100, direction: "row", gap: 4 } });
+    const c1 = new Node({ layout: { width: 100, height: 30 } });
+    const c2 = new Node({ layout: { width: 80, height: 20 } });
+    const r1 = new Node({ layout: { width: 100, height: 30 } });
+    const r2 = new Node({ layout: { width: 80, height: 20 } });
+    col.add(c1, c2);
+    row.add(r1, r2);
+    root.add(col, row);
     resolve(root);
 
-    expect(flex.rect).toEqual({ x: 0, y: 0, w: 100, h: 54 });
-    expect(child1.rect).toEqual({ x: 0, y: 0, w: 100, h: 30 });
-    expect(child2.rect).toEqual({ x: 0, y: 34, w: 80, h: 20 });
-  });
-
-  it("places children side by side in a row with gap", () => {
-    const root = createNode({ layout: { width: 320, height: 240 } });
-    const flex = createNode({
-      layout: { left: 0, top: 0, width: 300, height: 50, direction: "row", gap: 8 },
-    });
-    const child1 = createNode({ layout: { width: 100, height: 30 } });
-    const child2 = createNode({ layout: { width: 80, height: 20 } });
-    flex.children = [child1, child2];
-    root.children = [flex];
-
-    resolve(root);
-
-    expect(flex.rect).toEqual({ x: 0, y: 0, w: 300, h: 50 });
-    expect(child1.rect).toEqual({ x: 0, y: 0, w: 100, h: 30 });
-    expect(child2.rect).toEqual({ x: 108, y: 0, w: 80, h: 20 });
-  });
-
-  it("auto-sizes row to wrap children", () => {
-    const root = createNode({ layout: { width: 320, height: 240 } });
-    const flex = createNode({
-      layout: { left: 0, top: 0, direction: "row", gap: 4 },
-    });
-    const child1 = createNode({ layout: { width: 100, height: 30 } });
-    const child2 = createNode({ layout: { width: 80, height: 20 } });
-    flex.children = [child1, child2];
-    root.children = [flex];
-
-    resolve(root);
-
-    expect(flex.rect).toEqual({ x: 0, y: 0, w: 184, h: 30 });
-    expect(child1.rect).toEqual({ x: 0, y: 0, w: 100, h: 30 });
-    expect(child2.rect).toEqual({ x: 104, y: 0, w: 80, h: 20 });
+    // column wraps to max child width × (sum heights + gap)
+    expect(col.rect).toEqual({ x: 0, y: 0, w: 100, h: 54 });
+    expect(c2.rect).toEqual({ x: 0, y: 34, w: 80, h: 20 });
+    // row wraps to (sum widths + gap) × max child height
+    expect(row.rect).toEqual({ x: 0, y: 100, w: 184, h: 30 });
+    expect(r2.rect).toEqual({ x: 104, y: 100, w: 80, h: 20 });
   });
 
   it("centers children on cross-axis when alignItems is center", () => {
-    const root = createNode({ layout: { width: 320, height: 240 } });
-    const flex = createNode({
+    const root = new Node({ layout: { width: 320, height: 240 } });
+    const flex = new Node({
       layout: {
         left: 0,
         top: 0,
@@ -83,10 +61,10 @@ describe("flex", () => {
         alignItems: "center",
       },
     });
-    const child1 = createNode({ layout: { width: 80, height: 30 } });
-    const child2 = createNode({ layout: { width: 60, height: 20 } });
-    flex.children = [child1, child2];
-    root.children = [flex];
+    const child1 = new Node({ layout: { width: 80, height: 30 } });
+    const child2 = new Node({ layout: { width: 60, height: 20 } });
+    flex.add(child1, child2);
+    root.add(flex);
 
     resolve(root);
 
@@ -98,8 +76,8 @@ describe("flex", () => {
   });
 
   it("aligns children to cross-axis end when alignItems is end", () => {
-    const root = createNode({ layout: { width: 320, height: 240 } });
-    const flex = createNode({
+    const root = new Node({ layout: { width: 320, height: 240 } });
+    const flex = new Node({
       layout: {
         left: 0,
         top: 0,
@@ -110,10 +88,10 @@ describe("flex", () => {
         alignItems: "end",
       },
     });
-    const child1 = createNode({ layout: { width: 80, height: 30 } });
-    const child2 = createNode({ layout: { width: 60, height: 20 } });
-    flex.children = [child1, child2];
-    root.children = [flex];
+    const child1 = new Node({ layout: { width: 80, height: 30 } });
+    const child2 = new Node({ layout: { width: 60, height: 20 } });
+    flex.add(child1, child2);
+    root.add(flex);
 
     resolve(root);
 
@@ -125,8 +103,8 @@ describe("flex", () => {
   });
 
   it("centers packed children on main-axis when justifyContent is center", () => {
-    const root = createNode({ layout: { width: 320, height: 240 } });
-    const flex = createNode({
+    const root = new Node({ layout: { width: 320, height: 240 } });
+    const flex = new Node({
       layout: {
         left: 0,
         top: 0,
@@ -137,10 +115,10 @@ describe("flex", () => {
         justifyContent: "center",
       },
     });
-    const child1 = createNode({ layout: { width: 80, height: 30 } });
-    const child2 = createNode({ layout: { width: 60, height: 20 } });
-    flex.children = [child1, child2];
-    root.children = [flex];
+    const child1 = new Node({ layout: { width: 80, height: 30 } });
+    const child2 = new Node({ layout: { width: 60, height: 20 } });
+    flex.add(child1, child2);
+    root.add(flex);
 
     resolve(root);
 
@@ -150,8 +128,8 @@ describe("flex", () => {
   });
 
   it("aligns packed children to main-axis end when justifyContent is end", () => {
-    const root = createNode({ layout: { width: 320, height: 240 } });
-    const flex = createNode({
+    const root = new Node({ layout: { width: 320, height: 240 } });
+    const flex = new Node({
       layout: {
         left: 0,
         top: 0,
@@ -162,10 +140,10 @@ describe("flex", () => {
         justifyContent: "end",
       },
     });
-    const child1 = createNode({ layout: { width: 80, height: 30 } });
-    const child2 = createNode({ layout: { width: 60, height: 20 } });
-    flex.children = [child1, child2];
-    root.children = [flex];
+    const child1 = new Node({ layout: { width: 80, height: 30 } });
+    const child2 = new Node({ layout: { width: 60, height: 20 } });
+    flex.add(child1, child2);
+    root.add(flex);
 
     resolve(root);
 
@@ -175,51 +153,211 @@ describe("flex", () => {
   });
 
   it("stacks flex children with nested intrinsic sizes", () => {
-    const root = createNode({ layout: { width: 320, height: 240 } });
-    const flex = createNode({
+    const root = new Node({ layout: { width: 320, height: 240 } });
+    const flex = new Node({
       layout: { direction: "column", gap: 4 },
     });
-    const wrapA = createNode({});
-    const leafA = createNode({
+    const wrapA = new Node({});
+    const leafA = new Node({
       layout: { width: 80 },
-      intrinsic: { h: 20 },
+      intrinsicSize: { h: 20 },
     });
-    wrapA.children = [leafA];
-    const wrapB = createNode({});
-    const leafB = createNode({
+    wrapA.add(leafA);
+    const wrapB = new Node({});
+    const leafB = new Node({
       layout: { width: 60 },
-      intrinsic: { h: 15 },
+      intrinsicSize: { h: 15 },
     });
-    wrapB.children = [leafB];
+    wrapB.add(leafB);
 
-    flex.children = [wrapA, wrapB];
-    root.children = [flex];
+    flex.add(wrapA, wrapB);
+    root.add(flex);
 
     resolve(root);
 
     expect(flex.rect).toEqual({ x: 0, y: 0, w: 80, h: 39 });
     expect(wrapA.rect).toEqual({ x: 0, y: 0, w: 80, h: 20 });
-    expect(wrapB.rect).toEqual({ x: 0, y: 24, w: 60, h: 15 });
+    // CSS default align-items is stretch: wrapB's auto width fills the line (80),
+    // even though its content (leafB) is only 60 wide.
+    expect(wrapB.rect).toEqual({ x: 0, y: 24, w: 80, h: 15 });
   });
 
-  it("stacks flex child with inset-0 leaf", () => {
-    const root = createNode({ layout: { width: 320, height: 240 } });
-    const flex = createNode({
-      layout: { direction: "column", gap: 2 },
-    });
-    const wrapper = createNode({});
-    const leaf = createNode({
-      layout: { inset: 0 },
-      intrinsic: { h: 22 },
-    });
-    wrapper.children = [leaf];
-    flex.children = [wrapper];
-    root.children = [flex];
+  it("lays out a flex container nested inside a flex container", () => {
+    const root = new Node({ layout: { width: 320, height: 240 } });
+    const outer = new Node({ layout: { direction: "column" } });
+    const inner = new Node({ layout: { direction: "row", gap: 4 } });
+    const a = new Node({ layout: { width: 40, height: 10 } });
+    const b = new Node({ layout: { width: 40, height: 10 } });
+    inner.add(a, b);
+    outer.add(inner);
+    root.add(outer);
 
     resolve(root);
 
-    expect(flex.rect).toEqual({ x: 0, y: 0, w: 0, h: 22 });
-    expect(wrapper.rect).toEqual({ x: 0, y: 0, w: 0, h: 22 });
-    expect(leaf.rect).toEqual({ x: 0, y: 0, w: 0, h: 22 });
+    // inner is a row → a and b placed side by side (b.x = 40 + gap 4)
+    expect(a.rect).toEqual({ x: 0, y: 0, w: 40, h: 10 });
+    expect(b.rect).toEqual({ x: 44, y: 0, w: 40, h: 10 });
+  });
+
+  it("caps nested flex container width by maxWidth", () => {
+    const root = new Node({ layout: { width: 320, height: 240 } });
+    const outer = new Node({ layout: { direction: "row" } });
+    const inner = new Node({
+      layout: { direction: "row", gap: 4, maxWidth: 50 },
+    });
+    const a = new Node({ layout: { width: 40, height: 10 } });
+    const b = new Node({ layout: { width: 40, height: 10 } });
+    inner.add(a, b);
+    outer.add(inner);
+    root.add(outer);
+
+    resolve(root);
+
+    // inner auto-sizes to 84 (40 + 4 + 40), maxWidth caps the container to 50;
+    // children keep their sizes and overflow (no auto-shrink)
+    expect(inner.rect.w).toBe(50);
+    expect(a.rect.w).toBe(40);
+    expect(b.rect.w).toBe(40);
+  });
+
+  it("honors flex-item margins on the cross axis", () => {
+    const root = new Node({ layout: { width: 320, height: 240 } });
+    const flex = new Node({
+      layout: { direction: "column", width: 200, height: 60, alignItems: "center" },
+    });
+    const child = new Node({ layout: { width: 80, height: 20, marginLeft: 30 } });
+    flex.add(child);
+    root.add(flex);
+
+    resolve(root);
+
+    // margin-box = marginLeft 30 + width 80 = 110; centered in 200 → lead 45;
+    // border-box x = 45 + marginLeft 30 = 75
+    expect(child.rect.x).toBe(75);
+  });
+
+  it("pushes flex item to main-end with margin-left: auto", () => {
+    const root = new Node({ layout: { width: 320, height: 240 } });
+    const flex = new Node({
+      layout: { direction: "row", width: 200, height: 50 },
+    });
+    const child = new Node({
+      layout: { width: 40, height: 20, marginLeft: "auto" },
+    });
+    flex.add(child);
+    root.add(flex);
+
+    resolve(root);
+
+    // 200 - 40 = 160 free space on main axis → margin-left absorbs it all
+    expect(child.rect.x).toBe(160);
+  });
+
+  it("stretches flex items on the cross axis by default (align-items: stretch)", () => {
+    const root = new Node({ layout: { width: 320, height: 240 } });
+    const flex = new Node({
+      layout: { direction: "column", width: 200, height: 60 },
+    });
+    const child = new Node({ layout: { height: 20 } }); // width auto
+    flex.add(child);
+    root.add(flex);
+
+    resolve(root);
+
+    // cross axis (width) stretches to fill the container
+    expect(child.rect.w).toBe(200);
+  });
+
+  it("does not stretch flex item with explicit cross-axis size", () => {
+    const root = new Node({ layout: { width: 320, height: 240 } });
+    const flex = new Node({
+      layout: { direction: "column", width: 200, height: 100 },
+    });
+    const child = new Node({ layout: { width: 80, height: 30 } });
+    flex.add(child);
+    root.add(flex);
+
+    resolve(root);
+
+    // align-items: stretch is default, but explicit width=80 overrides it
+    expect(child.rect.w).toBe(80);
+  });
+
+  it("collapses to zero when flex container has no children", () => {
+    const root = new Node({ layout: { width: 320, height: 240 } });
+    const flex = new Node({ layout: { direction: "column" } });
+    root.add(flex);
+
+    resolve(root);
+
+    expect(flex.rect).toEqual({ x: 0, y: 0, w: 0, h: 0 });
+  });
+
+  it("absolute flex item (inset:0) fills the container on both axes", () => {
+    const root = new Node({ layout: { width: 200, height: 100 } });
+    const flex = new Node({
+      layout: { direction: "column", width: 200, height: 100 },
+    });
+    const abs = new Node({ layout: { inset: 0 } });
+    const sibling = new Node({ layout: { width: 50, height: 20 } });
+    flex.add(abs, sibling);
+    root.add(flex);
+
+    resolve(root);
+
+    expect(abs.rect).toEqual({ x: 0, y: 0, w: 200, h: 100 });
+  });
+
+  it("absolute flex item does not consume main-axis space", () => {
+    const root = new Node({ layout: { width: 100, height: 100 } });
+    const flex = new Node({
+      layout: { direction: "column", width: 100, height: 100 },
+    });
+    const abs = new Node({ layout: { inset: 0, height: 50 } });
+    const a = new Node({ layout: { width: 10, height: 10 } });
+    const b = new Node({ layout: { width: 10, height: 10 } });
+    flex.add(abs, a, b);
+    root.add(flex);
+
+    resolve(root);
+
+    expect(a.rect.y).toBe(0);
+    expect(b.rect.y).toBe(10);
+  });
+
+  it("absolute flex item is placed by its edges, ignoring justify/align", () => {
+    const root = new Node({ layout: { width: 200, height: 200 } });
+    const flex = new Node({
+      layout: {
+        direction: "column",
+        width: 200,
+        height: 200,
+        justifyContent: "center",
+        alignItems: "center",
+      },
+    });
+    const abs = new Node({ layout: { top: 5, right: 5, width: 40, height: 40 } });
+    flex.add(abs);
+    root.add(flex);
+
+    resolve(root);
+
+    expect(abs.rect).toEqual({ x: 155, y: 5, w: 40, h: 40 });
+  });
+
+  it("absolute background fills while in-flow sibling centers", () => {
+    const root = new Node({ layout: { width: 128, height: 32 } });
+    const frame = new Node({
+      layout: { inset: 0, direction: "column", justifyContent: "center", alignItems: "center" },
+    });
+    const bg = new Node({ layout: { inset: 0 } });
+    const label = new Node({ layout: { width: 60, height: 12 } });
+    frame.add(bg, label);
+    root.add(frame);
+
+    resolve(root);
+
+    expect(bg.rect).toEqual({ x: 0, y: 0, w: 128, h: 32 });
+    expect(label.rect).toEqual({ x: 34, y: 10, w: 60, h: 12 });
   });
 });

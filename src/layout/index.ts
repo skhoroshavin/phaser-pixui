@@ -1,4 +1,3 @@
 export type { Layout } from "./layout";
-export type { Node, Rect } from "./node";
-export { createNode } from "./node";
+export { Node, type NodeConfig, type Rect, type Size, type IntrinsicSize } from "./node";
 export { resolve } from "./resolve";
