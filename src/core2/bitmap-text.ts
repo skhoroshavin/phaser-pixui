@@ -20,4 +20,12 @@ export class BitmapText extends Renderable<GameObjects.BitmapText> {
     });
     if (cfg.tint !== undefined) this.internal.setTint(cfg.tint).setTintMode(TintModes.FILL);
   }
+
+  get text(): string {
+    return this.internal.text;
+  }
+  set text(value: string) {
+    this.internal.setText(value);
+    this.mount.resolveLayout();
+  }
 }

@@ -41,8 +41,8 @@ export class Draggable extends Interactive {
       this._onDragStart?.(origin);
     });
 
-    zone.on("drag", (_pointer: Phaser.Input.Pointer, dragX: number, dragY: number) => {
-      const pos = this._axisLock(dragX, dragY);
+    zone.on("drag", (pointer: Phaser.Input.Pointer) => {
+      const pos = this._axisLock(pointer.worldX - zone.x, pointer.worldY - zone.y);
       const delta = sub(pos, this._lastPos);
 
       const now = Date.now();
@@ -53,7 +53,7 @@ export class Draggable extends Interactive {
 
       this._lastPos = pos;
       this._onDrag?.(pos);
-      this._onScroll?.(delta);
+      this._onScroll?.(scale(delta, -1));
     });
 
     zone.on("dragend", () => {
@@ -78,7 +78,7 @@ export class Draggable extends Interactive {
   }
 
   private _coast(_time: number, frameDelta: number): void {
-    this._onScroll?.(scale(this._velocity, frameDelta));
+    this._onScroll?.(scale(this._velocity, -frameDelta));
     this._velocity = scale(this._velocity, 0.94);
     if (len(this._velocity) < 0.002) {
       this._stopCoast();
