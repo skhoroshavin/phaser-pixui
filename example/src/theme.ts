@@ -19,25 +19,11 @@ export const uiTheme: ThemeConfig = {
     disabled: 0x7bb6bc,
   },
 
-  fontName: "mana_roots",
-  fontSize: 16,
-  fontTint: "light",
-
   progress: {
     frame: "progress_curly",
     bar: "bar_green",
     paddingX: 5,
     paddingY: 3,
-  },
-
-  textArea: {},
-
-  frame: {
-    frame: "frame_light",
-    paddingX: 12,
-    paddingY: 14,
-    tileX: true,
-    tileY: true,
   },
 };
 

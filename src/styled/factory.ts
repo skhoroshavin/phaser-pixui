@@ -1,11 +1,8 @@
 import { ComponentFactory, ComponentFactoryConfig } from "../core/factory.ts";
 import { ThemeConfig } from "../theme/theme.ts";
 import { InsertContext } from "./context.ts";
-import { Frame, FrameConfig } from "./frame.ts";
 import { Progress, ProgressConfig } from "./progress.ts";
-import { ScrollableTextArea, ScrollableTextAreaConfig } from "./scrollable-textarea.ts";
 import { StyledComponent, StyledComponentConfig } from "./styled.ts";
-import { TextArea, TextAreaConfig } from "./textarea.ts";
 
 export type StyledComponentFactoryConfig = {
   theme: ThemeConfig;
@@ -22,20 +19,8 @@ export class StyledComponentFactory extends ComponentFactory {
     return this.createStyled(StyledComponent, cfg);
   }
 
-  frame(cfg: FrameConfig): Frame {
-    return this.createStyled(Frame, cfg);
-  }
-
   progress(cfg: ProgressConfig): Progress {
     return this.createStyled(Progress, cfg);
-  }
-
-  textArea(cfg: TextAreaConfig): TextArea {
-    return this.createStyled(TextArea, cfg);
-  }
-
-  scrollableTextArea(cfg: ScrollableTextAreaConfig): ScrollableTextArea {
-    return this.createStyled(ScrollableTextArea, cfg);
   }
 
   createStyled<T extends StyledComponent, Cfg>(
