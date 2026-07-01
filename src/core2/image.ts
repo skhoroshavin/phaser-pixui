@@ -1,3 +1,4 @@
+import { GameObjects } from "phaser";
 import { frameDimensions } from "../util/frame";
 import { Component, type ComponentConfig } from "./component";
 import { Renderable } from "./renderable";
@@ -9,51 +10,47 @@ export type ImageConfig = {
   tileY?: boolean;
 } & ComponentConfig;
 
-export class Image extends Renderable<Phaser.GameObjects.Sprite | Phaser.GameObjects.NineSlice> {
+export class Image extends Renderable<GameObjects.Sprite | GameObjects.NineSlice> {
   constructor(parent: Component, cfg: ImageConfig) {
-    const scene = parent.mount.scene;
-    const dims = frameDimensions(scene.textures.getFrame(cfg.texture, cfg.frame));
-    const scalable = dims.scalableX || dims.scalableY;
+    let dims!: ReturnType<typeof frameDimensions>;
+    super(
+      parent,
+      (scene) => {
+        dims = frameDimensions(scene.textures.getFrame(cfg.texture, cfg.frame));
+        if (dims.scalableX || dims.scalableY) {
+          return new GameObjects.NineSlice(
+            scene,
+            0,
+            0,
+            cfg.texture,
+            cfg.frame,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            cfg.tileX,
+            cfg.tileY,
+          );
+        }
+        return new GameObjects.Sprite(scene, 0, 0, cfg.texture, cfg.frame);
+      },
+      {
+        ...cfg,
+        onResize: (i, w, h) => {
+          if (dims.scalableX || dims.scalableY) {
+            const ns = i as GameObjects.NineSlice;
+            if (dims.scalableX) ns.width = w;
+            if (dims.scalableY) ns.height = h;
+          }
+        },
+      },
+    );
 
-    if (scalable) {
-      const inner = Image._createNineSlice(scene, cfg);
-      super(parent, inner, cfg);
-      Image._wireNineSlice(this, inner, dims.scalableX, dims.scalableY);
-    } else {
-      super(parent, scene.add.sprite(0, 0, cfg.texture, cfg.frame), cfg);
-    }
-
-    this.node.intrinsic = {
-      w: dims.scalableX ? undefined : dims.width,
-      h: dims.scalableY ? undefined : dims.height,
-    };
-  }
-
-  private static _createNineSlice(
-    scene: Phaser.Scene,
-    cfg: ImageConfig,
-  ): Phaser.GameObjects.NineSlice {
-    const inner = scene.make.nineslice({
-      key: cfg.texture,
-      frame: cfg.frame,
-      tileX: cfg.tileX,
-      tileY: cfg.tileY,
+    this.node.setIntrinsicSize({
+      w: dims.scalableX ? 0 : dims.width,
+      h: dims.scalableY ? 0 : dims.height,
     });
-    scene.children.add(inner);
-    return inner;
-  }
-
-  private static _wireNineSlice(
-    image: Image,
-    nineSlice: Phaser.GameObjects.NineSlice,
-    scalableX: boolean,
-    scalableY: boolean,
-  ): void {
-    const origLayout = image.node.onLayout;
-    image.node.onLayout = (rect, depth) => {
-      origLayout?.(rect, depth);
-      if (scalableX) nineSlice.width = rect.w;
-      if (scalableY) nineSlice.height = rect.h;
-    };
   }
 }

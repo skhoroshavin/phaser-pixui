@@ -1,4 +1,4 @@
-import { ViewportMount } from "../core2/viewport-mount.ts";
+import { ViewportMount } from "./viewport-mount.ts";
 import { Theme, type ThemeConfig as Theme2Config } from "../theme2";
 import { InsertContext } from "../styled/context.ts";
 import { StyledComponent } from "../styled/styled.ts";

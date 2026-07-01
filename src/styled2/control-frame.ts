@@ -49,7 +49,12 @@ export class ControlFrame extends Component {
   }
 
   constructor(parent: Component, cfg: ControlFrameConfig) {
-    super(parent, cfg);
+    super(parent, {
+      ...cfg,
+      direction: "column",
+      justifyContent: "center",
+      alignItems: "center",
+    });
 
     const normal = new Frame(this, { style: cfg.style.normal, inset: 0 });
     this._frames = [normal];
@@ -73,7 +78,6 @@ export class ControlFrame extends Component {
       this._text = new Text(this, {
         text: cfg.text,
         style: cfg.style.textStyle,
-        margin: "auto",
       });
       const baseTint = theme.resolve(Text, cfg.style.textStyle).tint;
       for (const s of ["normal", "hover", "pressed", "disabled"] as const) {

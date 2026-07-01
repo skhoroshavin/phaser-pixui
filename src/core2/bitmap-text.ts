@@ -1,16 +1,23 @@
-import { TintModes } from "phaser";
+import { TintModes, GameObjects } from "phaser";
 import { Component, type ComponentConfig } from "./component";
 import { Renderable } from "./renderable";
+import type { Size } from "../layout";
 
-export class BitmapText extends Renderable<Phaser.GameObjects.BitmapText> {
+export class BitmapText extends Renderable<GameObjects.BitmapText> {
   constructor(
     parent: Component,
     cfg: { font: string; text?: string; tint?: number } & ComponentConfig,
   ) {
-    const scene = parent.mount.scene;
-    const inner = scene.add.bitmapText(0, 0, cfg.font, cfg.text ?? "");
-    super(parent, inner, cfg);
-    this.node.intrinsic = { w: inner.width, h: inner.height };
-    if (cfg.tint !== undefined) inner.setTint(cfg.tint).setTintMode(TintModes.FILL);
+    super(
+      parent,
+      (scene) => new GameObjects.BitmapText(scene, 0, 0, cfg.font, cfg.text ?? ""),
+      cfg,
+    );
+    this.node.setIntrinsicSize((availableWidth?: number): Size => {
+      this.internal.setMaxWidth(availableWidth ?? 0);
+      const b = this.internal.getTextBounds(true);
+      return { w: b.global.width, h: b.global.height };
+    });
+    if (cfg.tint !== undefined) this.internal.setTint(cfg.tint).setTintMode(TintModes.FILL);
   }
 }

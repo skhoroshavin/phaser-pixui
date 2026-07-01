@@ -1,19 +1,19 @@
 import { describe, expect, it } from "vitest";
-import { createNode, resolve, type Node, type Rect } from "./";
+import { Node, resolve, type Rect } from "./";
 
 describe("resolve", () => {
   function viewport(w: number, h: number): Node {
-    return createNode({ layout: { width: w, height: h } });
+    return new Node({ layout: { width: w, height: h } });
   }
 
   // ── nested children ──
 
   it("positions nested child at parent origin when no edges set", () => {
     const root = viewport(320, 240);
-    const frame = createNode({ layout: { left: 100, top: 50, width: 200, height: 100 } });
-    const child = createNode({ layout: { width: 50 }, intrinsic: { w: 50, h: 20 } });
-    frame.children = [child];
-    root.children = [frame];
+    const frame = new Node({ layout: { left: 100, top: 50, width: 200, height: 100 } });
+    const child = new Node({ layout: { width: 50 }, intrinsicSize: { w: 50, h: 20 } });
+    frame.add(child);
+    root.add(frame);
 
     resolve(root);
 
@@ -23,10 +23,10 @@ describe("resolve", () => {
 
   it("positions nested child with left/top offset relative to parent", () => {
     const root = viewport(320, 240);
-    const frame = createNode({ layout: { left: 50, top: 30, width: 200, height: 100 } });
-    const child = createNode({ layout: { left: 10, top: 20, width: 80 } });
-    frame.children = [child];
-    root.children = [frame];
+    const frame = new Node({ layout: { left: 50, top: 30, width: 200, height: 100 } });
+    const child = new Node({ layout: { left: 10, top: 20, width: 80 } });
+    frame.add(child);
+    root.add(frame);
 
     resolve(root);
 
@@ -36,10 +36,10 @@ describe("resolve", () => {
 
   it("positions nested child with right/bottom relative to parent", () => {
     const root = viewport(320, 240);
-    const frame = createNode({ layout: { left: 50, top: 30, width: 200, height: 100 } });
-    const child = createNode({ layout: { right: 10, bottom: 20, width: 50, height: 30 } });
-    frame.children = [child];
-    root.children = [frame];
+    const frame = new Node({ layout: { left: 50, top: 30, width: 200, height: 100 } });
+    const child = new Node({ layout: { right: 10, bottom: 20, width: 50, height: 30 } });
+    frame.add(child);
+    root.add(frame);
 
     resolve(root);
 
@@ -51,24 +51,25 @@ describe("resolve", () => {
 
   it("fires onLayout only when rect changes", () => {
     const layouts: Rect[] = [];
-    const leaf = createNode({
+    const leaf = new Node({
       layout: { right: 4 },
-      intrinsic: { w: 100, h: 16 },
+      intrinsicSize: { w: 100, h: 16 },
       onLayout: (r) => {
         layouts.push({ ...r });
       },
     });
     const root = viewport(320, 240);
-    root.children = [leaf];
+    root.add(leaf);
 
     resolve(root);
     expect(layouts).toHaveLength(1);
     expect(layouts[0]).toEqual({ x: 216, y: 0, w: 100, h: 16 });
 
-    leaf.layout.right = 10;
+    // Viewport resize repositions the right-anchored leaf.
+    root.layout.width = 400;
     resolve(root);
     expect(layouts).toHaveLength(2);
-    expect(layouts[1]).toEqual({ x: 210, y: 0, w: 100, h: 16 });
+    expect(layouts[1]).toEqual({ x: 296, y: 0, w: 100, h: 16 });
 
     leaf.onLayout = () => {
       throw new Error("should not fire");
@@ -80,9 +81,9 @@ describe("resolve", () => {
 
   it("resolves non-scalable axis from intrinsic, scalable axis to 0", () => {
     // Mirrors a 9-slice Frame scalable on X but fixed on Y.
-    const frame = createNode({ intrinsic: { h: 40 } });
+    const frame = new Node({ intrinsicSize: { h: 40 } });
     const root = viewport(320, 240);
-    root.children = [frame];
+    root.add(frame);
 
     resolve(root);
 
@@ -90,9 +91,9 @@ describe("resolve", () => {
   });
 
   it("lets explicit width override an undefined scalable axis", () => {
-    const frame = createNode({ layout: { width: 100 }, intrinsic: { h: 40 } });
+    const frame = new Node({ layout: { width: 100 }, intrinsicSize: { h: 40 } });
     const root = viewport(320, 240);
-    root.children = [frame];
+    root.add(frame);
 
     resolve(root);
 
