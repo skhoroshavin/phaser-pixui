@@ -1,7 +1,8 @@
 import { CANVAS, HEADLESS, VERSION, WEBGL } from "phaser";
-import { ConstraintMode, TextArea, UiScene } from "../../src";
+import { ConstraintMode, UiScene } from "../../src";
 import { Component } from "../../src/core2/component.ts";
 import { BitmapText } from "../../src/core2/bitmap-text.ts";
+import { ScrollArea } from "../../src/core2/scroll-area.ts";
 import { Frame } from "../../src/styled2/frame.ts";
 import { Text } from "../../src/styled2/text.ts";
 import { Button } from "../../src/styled2/button.ts";
@@ -27,12 +28,14 @@ export class Ui extends UiScene {
   create() {
     super.create();
     this.scene.bringToTop("ui");
-    const logFrame = this.insert.bottom.frame({
-      y: 2,
-      width: -4,
+    const logFrame = new Frame(this.root, {
+      bottom: 2,
+      left: 2,
+      right: 2,
       height: 84,
     });
-    this._logArea = logFrame.insert.scrollableTextArea({});
+    this._logScroll = new ScrollArea(logFrame, { axis: "y", insetX: 12, insetY: 14 });
+    this._logText = new Text(this._logScroll.content, { left: 0, right: 0 });
 
     const progress = this.insert.bottom.progress({
       y: 108,
@@ -141,14 +144,11 @@ export class Ui extends UiScene {
   }
 
   log(msg: string) {
-    const text = this._logArea.text + msg + "\n";
+    const text = this._logText.text + msg + "\n";
     const lines = text.split("\n");
-    if (lines.length > 200) {
-      const trimmedLines = lines.slice(-200);
-      this._logArea.text = trimmedLines.join("\n");
-    } else {
-      this._logArea.text = text;
-    }
+    this._logText.text = lines.slice(-200).join("\n");
+    this._logScroll.scrollToEnd();
   }
-  private _logArea!: TextArea;
+  private _logScroll!: ScrollArea;
+  private _logText!: Text;
 }

@@ -1,7 +1,6 @@
 import type { GameObjects } from "phaser";
 import { Scene } from "phaser";
 import { Component, ComponentConfig } from "./component.ts";
-import { Mask } from "./mask.ts";
 
 type GameObject = GameObjects.GameObject;
 type Transform = GameObjects.Components.Transform;
@@ -44,13 +43,6 @@ export class Renderable<
 
   override bringToTop() {
     this.scene.children.bringToTop(this.internal);
-  }
-
-  override setMask(mask: Mask) {
-    if (!this.internal.filters) {
-      this.internal.enableFilters();
-    }
-    this.internal.filters?.internal.addMask(mask.internal);
   }
 
   protected override updatePosition() {

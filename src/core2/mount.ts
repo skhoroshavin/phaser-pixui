@@ -6,4 +6,5 @@ export type DisplayHost = GameObjects.DisplayList | GameObjects.Container;
 export interface Mount {
   readonly theme: Theme;
   readonly displayHost: DisplayHost;
+  resolveLayout(): void;
 }

@@ -48,7 +48,7 @@ export class UiScene extends ResponsiveScene {
     initTheme(this.theme);
     this.events.once("create", () => {
       this._root.initialize();
-      this._mount.layout();
+      this._mount.resolveLayout();
       this.game.scale.refresh();
       this.game.scale.on("resize", this._updateRoot, this);
     });

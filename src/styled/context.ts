@@ -30,20 +30,8 @@ export class InsertContext extends StyledComponentFactory {
   }
   private readonly _factories: { [key: string]: StyledComponentFactory } = {};
 
-  get center(): StyledComponentFactory {
-    return this.at(OriginX.Center, OriginY.Center);
-  }
-
   get left(): StyledComponentFactory {
     return this.at(OriginX.Left, OriginY.Center);
-  }
-
-  get topLeft(): StyledComponentFactory {
-    return this.at(OriginX.Left, OriginY.Top);
-  }
-
-  get topRight(): StyledComponentFactory {
-    return this.at(OriginX.Right, OriginY.Top);
   }
 
   get bottom(): StyledComponentFactory {

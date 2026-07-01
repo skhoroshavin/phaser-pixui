@@ -1,7 +1,6 @@
 import { Scene } from "phaser";
 import { Origin, OriginX, OriginY } from "../util/origin.ts";
 import { Anchor, Component, ComponentConfig } from "./component.ts";
-import type { Mask } from "./mask.ts";
 
 export class Container extends Component {
   constructor(scene: Scene, cfg?: ComponentConfig) {
@@ -51,12 +50,6 @@ export class Container extends Component {
         anchors.set(key, anchor);
       }
       item.component.reposition(anchor, this.zoom);
-    }
-  }
-
-  override setMask(mask: Mask) {
-    for (const item of this._children) {
-      item.component.setMask(mask);
     }
   }
 

@@ -18,7 +18,7 @@ export class ViewportMount implements Mount {
     return this.scene.children;
   }
 
-  layout(): void {
+  resolveLayout(): void {
     resolve(this.root.node);
   }
 

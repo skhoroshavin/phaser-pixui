@@ -2,7 +2,6 @@ import { Scene } from "phaser";
 import { Origin, OriginConfig, OriginX, OriginY } from "../util/origin.ts";
 import { Position, RelativePosition } from "../util/position.ts";
 import { RelativeSize, Size } from "../util/size.ts";
-import type { Mask } from "./mask.ts";
 
 /**
  * Configuration for creating a {@link Component}.
@@ -261,8 +260,6 @@ export class Component {
   };
   private _zoom = 1;
 
-  /** Override to apply a {@link Mask} to this component's game objects. */
-  setMask(_mask: Mask) {}
   /** Override to bring this component's game objects to the top of the display list. */
   bringToTop() {}
 

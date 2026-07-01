@@ -1,7 +1,4 @@
-import { FontStyle, initBaseFontStyle } from "./font.ts";
-import { FrameStyle, initFrameStyle } from "./frame.ts";
 import { initProgressStyle, ProgressStyle } from "./progress.ts";
-import { initTextAreaStyle, TextAreaStyle } from "./textarea.ts";
 
 export type ThemeConfig = {
   resources: {
@@ -16,9 +13,7 @@ export type ThemeConfig = {
   palette: Palette;
 
   progress: StyleList<ProgressStyle>;
-  textArea: StyleList<TextAreaStyle>;
-  frame: StyleList<FrameStyle>;
-} & FontStyle;
+};
 
 export type Palette = {
   default: number;
@@ -54,8 +49,5 @@ export function findStyle<StyleType extends object>(
 }
 
 export function initTheme(theme: ThemeConfig) {
-  initBaseFontStyle(theme);
   initProgressStyle(theme.progress);
-  initTextAreaStyle(theme.textArea, theme);
-  initFrameStyle("frame", theme.frame);
 }
