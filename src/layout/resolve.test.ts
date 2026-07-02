@@ -79,8 +79,7 @@ describe("resolve", () => {
 
   // ── per-axis intrinsic (e.g. auto-sized Frame from sprite dims) ──
 
-  it("resolves non-scalable axis from intrinsic, scalable axis to 0", () => {
-    // Mirrors a 9-slice Frame scalable on X but fixed on Y.
+  it("treats an omitted intrinsic axis as 0", () => {
     const frame = new Node({ intrinsicSize: { h: 40 } });
     const root = viewport(320, 240);
     root.add(frame);
@@ -90,7 +89,7 @@ describe("resolve", () => {
     expect(frame.rect).toEqual({ x: 0, y: 0, w: 0, h: 40 });
   });
 
-  it("lets explicit width override an undefined scalable axis", () => {
+  it("lets explicit width override an omitted intrinsic axis", () => {
     const frame = new Node({ layout: { width: 100 }, intrinsicSize: { h: 40 } });
     const root = viewport(320, 240);
     root.add(frame);

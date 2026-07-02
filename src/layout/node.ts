@@ -21,14 +21,18 @@ export class Node {
     this.xAxis = Node.deriveAxis(
       l.left ?? l.insetX ?? l.inset,
       l.right ?? l.insetX ?? l.inset,
-      l.marginLeft ?? l.marginX ?? l.margin,
-      l.marginRight ?? l.marginX ?? l.margin,
+      l.paddingLeft ?? l.paddingX ?? l.padding ?? 0,
+      l.paddingRight ?? l.paddingX ?? l.padding ?? 0,
+      l.marginLeft ?? l.marginX ?? l.margin ?? 0,
+      l.marginRight ?? l.marginX ?? l.margin ?? 0,
     );
     this.yAxis = Node.deriveAxis(
       l.top ?? l.insetY ?? l.inset,
       l.bottom ?? l.insetY ?? l.inset,
-      l.marginTop ?? l.marginY ?? l.margin,
-      l.marginBottom ?? l.marginY ?? l.margin,
+      l.paddingTop ?? l.paddingY ?? l.padding ?? 0,
+      l.paddingBottom ?? l.paddingY ?? l.padding ?? 0,
+      l.marginTop ?? l.marginY ?? l.margin ?? 0,
+      l.marginBottom ?? l.marginY ?? l.margin ?? 0,
     );
     this.measured = {
       topDownWidth: undefined,
@@ -116,16 +120,20 @@ export class Node {
   }
 
   private static deriveAxis(
-    start?: number,
-    end?: number,
-    mStart?: number | "auto",
-    mEnd?: number | "auto",
+    start: number | undefined,
+    end: number | undefined,
+    padStart: number,
+    padEnd: number,
+    mStart: number | "auto",
+    mEnd: number | "auto",
   ): Axis {
     return new Axis(
       start,
       end,
-      mStart === undefined || mStart === "auto" ? 0 : mStart,
-      mEnd === undefined || mEnd === "auto" ? 0 : mEnd,
+      padStart,
+      padEnd,
+      mStart === "auto" ? 0 : mStart,
+      mEnd === "auto" ? 0 : mEnd,
       mStart === "auto",
       mEnd === "auto",
     );

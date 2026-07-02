@@ -2,6 +2,8 @@ export class Axis {
   constructor(
     readonly start: number | undefined,
     readonly end: number | undefined,
+    readonly paddingStart: number,
+    readonly paddingEnd: number,
     readonly marginStart: number,
     readonly marginEnd: number,
     readonly marginStartAuto: boolean,
@@ -19,6 +21,21 @@ export class Axis {
   /** Child size when stretched to fill `parentSize` on this axis. */
   stretch(parentSize: number): number {
     return Math.max(0, parentSize - this._start - this._end - this.marginStart - this.marginEnd);
+  }
+
+  /** Origin of the content rect for a placed-axis starting at `start`. */
+  contentStart(start: number): number {
+    return start + this.paddingStart;
+  }
+
+  /** Size of the content rect for a placed-axis of `size`. */
+  contentSize(size: number): number {
+    return Math.max(0, size - this.paddingStart - this.paddingEnd);
+  }
+
+  /** Placed-axis size wrapping a content size with padding. */
+  actualSize(contentSize: number): number {
+    return this.paddingStart + contentSize + this.paddingEnd;
   }
 
   /** Whether either edge on this axis is set. */

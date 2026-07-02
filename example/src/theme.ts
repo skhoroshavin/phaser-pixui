@@ -58,9 +58,12 @@ export const uiTheme2 = defineTheme([...builtinComponents], {
     frame: "frame_light",
     tileX: true,
     tileY: true,
+    paddingX: 12,
+    paddingY: 14,
     styles: {
       header_scroll: {
         frame: "header_scroll",
+        padding: 0,
       },
     },
   },

@@ -12,11 +12,11 @@ export type ImageConfig = {
 
 export class Image extends Renderable<GameObjects.Sprite | GameObjects.NineSlice> {
   constructor(parent: Component, cfg: ImageConfig) {
-    let dims!: ReturnType<typeof frameDimensions>;
+    const scene = parent.mount.displayHost.scene!;
+    const dims = frameDimensions(scene.textures.getFrame(cfg.texture, cfg.frame));
     super(
       parent,
       (scene) => {
-        dims = frameDimensions(scene.textures.getFrame(cfg.texture, cfg.frame));
         if (dims.scalableX || dims.scalableY) {
           return new GameObjects.NineSlice(
             scene,
@@ -48,9 +48,6 @@ export class Image extends Renderable<GameObjects.Sprite | GameObjects.NineSlice
       },
     );
 
-    this.node.setIntrinsicSize({
-      w: dims.scalableX ? 0 : dims.width,
-      h: dims.scalableY ? 0 : dims.height,
-    });
+    this.node.setIntrinsicSize({ w: dims.width, h: dims.height });
   }
 }

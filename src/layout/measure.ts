@@ -26,15 +26,16 @@ function childTopDownWidth(child: Node, parent: Node): number | undefined {
 
   // Plain box child: if both edges are set - just stretch between them
   const x = child.xAxis;
+  const parentContentWidth = parent.xAxis.contentSize(parentWidth);
   if (pl.direction === undefined) {
     if (!x.hasBothEdges) return undefined;
-    return x.stretch(parentWidth);
+    return x.stretch(parentContentWidth);
   }
 
   // Flex column: if alignItems is stretch and child is not absolute - stretch it
   if ((pl.alignItems ?? "stretch") !== "stretch") return undefined;
   if (child.isAbsolute(parent)) return undefined;
-  return x.stretch(parentWidth);
+  return x.stretch(parentContentWidth);
 }
 
 export function measureBottomUp(node: Node): void {
@@ -50,14 +51,19 @@ export function measureBottomUp(node: Node): void {
 function measureBox(node: Node): Size {
   const l = node.layout;
   const availableW = node.clampWidth(node.measured.topDownWidth) ?? l.maxWidth;
+  const { w: iw, h: ih } = node.intrinsicSize(availableW);
 
-  let { w: maxW, h: maxH } = node.intrinsicSize(availableW);
+  let aggW = 0;
+  let aggH = 0;
   for (const child of node.children) {
     const size = child.measured.bottomUpSize;
-    maxW = Math.max(maxW, child.xAxis.extent(size.w));
-    maxH = Math.max(maxH, child.yAxis.extent(size.h));
+    aggW = Math.max(aggW, child.xAxis.extent(size.w));
+    aggH = Math.max(aggH, child.yAxis.extent(size.h));
   }
-  return { w: l.width ?? maxW, h: l.height ?? maxH };
+  return {
+    w: l.width ?? Math.max(iw, node.xAxis.actualSize(aggW)),
+    h: l.height ?? Math.max(ih, node.yAxis.actualSize(aggH)),
+  };
 }
 
 function measureFlex(node: Node): Size {
@@ -88,10 +94,18 @@ function measureFlex(node: Node): Size {
     }
   }
   const mainMax = Math.max(mainFlowTotal, mainAbsMax);
+  const main = col ? node.yAxis : node.xAxis;
+  const cross = col ? node.xAxis : node.yAxis;
 
   return col
-    ? { w: l.width ?? crossMax, h: l.height ?? mainMax }
-    : { w: l.width ?? mainMax, h: l.height ?? crossMax };
+    ? {
+        w: l.width ?? cross.actualSize(crossMax),
+        h: l.height ?? main.actualSize(mainMax),
+      }
+    : {
+        w: l.width ?? main.actualSize(mainMax),
+        h: l.height ?? cross.actualSize(crossMax),
+      };
 }
 
 export function seedRootRect(node: Node): void {
@@ -120,8 +134,11 @@ function childFinalSize(child: Node, parent: Node, axis: "x" | "y"): number {
 
   // If both edges are set - just stretch between them
   const a = horizontal ? child.xAxis : child.yAxis;
-  const parentSize = horizontal ? parent.measured.finalSize.w : parent.measured.finalSize.h;
-  if (a.hasBothEdges) return a.stretch(parentSize);
+  const pa = horizontal ? parent.xAxis : parent.yAxis;
+  const parentContentSize = pa.contentSize(
+    horizontal ? parent.measured.finalSize.w : parent.measured.finalSize.h,
+  );
+  if (a.hasBothEdges) return a.stretch(parentContentSize);
 
   // Flex cross-axis: if alignItems is stretch and child is not absolute - stretch it
   const pl = parent.layout;
@@ -130,5 +147,5 @@ function childFinalSize(child: Node, parent: Node, axis: "x" | "y"): number {
   if (pl.direction !== crossDir) return bottomUp;
   if ((pl.alignItems ?? "stretch") !== "stretch") return bottomUp;
   if (child.isAbsolute(parent)) return bottomUp;
-  return a.stretch(parentSize);
+  return a.stretch(parentContentSize);
 }

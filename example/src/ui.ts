@@ -34,7 +34,7 @@ export class Ui extends UiScene {
       right: 2,
       height: 84,
     });
-    this._logScroll = new ScrollArea(logFrame, { axis: "y", insetX: 12, insetY: 14 });
+    this._logScroll = new ScrollArea(logFrame, { axis: "y", inset: 0 });
     this._logText = new Text(this._logScroll.content, { left: 0, right: 0 });
 
     const progress = this.insert.bottom.progress({
