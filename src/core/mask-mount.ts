@@ -2,7 +2,7 @@ import { GameObjects, type Scene } from "phaser";
 import { resolve, type Rect } from "../layout";
 import { Component } from "./component";
 import type { Mount } from "./mount";
-import type { Theme } from "../theme2";
+import type { Theme } from "../theme";
 
 export class MaskMount implements Mount {
   readonly theme: Theme;
@@ -30,7 +30,7 @@ export class MaskMount implements Mount {
   }
 
   setMaskRect(r: Rect): void {
-    this.maskRect.setPosition(r.x, r.y).setSize(r.w, r.h);
+    this.maskRect.setPosition(r.x, r.y).setSize(r.width, r.height);
   }
 
   resolveLayout(): void {

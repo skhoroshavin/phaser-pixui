@@ -1,7 +1,6 @@
-import { type ThemeColor, type ThemeContext } from "../theme2";
-import { TextAlign } from "../util/align";
-import { Component, type ComponentConfig } from "../core2/component";
-import { BitmapText } from "../core2/bitmap-text";
+import { type ThemeColor, type ThemeContext } from "../theme";
+import { Component, type ComponentConfig } from "../core/component";
+import { BitmapText, type TextAlign } from "../core/bitmap-text";
 
 export type TextConfig = ComponentConfig & {
   style?: string;
@@ -32,7 +31,7 @@ export class Text extends BitmapText {
     return {
       font: raw.font ?? def.font,
       tint: ctx.palette.resolve(raw.tint ?? def.tint),
-      align: raw.align ?? def.align ?? TextAlign.Left,
+      align: raw.align ?? def.align ?? "left",
     };
   }
 
@@ -40,6 +39,6 @@ export class Text extends BitmapText {
     const theme = parent.mount.theme;
     const s = theme.resolve(Text, cfg.style);
 
-    super(parent, { font: s.font, tint: s.tint, ...cfg });
+    super(parent, { font: s.font, tint: s.tint, align: s.align, ...cfg });
   }
 }

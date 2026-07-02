@@ -29,25 +29,25 @@ export class Interactive extends Renderable<GameObjects.Zone> {
     this._enabled = v;
   }
 
-  private _updateHitArea(w: number, h: number): void {
+  private _updateHitArea(width: number, height: number): void {
     let hitArea: Phaser.Geom.Rectangle | Phaser.Geom.Polygon | Phaser.Geom.Ellipse;
     let callback: Types.Input.HitAreaCallback;
 
     switch (this._shape) {
       case "diamond": {
-        const hw = w / 2;
-        const hh = h / 2;
-        hitArea = new Geom.Polygon([hw, 0, w, hh, hw, h, 0, hh]);
+        const hw = width / 2;
+        const hh = height / 2;
+        hitArea = new Geom.Polygon([hw, 0, width, hh, hw, height, 0, hh]);
         callback = Geom.Polygon.Contains;
         break;
       }
       case "ellipse": {
-        hitArea = new Geom.Ellipse(w / 2, w / 2, w, h);
+        hitArea = new Geom.Ellipse(width / 2, width / 2, width, height);
         callback = Geom.Ellipse.Contains;
         break;
       }
       default: {
-        hitArea = new Geom.Rectangle(0, 0, w, h);
+        hitArea = new Geom.Rectangle(0, 0, width, height);
         callback = Geom.Rectangle.Contains;
         break;
       }

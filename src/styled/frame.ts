@@ -1,6 +1,6 @@
-import { type ThemeContext } from "../theme2";
-import { Image } from "../core2/image";
-import { Component, type ComponentConfig } from "../core2/component";
+import { type ThemeContext } from "../theme";
+import { Image } from "../core/image";
+import { Component, type ComponentConfig } from "../core/component";
 
 export type FrameConfig = ComponentConfig & {
   style?: string | ResolvedFrameStyle;

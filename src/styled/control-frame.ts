@@ -1,8 +1,8 @@
-import { Component, type ComponentConfig } from "../core2/component";
+import { Component, type ComponentConfig } from "../core/component";
 import { Frame, type FrameStyle, type ResolvedFrameStyle } from "./frame";
 import { Text } from "./text";
-import { type ThemeColor, type ThemeContext } from "../theme2";
-import type { ClickableState } from "../core2/clickable";
+import { type ThemeColor, type ThemeContext } from "../theme";
+import type { ClickableState } from "../core/clickable";
 
 export type ControlFrameConfig = ComponentConfig & {
   style: ResolvedControlFrameStyle;

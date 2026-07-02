@@ -3,7 +3,6 @@ import { Component, type ComponentConfig } from "./component";
 import { Draggable } from "./draggable";
 import { MaskMount } from "./mask-mount";
 import { resolve, type Rect } from "../layout";
-import type { vec2 } from "../util/vec2";
 
 type Axis = "x" | "y" | "both";
 
@@ -44,7 +43,7 @@ export class ScrollArea extends Component {
       axis: this._axis,
       wheel: cfg.wheel ?? true,
       kinetic: cfg.kinetic ?? true,
-      onScroll: (delta: vec2) => this.scrollBy(delta.x, delta.y),
+      onScroll: (dx, dy) => this.scrollBy(dx, dy),
     });
   }
 
@@ -99,15 +98,15 @@ export class ScrollArea extends Component {
 
   private _applyAxisLock(): void {
     if (!this._viewport) return;
-    if (this._axis === "y") this.content.node.layout.width = this._viewport.w;
-    else if (this._axis === "x") this.content.node.layout.height = this._viewport.h;
+    if (this._axis === "y") this.content.node.layout.width = this._viewport.width;
+    else if (this._axis === "x") this.content.node.layout.height = this._viewport.height;
   }
 
   private _updateMaxScroll(): void {
     const cr = this.content.node.rect;
     this._maxScroll.set(
-      Math.max(0, cr.w - (this._viewport?.w ?? 0)),
-      Math.max(0, cr.h - (this._viewport?.h ?? 0)),
+      Math.max(0, cr.width - (this._viewport?.width ?? 0)),
+      Math.max(0, cr.height - (this._viewport?.height ?? 0)),
     );
   }
 

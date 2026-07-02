@@ -1,12 +1,15 @@
 import { TintModes, GameObjects } from "phaser";
 import { Component, type ComponentConfig } from "./component";
 import { Renderable } from "./renderable";
-import type { Size } from "../layout";
+import type { Size } from "../util/size";
+
+/** Horizontal alignment of text, matching CSS `text-align` values. */
+export type TextAlign = "left" | "center" | "right";
 
 export class BitmapText extends Renderable<GameObjects.BitmapText> {
   constructor(
     parent: Component,
-    cfg: { font: string; text?: string; tint?: number } & ComponentConfig,
+    cfg: { font: string; text?: string; tint?: number; align?: TextAlign } & ComponentConfig,
   ) {
     super(
       parent,
@@ -15,10 +18,17 @@ export class BitmapText extends Renderable<GameObjects.BitmapText> {
     );
     this.node.setIntrinsicSize((availableWidth?: number): Size => {
       this.internal.setMaxWidth(availableWidth ?? 0);
-      const b = this.internal.getTextBounds(true);
-      return { w: b.global.width, h: b.global.height };
+      return this.internal.getTextBounds(true).global;
     });
     if (cfg.tint !== undefined) this.internal.setTint(cfg.tint).setTintMode(TintModes.FILL);
+    switch (cfg.align) {
+      case "center":
+        this.internal.align = 1;
+        break;
+      case "right":
+        this.internal.align = 2;
+        break;
+    }
   }
 
   get text(): string {

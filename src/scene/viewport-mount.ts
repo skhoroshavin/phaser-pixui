@@ -1,7 +1,7 @@
 import { resolve } from "../layout";
-import { Component } from "../core2/component";
-import type { DisplayHost, Mount } from "../core2/mount";
-import type { Theme } from "../theme2";
+import { Component } from "../core/component";
+import type { DisplayHost, Mount } from "../core/mount";
+import type { Theme } from "../theme";
 
 export class ViewportMount implements Mount {
   readonly root: Component;
@@ -22,9 +22,9 @@ export class ViewportMount implements Mount {
     resolve(this.root.node);
   }
 
-  resize(w: number, h: number): void {
-    this.root.node.layout.width = w;
-    this.root.node.layout.height = h;
+  resize(width: number, height: number): void {
+    this.root.node.layout.width = width;
+    this.root.node.layout.height = height;
     resolve(this.root.node);
   }
 }

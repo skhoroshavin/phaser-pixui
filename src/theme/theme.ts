@@ -1,53 +1,31 @@
-import { initProgressStyle, ProgressStyle } from "./progress.ts";
+import { Palette } from "./palette";
+import type { ThemeContext, ThemeResources } from "./context";
+import type { StyleMap, ThemedComponent, ThemeConfig } from "./config";
 
-export type ThemeConfig = {
-  resources: {
-    basePath?: string;
-    atlas: string;
-    fonts: {
-      atlas: string;
-      names: string[];
-    };
-  };
+export class Theme {
+  readonly resources: ThemeResources;
+  readonly palette: Palette;
+  private readonly _resolved: Record<string, { def: unknown; variants: Record<string, unknown> }> =
+    {};
 
-  palette: Palette;
-
-  progress: StyleList<ProgressStyle>;
-};
-
-export type Palette = {
-  default: number;
-  [key: string]: number;
-};
-
-export function resolveColor(color: string | undefined, palette: Palette): number {
-  if (color === undefined || !(color in palette)) return palette.default;
-  return palette[color]!;
-}
-
-export type StyleList<StyleType extends object> = StyleType & {
-  styles?: { [key: string]: StyleType };
-};
-
-export function findStyle<StyleType extends object>(
-  type: string,
-  name: string | undefined,
-  list: StyleList<StyleType>,
-): StyleType {
-  if (name === undefined) return list;
-  if (list.styles === undefined) {
-    console.warn(`${type} style '${name}' not found, only default is available`);
-    return list;
+  constructor(config: ThemeConfig) {
+    this.resources = config.resources;
+    this.palette = new Palette(config.palette);
+    const ctx: ThemeContext = { palette: this.palette };
+    for (const c of config.components) {
+      const cfg = (config as Record<string, StyleMap<unknown>>)[c.styleKey];
+      if (!cfg) continue;
+      const def = c.resolveStyle(ctx, cfg, cfg);
+      const variants: Record<string, unknown> = {};
+      for (const [name, v] of Object.entries(cfg.styles ?? {}))
+        variants[name] = c.resolveStyle(ctx, v, cfg);
+      this._resolved[c.styleKey] = { def, variants };
+    }
   }
-  if (!(name in list.styles!)) {
-    console.warn(
-      `${type} style '${name} not found, available are: ${Object.keys(list.styles!).join(",")}`,
-    );
-    return list;
-  }
-  return list.styles![name]!;
-}
 
-export function initTheme(theme: ThemeConfig) {
-  initProgressStyle(theme.progress);
+  resolve<C extends ThemedComponent>(cls: C, style?: string) {
+    const entry = this._resolved[cls.styleKey]!;
+    const v = style ? entry.variants[style] : undefined;
+    return (v ?? entry.def) as ReturnType<C["resolveStyle"]>;
+  }
 }
