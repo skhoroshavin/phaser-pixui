@@ -65,7 +65,9 @@ function placeFlex(node: Node): void {
     first = false;
 
     const child = col ? childNode.yAxis : childNode.xAxis;
-    const childSize = col ? childNode.measured.finalSize.height : childNode.measured.finalSize.width;
+    const childSize = col
+      ? childNode.measured.finalSize.height
+      : childNode.measured.finalSize.width;
     if (child.marginStartAuto) autoMarginCount++;
     if (child.marginEndAuto) autoMarginCount++;
     mainContentSize += childSize + child.marginStart + child.marginEnd;

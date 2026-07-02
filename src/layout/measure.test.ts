@@ -61,7 +61,10 @@ describe("measure", () => {
   it("passes the stretch width into a definite parent as availableWidth", () => {
     const root = viewport(200, 200);
     root.add(
-      new Node({ layout: { left: 0, right: 0 }, intrinsicSize: (aw) => ({ width: 0, height: aw ?? 0 }) }),
+      new Node({
+        layout: { left: 0, right: 0 },
+        intrinsicSize: (aw) => ({ width: 0, height: aw ?? 0 }),
+      }),
     );
     resolve(root);
     // stretched to the parent's 200 width; availableWidth surfaces as height
@@ -71,7 +74,10 @@ describe("measure", () => {
   it("uses a closure intrinsic's returned size, passing undefined when nothing limits the width", () => {
     const root = viewport(200, 200);
     root.add(
-      new Node({ layout: {}, intrinsicSize: (aw) => ({ width: aw === undefined ? 50 : 0, height: 30 }) }),
+      new Node({
+        layout: {},
+        intrinsicSize: (aw) => ({ width: aw === undefined ? 50 : 0, height: 30 }),
+      }),
     );
     resolve(root);
     // closure's returned size is used (height: 30 comes through); it received
@@ -113,7 +119,10 @@ describe("measure", () => {
   it("stretches, not centers, an auto-width element with both edges and auto margins", () => {
     const root = viewport(320, 240);
     root.add(
-      new Node({ layout: { left: 0, right: 0, marginX: "auto" }, intrinsicSize: { width: 50, height: 10 } }),
+      new Node({
+        layout: { left: 0, right: 0, marginX: "auto" },
+        intrinsicSize: { width: 50, height: 10 },
+      }),
     );
     resolve(root);
     expect(root.children[0]!.rect).toEqual({ x: 0, y: 0, width: 320, height: 10 });

@@ -144,7 +144,9 @@ function childFinalSize(child: Node, parent: Node, axis: "x" | "y"): number {
   // Flex cross-axis: if alignItems is stretch and child is not absolute - stretch it
   const pl = parent.layout;
   const crossDir = horizontal ? "column" : "row";
-  const bottomUp = horizontal ? child.measured.bottomUpSize.width : child.measured.bottomUpSize.height;
+  const bottomUp = horizontal
+    ? child.measured.bottomUpSize.width
+    : child.measured.bottomUpSize.height;
   if (pl.direction !== crossDir) return bottomUp;
   if ((pl.alignItems ?? "stretch") !== "stretch") return bottomUp;
   if (child.isAbsolute(parent)) return bottomUp;

@@ -56,8 +56,14 @@ describe("box", () => {
         paddingBottom: 40,
       },
     });
-    const start = new Node({ layout: { left: 10, top: 20 }, intrinsicSize: { width: 100, height: 16 } });
-    const end = new Node({ layout: { right: 4, bottom: 8 }, intrinsicSize: { width: 100, height: 16 } });
+    const start = new Node({
+      layout: { left: 10, top: 20 },
+      intrinsicSize: { width: 100, height: 16 },
+    });
+    const end = new Node({
+      layout: { right: 4, bottom: 8 },
+      intrinsicSize: { width: 100, height: 16 },
+    });
     root.add(start, end);
     resolve(root);
     // content rect: x=10, y=20, w=280, h=180
@@ -78,8 +84,14 @@ describe("box", () => {
         paddingBottom: 40,
       },
     });
-    const horiz = new Node({ layout: { left: 10, width: 80 }, intrinsicSize: { width: 100, height: 16 } });
-    const vert = new Node({ layout: { top: 20, height: 50 }, intrinsicSize: { width: 100, height: 16 } });
+    const horiz = new Node({
+      layout: { left: 10, width: 80 },
+      intrinsicSize: { width: 100, height: 16 },
+    });
+    const vert = new Node({
+      layout: { top: 20, height: 50 },
+      intrinsicSize: { width: 100, height: 16 },
+    });
     root.add(horiz, vert);
     resolve(root);
     // content rect: x=10, y=20, w=280, h=180
@@ -99,8 +111,14 @@ describe("box", () => {
         paddingBottom: 40,
       },
     });
-    const horiz = new Node({ layout: { right: 4, width: 200 }, intrinsicSize: { width: 100, height: 16 } });
-    const vert = new Node({ layout: { bottom: 8, height: 50 }, intrinsicSize: { width: 100, height: 16 } });
+    const horiz = new Node({
+      layout: { right: 4, width: 200 },
+      intrinsicSize: { width: 100, height: 16 },
+    });
+    const vert = new Node({
+      layout: { bottom: 8, height: 50 },
+      intrinsicSize: { width: 100, height: 16 },
+    });
     root.add(horiz, vert);
     resolve(root);
     // end edge anchored to content extent: x = 10 + 280-4-200, y = 20 + 180-8-50
@@ -119,8 +137,14 @@ describe("box", () => {
         paddingBottom: 40,
       },
     });
-    const horiz = new Node({ layout: { left: 10, right: 20 }, intrinsicSize: { width: 100, height: 16 } });
-    const vert = new Node({ layout: { top: 10, bottom: 20 }, intrinsicSize: { width: 100, height: 16 } });
+    const horiz = new Node({
+      layout: { left: 10, right: 20 },
+      intrinsicSize: { width: 100, height: 16 },
+    });
+    const vert = new Node({
+      layout: { top: 10, bottom: 20 },
+      intrinsicSize: { width: 100, height: 16 },
+    });
     root.add(horiz, vert);
     resolve(root);
     // content rect: x=10, y=20, w=280, h=180
