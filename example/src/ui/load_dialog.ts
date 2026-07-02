@@ -1,8 +1,8 @@
-import { Modal } from "../../../src/core2/modal";
-import { Component } from "../../../src/core2/component";
-import { Frame } from "../../../src/styled2/frame";
-import { Text } from "../../../src/styled2/text";
-import { Button } from "../../../src/styled2/button";
+import { Modal } from "../../../src/core/modal";
+import { Component } from "../../../src/core/component";
+import { Frame } from "../../../src/styled/frame";
+import { Text } from "../../../src/styled/text";
+import { Button } from "../../../src/styled/button";
 
 export function load_dialog(parent: Component, log: (msg: string) => void) {
   const modal = new Modal(parent, {

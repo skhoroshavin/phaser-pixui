@@ -1,5 +1,5 @@
 import type { GameObjects } from "phaser";
-import type { Theme } from "../theme2";
+import type { Theme } from "../theme";
 
 export type DisplayHost = GameObjects.DisplayList | GameObjects.Container;
 

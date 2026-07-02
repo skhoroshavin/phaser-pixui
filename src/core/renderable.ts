@@ -1,52 +1,35 @@
 import type { GameObjects } from "phaser";
-import { Scene } from "phaser";
-import { Component, ComponentConfig } from "./component.ts";
+import { Component, type ComponentConfig } from "./component";
 
 type GameObject = GameObjects.GameObject;
 type Transform = GameObjects.Components.Transform;
 type Origin = GameObjects.Components.Origin;
 type Visible = GameObjects.Components.Visible;
-type Filters = GameObjects.Components.Filters;
+type Depth = GameObjects.Components.Depth;
 
-export type RenderableConfig = ComponentConfig & {
-  tint?: number;
+type RenderableConfig<T> = ComponentConfig & {
+  onResize?: (internal: T, width: number, height: number) => void;
 };
 
-export interface Tint {
-  isTinted: boolean;
-  tint: number;
-  setTint(color: number): void;
-  clearTint(): void;
-}
-
 export class Renderable<
-  Internal extends GameObject & Transform & Origin & Visible & Filters & Tint,
+  T extends GameObject & Transform & Origin & Visible & Depth,
 > extends Component {
-  constructor(scene: Scene, cfg: RenderableConfig | undefined, internal: Internal) {
-    super(scene, cfg);
-    this.internal = internal;
-    this.tint = cfg?.tint;
-  }
-  readonly internal: Internal;
-
-  protected override updateVisible(visible: boolean) {
-    this.internal.visible = visible;
-  }
-
-  get tint(): number | undefined {
-    return this.internal.isTinted ? this.internal.tint : undefined;
-  }
-  set tint(value: number | undefined) {
-    if (value === undefined) this.internal.clearTint();
-    else this.internal.setTint(value);
+  constructor(parent: Component, create: (scene: Phaser.Scene) => T, cfg?: RenderableConfig<T>) {
+    super(parent, cfg);
+    this.internal = create(this.mount.displayHost.scene!);
+    this.internal.setOrigin(0, 0);
+    this.mount.displayHost.add(this.internal);
+    this.node.onLayout = (rect, depth) => {
+      this.internal.setPosition(rect.x, rect.y);
+      this.internal.setDepth(depth);
+      cfg?.onResize?.(this.internal, rect.width, rect.height);
+    };
+    this.internal.setVisible(this.visible);
   }
 
-  override bringToTop() {
-    this.scene.children.bringToTop(this.internal);
-  }
+  readonly internal: T;
 
-  protected override updatePosition() {
-    this.internal.setOrigin(this.originX, this.originY);
-    this.internal.setPosition(this.x, this.y);
+  protected onVisibilityChange(v: boolean): void {
+    this.internal.setVisible(v);
   }
 }

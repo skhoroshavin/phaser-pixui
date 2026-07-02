@@ -1,14 +1,13 @@
 import { CANVAS, HEADLESS, VERSION, WEBGL } from "phaser";
 import { ConstraintMode, UiScene } from "../../src";
-import { Component } from "../../src/core2/component.ts";
-import { BitmapText } from "../../src/core2/bitmap-text.ts";
-import { ScrollArea } from "../../src/core2/scroll-area.ts";
-import { Frame } from "../../src/styled2/frame.ts";
-import { Text } from "../../src/styled2/text.ts";
-import { Button } from "../../src/styled2/button.ts";
-import { resolveColor } from "../../src";
+import { Component } from "../../src/core/component.ts";
+import { BitmapText } from "../../src/core/bitmap-text.ts";
+import { ScrollArea } from "../../src/core/scroll-area.ts";
+import { Frame } from "../../src/styled/frame.ts";
+import { Text } from "../../src/styled/text.ts";
+import { Button } from "../../src/styled/button.ts";
 import { GameWorld } from "./game.ts";
-import { uiTheme, uiTheme2 } from "./theme.ts";
+import { uiTheme } from "./theme.ts";
 import { load_dialog } from "./ui/load_dialog.ts";
 
 export class Ui extends UiScene {
@@ -21,7 +20,6 @@ export class Ui extends UiScene {
         height: 320,
       },
       theme: uiTheme,
-      theme2: uiTheme2,
     });
   }
 
@@ -37,23 +35,7 @@ export class Ui extends UiScene {
     this._logScroll = new ScrollArea(logFrame, { axis: "y", inset: 0 });
     this._logText = new Text(this._logScroll.content, { left: 0, right: 0 });
 
-    const progress = this.insert.bottom.progress({
-      y: 108,
-      width: 240,
-      height: 24,
-      visible: false,
-    });
     const game = this.scene.get<GameWorld>("game-world");
-    game.events.on("start", () => {
-      progress.value = 0;
-      progress.visible = true;
-      game.load.on("progress", (v: number) => {
-        progress.value = v;
-      });
-      game.load.once("complete", () => {
-        progress.visible = false;
-      });
-    });
     this.scene.launch(game);
 
     const loadDialog = load_dialog(this.root, (msg) => this.log(msg));
@@ -62,7 +44,7 @@ export class Ui extends UiScene {
       right: 4,
       bottom: 88,
       font: "mana_branches",
-      tint: resolveColor("dark", this.theme.palette),
+      tint: this.theme.palette.resolve("dark"),
       text: `Phaser PixUI v${PHASER_PIXUI_VERSION}`,
     });
 

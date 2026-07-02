@@ -1,32 +1,21 @@
 import { ViewportMount } from "./viewport-mount.ts";
-import { Theme, type ThemeConfig as Theme2Config } from "../theme2";
-import { InsertContext } from "../styled/context.ts";
-import { StyledComponent } from "../styled/styled.ts";
-import { ThemeConfig, initTheme } from "../theme/theme.ts";
-import { OriginX, OriginY } from "../util/origin.ts";
+import { Theme, type ThemeConfig } from "../theme";
 import { ResponsiveScene, ResponsiveSceneConfig } from "./responsive.ts";
 
 export type UiSceneConfig = ResponsiveSceneConfig & {
   theme: ThemeConfig;
-  theme2: Theme2Config;
 };
 
 export class UiScene extends ResponsiveScene {
   constructor(cfg: UiSceneConfig) {
     super(cfg);
-
-    this.theme = cfg.theme;
-
-    const theme = new Theme(cfg.theme2);
+    const theme = new Theme(cfg.theme);
+    this._theme = theme;
     this._mount = new ViewportMount(this, theme, this.viewport.width, this.viewport.height);
-
-    const ctx = new InsertContext(this, this.theme);
-    this._root = new StyledComponent(ctx);
-    this._updateRoot();
   }
 
   preload() {
-    const res = this.theme.resources;
+    const res = this._theme.resources;
     this.load.setPath(res.basePath);
     this.load.atlas(res.atlas, res.atlas + ".png", res.atlas + ".atlas");
     for (const font of res.fonts.names) {
@@ -34,40 +23,25 @@ export class UiScene extends ResponsiveScene {
     }
   }
 
-  readonly theme: ThemeConfig;
-  get insert() {
-    return this._root.insert;
-  }
-
   get root() {
     return this._mount.root;
   }
 
+  get theme() {
+    return this._theme;
+  }
+
   create() {
     super.create();
-    initTheme(this.theme);
     this.events.once("create", () => {
-      this._root.initialize();
       this._mount.resolveLayout();
       this.game.scale.refresh();
-      this.game.scale.on("resize", this._updateRoot, this);
+      this.game.scale.on("resize", () =>
+        this._mount.resize(this.viewport.width, this.viewport.height),
+      );
     });
   }
 
-  private _updateRoot() {
-    this._root.reposition(
-      {
-        x: 0,
-        y: 0,
-        originX: OriginX.Left,
-        originY: OriginY.Top,
-        ...this.viewport,
-      },
-      this.zoom,
-    );
-    this._mount.resize(this.viewport.width, this.viewport.height);
-  }
-
-  private readonly _root: StyledComponent;
+  private readonly _theme: Theme;
   private readonly _mount: ViewportMount;
 }

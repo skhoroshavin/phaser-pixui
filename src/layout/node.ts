@@ -1,8 +1,8 @@
 import { Axis } from "./axis";
 import { type Layout } from "./layout";
+import type { Size } from "../util/size.ts";
 
-export type Rect = { x: number; y: number; w: number; h: number };
-export type Size = { w: number; h: number };
+export type Rect = { x: number; y: number; width: number; height: number };
 export type IntrinsicSize = Partial<Size> | IntrinsicSizeFn;
 type IntrinsicSizeFn = (availableWidth?: number) => Size;
 
@@ -36,10 +36,10 @@ export class Node {
     );
     this.measured = {
       topDownWidth: undefined,
-      bottomUpSize: { w: NaN, h: NaN },
-      finalSize: { w: NaN, h: NaN },
+      bottomUpSize: { width: NaN, height: NaN },
+      finalSize: { width: NaN, height: NaN },
     };
-    this._rect = { x: NaN, y: NaN, w: NaN, h: NaN };
+    this._rect = { x: NaN, y: NaN, width: NaN, height: NaN };
     this.depth = NaN;
   }
 
@@ -70,7 +70,7 @@ export class Node {
 
   setRect(rect: Rect): void {
     const r = this._rect;
-    if (rect.x !== r.x || rect.y !== r.y || rect.w !== r.w || rect.h !== r.h) {
+    if (rect.x !== r.x || rect.y !== r.y || rect.width !== r.width || rect.height !== r.height) {
       this._rect = rect;
       this.onLayout?.(rect, this.depth);
     }
@@ -85,7 +85,7 @@ export class Node {
     const i = this._intrinsicSize;
     if (typeof i === "function") {
       const r = i(availableWidth);
-      return { w: r.w ?? 0, h: r.h ?? 0 };
+      return { width: r.width ?? 0, height: r.height ?? 0 };
     }
     return i;
   }
@@ -114,9 +114,9 @@ export class Node {
   }
 
   private static normalizeIntrinsic(value?: IntrinsicSize): Size | IntrinsicSizeFn {
-    if (value === undefined) return { w: 0, h: 0 };
+    if (value === undefined) return { width: 0, height: 0 };
     if (typeof value === "function") return value;
-    return { w: value.w ?? 0, h: value.h ?? 0 };
+    return { width: value.width ?? 0, height: value.height ?? 0 };
   }
 
   private static deriveAxis(

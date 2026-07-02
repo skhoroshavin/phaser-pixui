@@ -1,59 +1,53 @@
-import type { GameObjects } from "phaser";
-import { Scene } from "phaser";
-import { frameDimensions } from "../util/frame.ts";
-import { Renderable, RenderableConfig } from "./renderable.ts";
+import { GameObjects } from "phaser";
+import { frameDimensions } from "../util/frame";
+import { Component, type ComponentConfig } from "./component";
+import { Renderable } from "./renderable";
 
 export type ImageConfig = {
   texture: string;
   frame: string;
   tileX?: boolean;
   tileY?: boolean;
-} & RenderableConfig;
+} & ComponentConfig;
 
 export class Image extends Renderable<GameObjects.Sprite | GameObjects.NineSlice> {
-  constructor(scene: Scene, cfg: ImageConfig) {
-    const frame = frameDimensions(scene.textures.getFrame(cfg.texture, cfg.frame));
-    const fixedWidth = frame.scalableX ? undefined : frame.width;
-    const fixedHeight = frame.scalableY ? undefined : frame.height;
+  constructor(parent: Component, cfg: ImageConfig) {
+    const scene = parent.mount.displayHost.scene!;
+    const dims = frameDimensions(scene.textures.getFrame(cfg.texture, cfg.frame));
+    super(
+      parent,
+      (scene) => {
+        if (dims.scalableX || dims.scalableY) {
+          return new GameObjects.NineSlice(
+            scene,
+            0,
+            0,
+            cfg.texture,
+            cfg.frame,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            cfg.tileX,
+            cfg.tileY,
+          );
+        }
+        return new GameObjects.Sprite(scene, 0, 0, cfg.texture, cfg.frame);
+      },
+      {
+        ...cfg,
+        onResize: (i, w, h) => {
+          if (dims.scalableX || dims.scalableY) {
+            const ns = i as GameObjects.NineSlice;
+            if (dims.scalableX) ns.width = w;
+            if (dims.scalableY) ns.height = h;
+          }
+        },
+      },
+    );
 
-    cfg = {
-      ...cfg,
-      width: cfg.width ?? fixedWidth,
-      height: cfg.height ?? fixedHeight,
-    };
-
-    const renderable =
-      frame.scalableX || frame.scalableY
-        ? Image._createNineSlice(scene, cfg)
-        : Image._createSprite(scene, cfg);
-    super(scene, cfg, renderable);
-    this.scalableX = frame.scalableX;
-    this.scalableY = frame.scalableY;
-  }
-  readonly scalableX: boolean;
-  readonly scalableY: boolean;
-
-  protected override updatePosition() {
-    super.updatePosition();
-    if (this.scalableX) this.internal.width = this.width;
-    if (this.scalableY) this.internal.height = this.height;
-  }
-
-  private static _createSprite(scene: Scene, cfg: ImageConfig) {
-    return scene.make.sprite({
-      key: cfg.texture,
-      frame: cfg.frame,
-      visible: false,
-    });
-  }
-
-  private static _createNineSlice(scene: Scene, cfg: ImageConfig) {
-    return scene.make.nineslice({
-      key: cfg.texture,
-      frame: cfg.frame,
-      tileX: cfg.tileX,
-      tileY: cfg.tileY,
-      visible: false,
-    });
+    this.node.setIntrinsicSize(dims);
   }
 }

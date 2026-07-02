@@ -1,4 +1,5 @@
-import { type Node, type Size } from "./node";
+import { type Node } from "./node";
+import type { Size } from "../util/size";
 
 export function seedRootWidth(node: Node): void {
   node.measured.topDownWidth = node.clampWidth(node.layout.width);
@@ -45,24 +46,24 @@ export function measureBottomUp(node: Node): void {
 
   const l = node.layout;
   if (l.maxWidth === undefined) return;
-  node.measured.bottomUpSize.w = Math.min(node.measured.bottomUpSize.w, l.maxWidth);
+  node.measured.bottomUpSize.width = Math.min(node.measured.bottomUpSize.width, l.maxWidth);
 }
 
 function measureBox(node: Node): Size {
   const l = node.layout;
   const availableW = node.clampWidth(node.measured.topDownWidth) ?? l.maxWidth;
-  const { w: iw, h: ih } = node.intrinsicSize(availableW);
+  const { width: iw, height: ih } = node.intrinsicSize(availableW);
 
   let aggW = 0;
   let aggH = 0;
   for (const child of node.children) {
     const size = child.measured.bottomUpSize;
-    aggW = Math.max(aggW, child.xAxis.extent(size.w));
-    aggH = Math.max(aggH, child.yAxis.extent(size.h));
+    aggW = Math.max(aggW, child.xAxis.extent(size.width));
+    aggH = Math.max(aggH, child.yAxis.extent(size.height));
   }
   return {
-    w: l.width ?? Math.max(iw, node.xAxis.actualSize(aggW)),
-    h: l.height ?? Math.max(ih, node.yAxis.actualSize(aggH)),
+    width: l.width ?? Math.max(iw, node.xAxis.actualSize(aggW)),
+    height: l.height ?? Math.max(ih, node.yAxis.actualSize(aggH)),
   };
 }
 
@@ -80,8 +81,8 @@ function measureFlex(node: Node): Size {
     const size = child.measured.bottomUpSize;
     const main = col ? child.yAxis : child.xAxis;
     const cross = col ? child.xAxis : child.yAxis;
-    const mainSize = col ? size.h : size.w;
-    const crossSize = col ? size.w : size.h;
+    const mainSize = col ? size.height : size.width;
+    const crossSize = col ? size.width : size.height;
 
     if (child.isAbsolute(node)) {
       mainAbsMax = Math.max(mainAbsMax, main.extent(mainSize));
@@ -99,26 +100,26 @@ function measureFlex(node: Node): Size {
 
   return col
     ? {
-        w: l.width ?? cross.actualSize(crossMax),
-        h: l.height ?? main.actualSize(mainMax),
+        width: l.width ?? cross.actualSize(crossMax),
+        height: l.height ?? main.actualSize(mainMax),
       }
     : {
-        w: l.width ?? main.actualSize(mainMax),
-        h: l.height ?? cross.actualSize(crossMax),
+        width: l.width ?? main.actualSize(mainMax),
+        height: l.height ?? cross.actualSize(crossMax),
       };
 }
 
 export function seedRootRect(node: Node): void {
-  const { w, h } = node.measured.bottomUpSize;
-  node.measured.finalSize = { w, h };
-  node.setRect({ x: 0, y: 0, w, h });
+  const { width, height } = node.measured.bottomUpSize;
+  node.measured.finalSize = { width, height };
+  node.setRect({ x: 0, y: 0, width, height });
 }
 
 export function finalizeSize(node: Node): void {
   for (const child of node.children) {
     child.measured.finalSize = {
-      w: child.clampWidth(childFinalSize(child, node, "x"))!,
-      h: childFinalSize(child, node, "y"),
+      width: child.clampWidth(childFinalSize(child, node, "x"))!,
+      height: childFinalSize(child, node, "y"),
     };
     finalizeSize(child);
   }
@@ -136,14 +137,16 @@ function childFinalSize(child: Node, parent: Node, axis: "x" | "y"): number {
   const a = horizontal ? child.xAxis : child.yAxis;
   const pa = horizontal ? parent.xAxis : parent.yAxis;
   const parentContentSize = pa.contentSize(
-    horizontal ? parent.measured.finalSize.w : parent.measured.finalSize.h,
+    horizontal ? parent.measured.finalSize.width : parent.measured.finalSize.height,
   );
   if (a.hasBothEdges) return a.stretch(parentContentSize);
 
   // Flex cross-axis: if alignItems is stretch and child is not absolute - stretch it
   const pl = parent.layout;
   const crossDir = horizontal ? "column" : "row";
-  const bottomUp = horizontal ? child.measured.bottomUpSize.w : child.measured.bottomUpSize.h;
+  const bottomUp = horizontal
+    ? child.measured.bottomUpSize.width
+    : child.measured.bottomUpSize.height;
   if (pl.direction !== crossDir) return bottomUp;
   if ((pl.alignItems ?? "stretch") !== "stretch") return bottomUp;
   if (child.isAbsolute(parent)) return bottomUp;

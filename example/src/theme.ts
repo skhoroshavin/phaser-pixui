@@ -1,33 +1,7 @@
-import { TextAlign, ThemeConfig } from "../../src";
-import { defineTheme } from "../../src/theme2";
-import { builtinComponents } from "../../src/styled2/theme";
+import { defineTheme } from "../../src/theme";
+import { builtinComponents } from "../../src/styled/theme";
 
-export const uiTheme: ThemeConfig = {
-  resources: {
-    basePath: "packed_assets",
-    atlas: "mana_soul",
-    fonts: {
-      atlas: "fonts",
-      names: ["mana_roots", "mana_trunk", "mana_branches"],
-    },
-  },
-
-  palette: {
-    default: 0xfbe4af,
-    light: 0xfbe4af,
-    dark: 0x111343,
-    disabled: 0x7bb6bc,
-  },
-
-  progress: {
-    frame: "progress_curly",
-    bar: "bar_green",
-    paddingX: 5,
-    paddingY: 3,
-  },
-};
-
-export const uiTheme2 = defineTheme([...builtinComponents], {
+export const uiTheme = defineTheme([...builtinComponents], {
   resources: {
     basePath: "packed_assets",
     atlas: "mana_soul",
@@ -45,12 +19,12 @@ export const uiTheme2 = defineTheme([...builtinComponents], {
   text: {
     font: "mana_roots",
     tint: "light",
-    align: TextAlign.Left,
+    align: "left",
     styles: {
       header_scroll: {
         font: "mana_trunk",
         tint: "dark",
-        align: TextAlign.Center,
+        align: "center",
       },
     },
   },

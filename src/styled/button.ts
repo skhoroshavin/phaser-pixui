@@ -1,12 +1,12 @@
-import { type ThemeContext } from "../theme2";
-import { Clickable } from "../core2/clickable";
+import { type ThemeContext } from "../theme";
+import { Clickable } from "../core/clickable";
 import {
   ControlFrame,
   type ControlFrameStyle,
   type ResolvedControlFrameStyle,
 } from "./control-frame";
-import { Component, type ComponentConfig } from "../core2/component";
-import type { HitShape } from "../core2/interactive";
+import { Component, type ComponentConfig } from "../core/component";
+import type { HitShape } from "../core/interactive";
 
 export type ButtonConfig = ComponentConfig & {
   style?: string;
