@@ -24,9 +24,10 @@ function placeBoxChild(child: Node, parent: Node): void {
 function childPos(child: Node, parent: Node, axis: "x" | "y"): number {
   const horizontal = axis === "x";
   const a = horizontal ? child.xAxis : child.yAxis;
+  const pa = horizontal ? parent.xAxis : parent.yAxis;
   const size = horizontal ? child.measured.finalSize.w : child.measured.finalSize.h;
-  const base = horizontal ? parent.rect.x : parent.rect.y;
-  const len = horizontal ? parent.rect.w : parent.rect.h;
+  const base = pa.contentStart(horizontal ? parent.rect.x : parent.rect.y);
+  const len = pa.contentSize(horizontal ? parent.rect.w : parent.rect.h);
 
   // Auto-margin centering
   if (a.marginAuto && a.start !== undefined && a.end !== undefined) {
@@ -49,8 +50,9 @@ function placeFlex(node: Node): void {
   const gap = l.gap ?? 0;
 
   const col = l.direction === "column";
-  const mainLen = col ? node.rect.h : node.rect.w;
-  const mainBase = col ? node.rect.y : node.rect.x;
+  const mainAxis = col ? node.yAxis : node.xAxis;
+  const mainLen = mainAxis.contentSize(col ? node.rect.h : node.rect.w);
+  const mainBase = mainAxis.contentStart(col ? node.rect.y : node.rect.x);
 
   // Pass 1: main content size + auto-margin count
   let autoMarginCount = 0;
@@ -99,8 +101,12 @@ function placeFlexChild(
 
   const mainPos = pos + mStart;
 
-  const crossSpace = col ? parent.rect.w : parent.rect.h;
-  const crossBase = col ? parent.rect.x : parent.rect.y;
+  const crossSpace = col
+    ? parent.xAxis.contentSize(parent.rect.w)
+    : parent.yAxis.contentSize(parent.rect.h);
+  const crossBase = col
+    ? parent.xAxis.contentStart(parent.rect.x)
+    : parent.yAxis.contentStart(parent.rect.y);
   const free = crossSpace - cross.extent(crossSize);
   const crossPos = crossBase + cross.marginStart + alignOffset(free, parent.layout.alignItems);
 

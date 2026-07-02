@@ -12,6 +12,9 @@ import { Node, resolve } from "./";
 // 4. No flex wrapping — items overflow rather than wrap.
 // 5. Absolutely positioned items contribute to an auto-sized container's
 //    intrinsic size (block or flex parent).
+// 6. Padding carves the content rect out of the `intrinsic` size rather than
+//    adding to it. When padding exceeds the intrinsic size, the padding box
+//    still wins.
 
 describe("deviations", () => {
   it("positions block children absolutely by default — no flow stacking", () => {
@@ -26,7 +29,7 @@ describe("deviations", () => {
     expect(b.rect).toEqual({ x: 0, y: 0, w: 50, h: 30 });
   });
 
-  it("flows flex children without edges along the main axis", () => {
+  it("flows flex children without explicit edges along the main axis", () => {
     const root = new Node({ layout: { width: 200, height: 200, direction: "column" } });
     const a = new Node({ layout: { width: 80, height: 40 } });
     const b = new Node({ layout: { width: 50, height: 30 } });
@@ -104,5 +107,26 @@ describe("deviations", () => {
     // container wraps all sources: flow stack (main 45), start-anchored
     // (main 5+30=35, cross 8+30=38), end-anchored (main 50+15=65, cross 50+10=60)
     expect(flex.rect).toEqual({ x: 0, y: 0, w: 60, h: 65 });
+  });
+
+  it("padding carves content out of intrinsic, or wins if larger", () => {
+    const root = new Node({ layout: { width: 320, height: 240 } });
+    // intrinsic larger than its padding box → element sizes to intrinsic
+    const frame = new Node({
+      layout: { paddingLeft: 20, paddingTop: 15, paddingRight: 20, paddingBottom: 15 },
+      intrinsicSize: { w: 200, h: 60 },
+    });
+    // intrinsic smaller than its padding box → padding box wins
+    const icon = new Node({
+      layout: { paddingLeft: 20, paddingTop: 20, paddingRight: 20, paddingBottom: 20 },
+      intrinsicSize: { w: 8, h: 8 },
+    });
+    root.add(frame, icon);
+    resolve(root);
+
+    // CSS content-box would inflate to 240×90; intrinsic is the border box instead
+    expect(frame.rect).toEqual({ x: 0, y: 0, w: 200, h: 60 });
+    // max(8, 20+0+20) = 40 — padding box exceeds intrinsic and wins
+    expect(icon.rect).toEqual({ x: 0, y: 0, w: 40, h: 40 });
   });
 });

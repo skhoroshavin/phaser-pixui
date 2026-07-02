@@ -11,7 +11,15 @@ export type Layout = {
   inset?: number;
   insetX?: number;
   insetY?: number;
-  // margins + shorthands
+  // padding + shorthands (absent = 0)
+  paddingLeft?: number;
+  paddingTop?: number;
+  paddingRight?: number;
+  paddingBottom?: number;
+  padding?: number;
+  paddingX?: number;
+  paddingY?: number;
+  // margins + shorthands (absent = 0)
   marginLeft?: number | "auto";
   marginTop?: number | "auto";
   marginRight?: number | "auto";
