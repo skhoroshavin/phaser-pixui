@@ -6,13 +6,15 @@ import type { Theme } from "../theme";
 
 export class MaskMount implements Mount {
   readonly theme: Theme;
+  readonly atlas: string;
   readonly root: Component;
 
   private readonly host: GameObjects.Container;
   private readonly maskRect: GameObjects.Rectangle;
 
-  constructor(scene: Scene, theme: Theme) {
+  constructor(scene: Scene, theme: Theme, atlas: string) {
     this.theme = theme;
+    this.atlas = atlas;
 
     this.host = new GameObjects.Container(scene, 0, 0);
 

@@ -2,6 +2,12 @@ import { ViewportMount } from "./viewport-mount.ts";
 import { Theme, type ThemeConfig } from "../theme";
 import { ResponsiveScene, ResponsiveSceneConfig } from "./responsive.ts";
 
+export type Resources = {
+  basePath?: string;
+  atlas: string;
+  fonts: { atlas: string; names: string[] };
+};
+
 export type UiSceneConfig = ResponsiveSceneConfig & {
   theme: ThemeConfig;
 };
@@ -11,7 +17,8 @@ export class UiScene extends ResponsiveScene {
     super(cfg);
     const theme = new Theme(cfg.theme);
     this._theme = theme;
-    this._mount = new ViewportMount(this, theme, this.viewport.width, this.viewport.height);
+    const atlas = cfg.theme.resources.atlas;
+    this._mount = new ViewportMount(this, theme, atlas, this.viewport.width, this.viewport.height);
   }
 
   preload() {
