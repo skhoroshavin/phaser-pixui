@@ -3,19 +3,18 @@ import type { Mount } from "../mounts/mount";
 
 export type ComponentConfig = Layout & {
   visible?: boolean;
-  mount?: Mount;
 };
 
 export class Component {
-  constructor(parent: Component | undefined, cfg?: ComponentConfig) {
+  constructor(parent: Component | Mount, cfg?: ComponentConfig) {
     this.node = new Node({ layout: cfg });
     this._visible = cfg?.visible ?? true;
-    if (parent) {
+    if (parent instanceof Component) {
       this.mount = parent.mount;
       parent.addChild(this);
     } else {
-      this.mount = cfg!.mount!;
-      this.mount.setRoot(this.node);
+      this.mount = parent;
+      this.mount.setRootNode(this.node);
     }
   }
 
@@ -57,17 +56,5 @@ export class Component {
     for (const child of this._children) {
       child._setParentVisible(this.visible);
     }
-  }
-}
-
-export class RootComponent extends Component {
-  constructor(mount: Mount, cfg?: Omit<ComponentConfig, "mount">) {
-    super(undefined, { ...cfg, mount });
-  }
-
-  resize(width: number, height: number): void {
-    this.node.layout.width = width;
-    this.node.layout.height = height;
-    this.mount.resolveLayout();
   }
 }

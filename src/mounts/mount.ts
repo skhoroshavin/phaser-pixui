@@ -7,9 +7,9 @@ export type DisplayHost = GameObjects.DisplayList | GameObjects.Container;
 export abstract class Mount {
   abstract get displayHost(): DisplayHost;
 
-  private _root?: Node;
+  protected _root?: Node;
 
-  setRoot(node: Node): void {
+  setRootNode(node: Node): void {
     this._root = node;
   }
 

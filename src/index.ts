@@ -1,6 +1,8 @@
 // Scene components
 export * from "./scene/responsive";
-export * from "./scene/ui";
+
+// Mounts
+export * from "./mounts/scene-mount";
 
 // Utilities
 export * from "./util/size";
