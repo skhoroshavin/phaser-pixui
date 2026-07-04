@@ -1,14 +1,13 @@
 import { CANVAS, HEADLESS, VERSION, WEBGL } from "phaser";
 import { ConstraintMode, UiScene } from "../../src";
 import { Component } from "../../src/core/component.ts";
-import { BitmapText } from "../../src/core/bitmap-text.ts";
-import { ScrollArea } from "../../src/core/scroll-area.ts";
-import { Frame } from "../../src/styled/frame.ts";
-import { Text } from "../../src/styled/text.ts";
 import { GameWorld } from "./game.ts";
-import { button, settingsButton } from "./ui/buttons";
+import { button, settingsButton } from "./ui/buttons.ts";
+import { frame, text } from "./ui/visuals.ts";
+import { log_panel } from "./ui/log_panel.ts";
 import { uiTheme } from "./theme.ts";
 import { load_dialog } from "./ui/load_dialog.ts";
+import { colors, fonts } from "./ui/constants.ts";
 
 export class Ui extends UiScene {
   constructor() {
@@ -26,30 +25,23 @@ export class Ui extends UiScene {
   create() {
     super.create();
     this.scene.bringToTop("ui");
-    const logFrame = new Frame(this.root, {
-      bottom: 2,
-      left: 2,
-      right: 2,
-      height: 84,
-    });
-    this._logScroll = new ScrollArea(logFrame, { axis: "y", inset: 0 });
-    this._logText = new Text(this._logScroll.content, { left: 0, right: 0 });
+    const logger = log_panel(this.root, { bottom: 2, left: 2, right: 2, height: 84 });
 
     const game = this.scene.get<GameWorld>("game-world");
     this.scene.launch(game);
 
-    const loadDialog = load_dialog(this.root, (msg) => this.log(msg));
+    const loadDialog = load_dialog(this.root, (msg) => logger.write(msg));
 
-    new BitmapText(this.root, {
+    text(this.root, {
       right: 4,
       bottom: 88,
-      font: "mana_branches",
-      tint: this.theme.palette.resolve("dark"),
+      font: fonts.branches,
+      tint: colors.dark,
       text: `Phaser PixUI v${PHASER_PIXUI_VERSION}`,
     });
 
-    const headerFrame = new Frame(this.root, {
-      style: "header_scroll",
+    const headerFrame = frame(this.root, {
+      frame: "header_scroll",
       top: 64,
       width: 224,
       height: 32,
@@ -60,8 +52,10 @@ export class Ui extends UiScene {
       justifyContent: "center",
       alignItems: "center",
     });
-    new Text(headerFrame, {
-      style: "header_scroll",
+    text(headerFrame, {
+      font: fonts.trunk,
+      tint: colors.dark,
+      align: "center",
       text: "Phaser-PixUI demo",
     });
 
@@ -75,19 +69,16 @@ export class Ui extends UiScene {
 
     button(mainMenu, {
       text: "New game",
-      width: 128,
-      onClick: () => this.log("New game is already started!"),
+      onClick: () => logger.write("New game is already started!"),
     });
     button(mainMenu, {
       text: "Load game",
-      width: 128,
       onClick: () => (loadDialog.visible = true),
     });
     button(mainMenu, {
       text: "Exit",
-      width: 128,
       enabled: false,
-      onClick: () => this.log("There is no escape :)"),
+      onClick: () => logger.write("There is no escape :)"),
     });
 
     settingsButton(this.root, {
@@ -95,7 +86,7 @@ export class Ui extends UiScene {
       top: 4,
       width: 32,
       height: 32,
-      onClick: () => this.log("What do you want to customize here?"),
+      onClick: () => logger.write("What do you want to customize here?"),
     });
 
     const dps = window.devicePixelRatio || 1;
@@ -113,23 +104,14 @@ export class Ui extends UiScene {
       default:
         rendererType = "Unknown";
     }
-    this.log(`Phaser ${VERSION}, renderer ${rendererType}, device pixel ratio ${dps}`);
+    logger.write(`Phaser ${VERSION}, renderer ${rendererType}, device pixel ratio ${dps}`);
 
     this.scale.on("resize", () => {
       const dpr = window.devicePixelRatio || 1;
       const game = this.scene.get<GameWorld>("game-world");
-      this.log(
+      logger.write(
         `Canvas ${window.innerWidth * dpr}x${window.innerHeight * dpr}, UI ${this.viewport.width}x${this.viewport.height}, game ${game.viewport.width}x${game.viewport.height}`,
       );
     });
   }
-
-  log(msg: string) {
-    const text = this._logText.text + msg + "\n";
-    const lines = text.split("\n");
-    this._logText.text = lines.slice(-200).join("\n");
-    this._logScroll.scrollToEnd();
-  }
-  private _logScroll!: ScrollArea;
-  private _logText!: Text;
 }

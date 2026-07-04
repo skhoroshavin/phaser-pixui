@@ -4,6 +4,7 @@ import { colors, fonts } from "./constants.ts";
 
 export function button(parent: Component, cfg?: Partial<ButtonConfig>): Button {
   return new Button(parent, {
+    width: 128,
     normal: { frame: "button_up", ...tiled },
     hover: { frame: "button_hover", ...tiled },
     pressed: { frame: "button_down", ...tiled },
