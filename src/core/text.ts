@@ -3,14 +3,17 @@ import { Component, type ComponentConfig } from "./component";
 import { Renderable } from "./renderable";
 import type { Size } from "../util/size";
 
-/** Horizontal alignment of text, matching CSS `text-align` values. */
+export type TextConfig = ComponentConfig & {
+  font: string;
+  text?: string;
+  tint?: number;
+  align?: TextAlign;
+};
+
 export type TextAlign = "left" | "center" | "right";
 
-export class BitmapText extends Renderable<GameObjects.BitmapText> {
-  constructor(
-    parent: Component,
-    cfg: { font: string; text?: string; tint?: number; align?: TextAlign } & ComponentConfig,
-  ) {
+export class Text extends Renderable<GameObjects.BitmapText> {
+  constructor(parent: Component, cfg: TextConfig) {
     super(
       parent,
       (scene) => new GameObjects.BitmapText(scene, 0, 0, cfg.font, cfg.text ?? ""),

@@ -1,8 +1,7 @@
 import { Modal } from "../../../src/core/modal";
 import { Component } from "../../../src/core/component";
-import { Frame } from "../../../src/styled/frame";
-import { Text } from "../../../src/styled/text";
-import { Button } from "../../../src/styled/button";
+import { button } from "./buttons";
+import { frame, text } from "./visuals";
 
 export function load_dialog(parent: Component, log: (msg: string) => void) {
   const modal = new Modal(parent, {
@@ -10,8 +9,8 @@ export function load_dialog(parent: Component, log: (msg: string) => void) {
     onDismiss: () => log("Dialog dismissed by backdrop click"),
   });
 
-  const frame = new Frame(modal.content, {
-    style: { frame: "frame_bright", tileX: true, tileY: true },
+  const panel = frame(modal.content, {
+    frame: "frame_bright",
     width: 256,
     height: 80,
     direction: "column",
@@ -20,11 +19,11 @@ export function load_dialog(parent: Component, log: (msg: string) => void) {
     alignItems: "center",
   });
 
-  new Text(frame, {
+  text(panel, {
     text: "There are no saved games",
   });
 
-  new Button(frame, {
+  button(panel, {
     text: "OK",
     width: 64,
     onClick: () => (modal.visible = false),

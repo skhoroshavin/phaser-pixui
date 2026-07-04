@@ -1,21 +1,30 @@
 import { ViewportMount } from "./viewport-mount.ts";
-import { Theme, type ThemeConfig } from "../theme";
 import { ResponsiveScene, ResponsiveSceneConfig } from "./responsive.ts";
 
+export type Resources = {
+  basePath?: string;
+  atlas: string;
+  fonts: { atlas: string; names: string[] };
+};
+
 export type UiSceneConfig = ResponsiveSceneConfig & {
-  theme: ThemeConfig;
+  resources: Resources;
 };
 
 export class UiScene extends ResponsiveScene {
   constructor(cfg: UiSceneConfig) {
     super(cfg);
-    const theme = new Theme(cfg.theme);
-    this._theme = theme;
-    this._mount = new ViewportMount(this, theme, this.viewport.width, this.viewport.height);
+    this._resources = cfg.resources;
+    this._mount = new ViewportMount(
+      this,
+      cfg.resources.atlas,
+      this.viewport.width,
+      this.viewport.height,
+    );
   }
 
   preload() {
-    const res = this._theme.resources;
+    const res = this._resources;
     this.load.setPath(res.basePath);
     this.load.atlas(res.atlas, res.atlas + ".png", res.atlas + ".atlas");
     for (const font of res.fonts.names) {
@@ -25,10 +34,6 @@ export class UiScene extends ResponsiveScene {
 
   get root() {
     return this._mount.root;
-  }
-
-  get theme() {
-    return this._theme;
   }
 
   create() {
@@ -42,6 +47,6 @@ export class UiScene extends ResponsiveScene {
     });
   }
 
-  private readonly _theme: Theme;
+  private readonly _resources: Resources;
   private readonly _mount: ViewportMount;
 }
