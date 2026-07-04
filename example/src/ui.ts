@@ -6,7 +6,7 @@ import { button, settingsButton } from "./ui/buttons.ts";
 import { frame, text } from "./ui/visuals.ts";
 import { log_panel } from "./ui/log_panel.ts";
 import { load_dialog } from "./ui/load_dialog.ts";
-import { colors, fonts, resources } from "./ui/constants.ts";
+import { colors, fonts, uiTexture } from "./ui/constants.ts";
 
 export class Ui extends UiScene {
   constructor() {
@@ -17,8 +17,15 @@ export class Ui extends UiScene {
         mode: ConstraintMode.Minimum,
         height: 320,
       },
-      resources,
     });
+  }
+
+  preload() {
+    this.load.setPath("packed_assets");
+    this.load.atlas(uiTexture, uiTexture + ".png", uiTexture + ".atlas");
+    for (const font of Object.values(fonts)) {
+      this.load.bitmapFont(font, "fonts.png", font + ".bmfont");
+    }
   }
 
   create() {
