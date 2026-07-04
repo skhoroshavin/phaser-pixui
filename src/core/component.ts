@@ -1,20 +1,20 @@
 import { Node, type Layout } from "../layout";
-import type { Mount } from "./mount";
+import type { Mount } from "../mounts/mount";
 
 export type ComponentConfig = Layout & {
   visible?: boolean;
-  mount?: Mount;
 };
 
 export class Component {
-  constructor(parent: Component | undefined, cfg?: ComponentConfig) {
+  constructor(parent: Component | Mount, cfg?: ComponentConfig) {
     this.node = new Node({ layout: cfg });
     this._visible = cfg?.visible ?? true;
-    if (parent) {
+    if (parent instanceof Component) {
       this.mount = parent.mount;
       parent.addChild(this);
     } else {
-      this.mount = cfg!.mount!;
+      this.mount = parent;
+      this.mount.setRootNode(this.node);
     }
   }
 

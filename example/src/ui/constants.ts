@@ -10,8 +10,4 @@ export const fonts = {
   branches: "mana_branches",
 };
 
-export const resources = {
-  basePath: "packed_assets",
-  atlas: "mana_soul",
-  fonts: { atlas: "fonts", names: [fonts.roots, fonts.trunk, fonts.branches] },
-};
+export const uiTexture = "mana_soul";

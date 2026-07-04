@@ -1,14 +1,14 @@
 import { CANVAS, HEADLESS, VERSION, WEBGL } from "phaser";
-import { ConstraintMode, UiScene } from "../../src";
+import { ConstraintMode, ResponsiveScene, SceneMount } from "../../src";
 import { Component } from "../../src/core/component.ts";
 import { GameWorld } from "./game.ts";
 import { button, settingsButton } from "./ui/buttons.ts";
 import { frame, text } from "./ui/visuals.ts";
 import { log_panel } from "./ui/log_panel.ts";
 import { load_dialog } from "./ui/load_dialog.ts";
-import { colors, fonts, resources } from "./ui/constants.ts";
+import { colors, fonts, uiTexture } from "./ui/constants.ts";
 
-export class Ui extends UiScene {
+export class Ui extends ResponsiveScene {
   constructor() {
     super({
       key: "ui",
@@ -17,21 +17,34 @@ export class Ui extends UiScene {
         mode: ConstraintMode.Minimum,
         height: 320,
       },
-      resources,
     });
+  }
+
+  preload() {
+    this.load.setPath("packed_assets");
+    this.load.atlas(uiTexture, uiTexture + ".png", uiTexture + ".atlas");
+    for (const font of Object.values(fonts)) {
+      this.load.bitmapFont(font, "fonts.png", font + ".bmfont");
+    }
   }
 
   create() {
     super.create();
     this.scene.bringToTop("ui");
-    const logger = log_panel(this.root, { bottom: 2, left: 2, right: 2, height: 84 });
+
+    const mount = new SceneMount(this, {
+      viewport: () => this.viewport,
+    });
+    const root = new Component(mount);
+
+    const logger = log_panel(root, { bottom: 2, left: 2, right: 2, height: 84 });
 
     const game = this.scene.get<GameWorld>("game-world");
     this.scene.launch(game);
 
-    const loadDialog = load_dialog(this.root, (msg) => logger.write(msg));
+    const loadDialog = load_dialog(root, (msg) => logger.write(msg));
 
-    text(this.root, {
+    text(root, {
       right: 4,
       bottom: 88,
       font: fonts.branches,
@@ -39,7 +52,7 @@ export class Ui extends UiScene {
       text: `Phaser PixUI v${PHASER_PIXUI_VERSION}`,
     });
 
-    const headerFrame = frame(this.root, {
+    const headerFrame = frame(root, {
       frame: "header_scroll",
       top: 64,
       width: 224,
@@ -58,7 +71,7 @@ export class Ui extends UiScene {
       text: "Phaser-PixUI demo",
     });
 
-    const mainMenu = new Component(this.root, {
+    const mainMenu = new Component(root, {
       inset: 0,
       direction: "column",
       gap: 2,
@@ -80,7 +93,7 @@ export class Ui extends UiScene {
       onClick: () => logger.write("There is no escape :)"),
     });
 
-    settingsButton(this.root, {
+    settingsButton(root, {
       right: 4,
       top: 4,
       width: 32,

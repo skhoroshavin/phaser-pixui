@@ -3,6 +3,7 @@ import { Component } from "../core/component";
 import { StateView, type StateVisualConfig } from "../core/state-view";
 
 export type ButtonConfig = ClickableConfig & {
+  texture: string;
   normal: StateVisualConfig;
   hover?: StateVisualConfig;
   pressed?: StateVisualConfig;
@@ -19,6 +20,7 @@ export class Button extends Clickable {
       onUpdate: (state) => this._view.setState(state),
     });
     this._view = new StateView(this, {
+      texture: cfg.texture,
       states: {
         normal: cfg.normal,
         hover: cfg.hover,
