@@ -1,6 +1,6 @@
 import { Component, ComponentConfig } from "../../../src/core/component";
 import { Image } from "../../../src/core/image";
-import { BitmapText, TextConfig } from "../../../src/core/bitmap-text";
+import { Text, TextConfig } from "../../../src/core/text";
 import { colors, fonts } from "./constants.ts";
 
 export type FrameConfig = ComponentConfig & {
@@ -12,5 +12,5 @@ export function frame(parent: Component, cfg: FrameConfig) {
 }
 
 export function text(parent: Component, cfg: Partial<TextConfig>) {
-  return new BitmapText(parent, { font: fonts.roots, tint: colors.light, ...cfg });
+  return new Text(parent, { font: fonts.roots, tint: colors.light, ...cfg });
 }

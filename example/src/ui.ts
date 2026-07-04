@@ -5,9 +5,8 @@ import { GameWorld } from "./game.ts";
 import { button, settingsButton } from "./ui/buttons.ts";
 import { frame, text } from "./ui/visuals.ts";
 import { log_panel } from "./ui/log_panel.ts";
-import { uiTheme } from "./theme.ts";
 import { load_dialog } from "./ui/load_dialog.ts";
-import { colors, fonts } from "./ui/constants.ts";
+import { colors, fonts, resources } from "./ui/constants.ts";
 
 export class Ui extends UiScene {
   constructor() {
@@ -18,7 +17,7 @@ export class Ui extends UiScene {
         mode: ConstraintMode.Minimum,
         height: 320,
       },
-      theme: uiTheme,
+      resources,
     });
   }
 

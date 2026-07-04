@@ -12,7 +12,7 @@ export type TextConfig = ComponentConfig & {
 
 export type TextAlign = "left" | "center" | "right";
 
-export class BitmapText extends Renderable<GameObjects.BitmapText> {
+export class Text extends Renderable<GameObjects.BitmapText> {
   constructor(parent: Component, cfg: TextConfig) {
     super(
       parent,

@@ -1,7 +1,7 @@
 import { TintModes } from "phaser";
 import { Component, type ComponentConfig } from "./component";
 import { Image } from "./image";
-import { BitmapText } from "./bitmap-text";
+import { Text } from "./text";
 
 export type StateVisualConfig = {
   frame: string;
@@ -46,7 +46,7 @@ export class StateView extends Component {
     }
 
     if (cfg.text !== undefined) {
-      this._text = new BitmapText(this, {
+      this._text = new Text(this, {
         font: cfg.font!,
         text: cfg.text,
         tint: cfg.textTint,
@@ -75,7 +75,7 @@ export class StateView extends Component {
 
   private readonly _fallback: string | ((state: string) => string);
   private readonly _states: Record<string, State> = {};
-  private readonly _text?: BitmapText;
+  private readonly _text?: Text;
 }
 
 type State = { image: Image; textTint?: number };

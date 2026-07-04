@@ -19,7 +19,7 @@ export class ScrollArea extends Component {
     this._axis = cfg.axis ?? "both";
 
     const scene = this.mount.displayHost.scene!;
-    this._maskMount = new MaskMount(scene, this.mount.theme, this.mount.atlas);
+    this._maskMount = new MaskMount(scene, this.mount.atlas);
     this.mount.displayHost.add(this._maskMount.displayHost);
     this.content = this._maskMount.root;
 
