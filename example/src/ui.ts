@@ -5,8 +5,8 @@ import { BitmapText } from "../../src/core/bitmap-text.ts";
 import { ScrollArea } from "../../src/core/scroll-area.ts";
 import { Frame } from "../../src/styled/frame.ts";
 import { Text } from "../../src/styled/text.ts";
-import { Button } from "../../src/styled/button.ts";
 import { GameWorld } from "./game.ts";
+import { button, settingsButton } from "./ui/buttons";
 import { uiTheme } from "./theme.ts";
 import { load_dialog } from "./ui/load_dialog.ts";
 
@@ -65,7 +65,7 @@ export class Ui extends UiScene {
       text: "Phaser-PixUI demo",
     });
 
-    const buttonStack = new Component(this.root, {
+    const mainMenu = new Component(this.root, {
       inset: 0,
       direction: "column",
       gap: 2,
@@ -73,25 +73,24 @@ export class Ui extends UiScene {
       alignItems: "center",
     });
 
-    new Button(buttonStack, {
+    button(mainMenu, {
       text: "New game",
       width: 128,
       onClick: () => this.log("New game is already started!"),
     });
-    new Button(buttonStack, {
+    button(mainMenu, {
       text: "Load game",
       width: 128,
       onClick: () => (loadDialog.visible = true),
     });
-    new Button(buttonStack, {
+    button(mainMenu, {
       text: "Exit",
       width: 128,
       enabled: false,
       onClick: () => this.log("There is no escape :)"),
     });
 
-    new Button(this.root, {
-      style: "settings",
+    settingsButton(this.root, {
       right: 4,
       top: 4,
       width: 32,

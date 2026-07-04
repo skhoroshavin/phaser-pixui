@@ -11,7 +11,7 @@ export type StateVisualConfig = {
 };
 
 export type StateViewConfig = ComponentConfig & {
-  states: Record<string, StateVisualConfig>;
+  states: Record<string, StateVisualConfig | undefined>;
   fallback: string | ((state: string) => string);
   text?: string;
   font?: string;
@@ -31,6 +31,7 @@ export class StateView extends Component {
     const atlas = this.mount.atlas;
 
     for (const [state, v] of Object.entries(cfg.states)) {
+      if (!v) continue;
       this._states[state] = {
         image: new Image(this, {
           texture: atlas,

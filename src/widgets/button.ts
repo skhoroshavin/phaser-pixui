@@ -1,0 +1,38 @@
+import { Clickable, type ClickableConfig } from "../core/clickable";
+import { Component } from "../core/component";
+import { StateView, type StateVisualConfig } from "../core/state-view";
+
+export type ButtonConfig = ClickableConfig & {
+  normal: StateVisualConfig;
+  hover?: StateVisualConfig;
+  pressed?: StateVisualConfig;
+  disabled?: StateVisualConfig;
+  text?: string;
+  font?: string;
+  textTint?: number;
+};
+
+export class Button extends Clickable {
+  constructor(parent: Component, cfg: ButtonConfig) {
+    super(parent, {
+      ...cfg,
+      onUpdate: (state) => this._view.setState(state),
+    });
+    this._view = new StateView(this, {
+      states: {
+        normal: cfg.normal,
+        hover: cfg.hover,
+        pressed: cfg.pressed,
+        disabled: cfg.disabled,
+      },
+      fallback: "normal",
+      inset: 0,
+      text: cfg.text,
+      font: cfg.font,
+      textTint: cfg.textTint,
+    });
+    this._view.setState(this.state);
+  }
+
+  private readonly _view: StateView;
+}

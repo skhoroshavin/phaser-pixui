@@ -2,7 +2,7 @@ import { Modal } from "../../../src/core/modal";
 import { Component } from "../../../src/core/component";
 import { Frame } from "../../../src/styled/frame";
 import { Text } from "../../../src/styled/text";
-import { Button } from "../../../src/styled/button";
+import { button } from "./buttons";
 
 export function load_dialog(parent: Component, log: (msg: string) => void) {
   const modal = new Modal(parent, {
@@ -24,7 +24,7 @@ export function load_dialog(parent: Component, log: (msg: string) => void) {
     text: "There are no saved games",
   });
 
-  new Button(frame, {
+  button(frame, {
     text: "OK",
     width: 64,
     onClick: () => (modal.visible = false),
