@@ -1,9 +1,10 @@
 import { Component } from "../../../src/core/component";
 import { Button, type ButtonConfig } from "../../../src/widgets/button";
-import { colors, fonts } from "./constants.ts";
+import { colors, fonts, resources } from "./constants.ts";
 
 export function button(parent: Component, cfg?: Partial<ButtonConfig>): Button {
   return new Button(parent, {
+    texture: resources.atlas,
     width: 128,
     normal: { frame: "button_up", ...tiled },
     hover: { frame: "button_hover", ...tiled },
@@ -17,6 +18,7 @@ export function button(parent: Component, cfg?: Partial<ButtonConfig>): Button {
 
 export function settingsButton(parent: Component, cfg?: Partial<ButtonConfig>): Button {
   return new Button(parent, {
+    texture: resources.atlas,
     normal: { frame: "button_settings_up" },
     hover: { frame: "button_settings_hover" },
     pressed: { frame: "button_settings_down" },

@@ -1,5 +1,5 @@
 import { Node, type Layout } from "../layout";
-import type { Mount } from "./mount";
+import type { Mount } from "../mounts/mount";
 
 export type ComponentConfig = Layout & {
   visible?: boolean;
@@ -15,6 +15,7 @@ export class Component {
       parent.addChild(this);
     } else {
       this.mount = cfg!.mount!;
+      this.mount.setRoot(this.node);
     }
   }
 
@@ -56,5 +57,17 @@ export class Component {
     for (const child of this._children) {
       child._setParentVisible(this.visible);
     }
+  }
+}
+
+export class RootComponent extends Component {
+  constructor(mount: Mount, cfg?: Omit<ComponentConfig, "mount">) {
+    super(undefined, { ...cfg, mount });
+  }
+
+  resize(width: number, height: number): void {
+    this.node.layout.width = width;
+    this.node.layout.height = height;
+    this.mount.resolveLayout();
   }
 }

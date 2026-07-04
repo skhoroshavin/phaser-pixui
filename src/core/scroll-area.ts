@@ -1,7 +1,7 @@
 import { Math as PMath } from "phaser";
-import { Component, type ComponentConfig } from "./component";
+import { Component, RootComponent, type ComponentConfig } from "./component";
 import { Draggable } from "./draggable";
-import { MaskMount } from "./mask-mount";
+import { MaskMount } from "../mounts/mask-mount";
 import { resolve, type Rect } from "../layout";
 
 type Axis = "x" | "y" | "both";
@@ -19,9 +19,9 @@ export class ScrollArea extends Component {
     this._axis = cfg.axis ?? "both";
 
     const scene = this.mount.displayHost.scene!;
-    this._maskMount = new MaskMount(scene, this.mount.atlas);
+    this._maskMount = new MaskMount(scene);
     this.mount.displayHost.add(this._maskMount.displayHost);
-    this.content = this._maskMount.root;
+    this.content = new RootComponent(this._maskMount);
 
     this.node.onLayout = (rect, depth) => {
       this._viewport = rect;

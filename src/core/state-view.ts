@@ -11,6 +11,7 @@ export type StateVisualConfig = {
 };
 
 export type StateViewConfig = ComponentConfig & {
+  texture: string;
   states: Record<string, StateVisualConfig | undefined>;
   fallback: string | ((state: string) => string);
   text?: string;
@@ -28,13 +29,12 @@ export class StateView extends Component {
     });
 
     this._fallback = cfg.fallback;
-    const atlas = this.mount.atlas;
 
     for (const [state, v] of Object.entries(cfg.states)) {
       if (!v) continue;
       this._states[state] = {
         image: new Image(this, {
-          texture: atlas,
+          texture: cfg.texture,
           frame: v.frame,
           tileX: v.tileX,
           tileY: v.tileY,
