@@ -1,12 +1,10 @@
 import { TintModes } from "phaser";
-import { Component, type ComponentConfig } from "./component";
-import { Image } from "./image";
+import type { Component, ComponentConfig } from "./component";
+import { MultiImage } from "./multi-image";
 import { Text } from "./text";
 
 export type StateVisualConfig = {
   frame: string;
-  tileX?: boolean;
-  tileY?: boolean;
   textTint?: number;
 };
 
@@ -14,43 +12,33 @@ export type StateViewConfig = ComponentConfig & {
   texture: string;
   states: Record<string, StateVisualConfig | undefined>;
   fallback: string | ((state: string) => string);
+  tileX?: boolean;
+  tileY?: boolean;
   text?: string;
   font?: string;
   textTint?: number;
 };
 
-export class StateView extends Component {
+export class StateView extends MultiImage {
   constructor(parent: Component, cfg: StateViewConfig) {
+    const states = Object.entries(cfg.states).filter(
+      (e): e is [string, StateVisualConfig] => e[1] !== undefined,
+    );
+
     super(parent, {
+      frame: states[0]![1].frame,
+      frames: states.map(([, v]) => v.frame),
       direction: "column",
       justifyContent: "center",
       alignItems: "center",
       ...cfg,
     });
 
+    this._states = Object.fromEntries(states);
     this._fallback = cfg.fallback;
 
-    for (const [state, v] of Object.entries(cfg.states)) {
-      if (!v) continue;
-      this._states[state] = {
-        image: new Image(this, {
-          texture: cfg.texture,
-          frame: v.frame,
-          tileX: v.tileX,
-          tileY: v.tileY,
-          inset: 0,
-          visible: false,
-        }),
-        textTint: v.textTint ?? cfg.textTint,
-      };
-    }
-
     if (cfg.text !== undefined) {
-      this._text = new Text(this, {
-        font: cfg.font!,
-        text: cfg.text,
-        tint: cfg.textTint,
-      });
+      this._text = new Text(this, { font: cfg.font!, text: cfg.text, tint: cfg.textTint });
     }
 
     this.setState();
@@ -58,9 +46,7 @@ export class StateView extends Component {
 
   setState(s?: string) {
     const active = this._states[this._validState(s)]!;
-    for (const state of Object.values(this._states)) {
-      state.image.visible = state === active;
-    }
+    this.setFrame(active.frame);
     if (this._text && active.textTint !== undefined) {
       this._text.internal.setTint(active.textTint).setTintMode(TintModes.FILL);
     }
@@ -74,8 +60,6 @@ export class StateView extends Component {
   }
 
   private readonly _fallback: string | ((state: string) => string);
-  private readonly _states: Record<string, State> = {};
+  private readonly _states: Record<string, StateVisualConfig>;
   private readonly _text?: Text;
 }
-
-type State = { image: Image; textTint?: number };

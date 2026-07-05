@@ -8,6 +8,8 @@ export type ButtonConfig = ClickableConfig & {
   hover?: StateVisualConfig;
   pressed?: StateVisualConfig;
   disabled?: StateVisualConfig;
+  tileX?: boolean;
+  tileY?: boolean;
   text?: string;
   font?: string;
   textTint?: number;
@@ -29,6 +31,8 @@ export class Button extends Clickable {
       },
       fallback: "normal",
       inset: 0,
+      tileX: cfg.tileX,
+      tileY: cfg.tileY,
       text: cfg.text,
       font: cfg.font,
       textTint: cfg.textTint,

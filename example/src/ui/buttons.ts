@@ -6,10 +6,12 @@ export function button(parent: Component, cfg?: Partial<ButtonConfig>): Button {
   return new Button(parent, {
     texture: uiTexture,
     width: 128,
-    normal: { frame: "button_up", ...tiled },
-    hover: { frame: "button_hover", ...tiled },
-    pressed: { frame: "button_down", ...tiled },
-    disabled: { frame: "button_disabled", ...tiled, textTint: colors.disabled },
+    normal: { frame: "button_up" },
+    hover: { frame: "button_hover" },
+    pressed: { frame: "button_down" },
+    disabled: { frame: "button_disabled", textTint: colors.disabled },
+    tileX: true,
+    tileY: true,
     font: fonts.roots,
     textTint: colors.light,
     ...cfg,
@@ -26,5 +28,3 @@ export function settingsButton(parent: Component, cfg?: Partial<ButtonConfig>): 
     ...cfg,
   });
 }
-
-const tiled = { tileX: true, tileY: true };
