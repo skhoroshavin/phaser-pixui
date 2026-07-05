@@ -1,7 +1,7 @@
 import { GameObjects } from "phaser";
 import { frameDimensions } from "../util/frame";
 import { Component, type ComponentConfig } from "./component";
-import { Renderable } from "./renderable";
+import { PhaserObject } from "./phaser-object";
 
 export type ImageConfig = {
   texture: string;
@@ -10,7 +10,7 @@ export type ImageConfig = {
   tileY?: boolean;
 } & ComponentConfig;
 
-export class Image extends Renderable<GameObjects.Sprite | GameObjects.NineSlice> {
+export class Image extends PhaserObject<GameObjects.Sprite | GameObjects.NineSlice> {
   constructor(parent: Component, cfg: ImageConfig) {
     const scene = parent.mount.displayHost.scene!;
     const dims = frameDimensions(scene.textures.getFrame(cfg.texture, cfg.frame));

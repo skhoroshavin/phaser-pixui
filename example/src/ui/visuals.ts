@@ -1,6 +1,6 @@
-import { Component, ComponentConfig } from "../../../src/core/component";
-import { Image } from "../../../src/core/image";
-import { Text, TextConfig } from "../../../src/core/text";
+import { Component, ComponentConfig } from "../../../src/components/component";
+import { Image } from "../../../src/components/image";
+import { Text, TextConfig } from "../../../src/components/text";
 import { colors, fonts, uiTexture } from "./constants.ts";
 
 export type FrameConfig = ComponentConfig & {

@@ -7,14 +7,14 @@ type Origin = GameObjects.Components.Origin;
 type Visible = GameObjects.Components.Visible;
 type Depth = GameObjects.Components.Depth;
 
-type RenderableConfig<T> = ComponentConfig & {
+type PhaserObjectConfig<T> = ComponentConfig & {
   onResize?: (internal: T, width: number, height: number) => void;
 };
 
-export class Renderable<
+export class PhaserObject<
   T extends GameObject & Transform & Origin & Visible & Depth,
 > extends Component {
-  constructor(parent: Component, create: (scene: Phaser.Scene) => T, cfg?: RenderableConfig<T>) {
+  constructor(parent: Component, create: (scene: Phaser.Scene) => T, cfg?: PhaserObjectConfig<T>) {
     super(parent, cfg);
     this.internal = create(this.mount.displayHost.scene!);
     this.internal.setOrigin(0, 0);

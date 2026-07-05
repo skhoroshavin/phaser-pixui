@@ -1,13 +1,13 @@
 import { GameObjects } from "phaser";
 import { Component, type ComponentConfig } from "./component";
-import { Renderable } from "./renderable";
+import { PhaserObject } from "./phaser-object";
 
 export type RectangleConfig = ComponentConfig & {
   fillColor?: number;
   fillAlpha?: number;
 };
 
-export class Rectangle extends Renderable<GameObjects.Rectangle> {
+export class Rectangle extends PhaserObject<GameObjects.Rectangle> {
   constructor(parent: Component, cfg?: RectangleConfig) {
     super(parent, (scene) => new GameObjects.Rectangle(scene, 0, 0, 0, 0), {
       ...cfg,

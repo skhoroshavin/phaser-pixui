@@ -1,6 +1,6 @@
-import { Clickable, type ClickableConfig } from "../core/clickable";
-import { Component } from "../core/component";
-import { StateView, type StateVisualConfig } from "../core/state-view";
+import { Clickable, type ClickableConfig } from "./clickable";
+import { Component } from "./component";
+import { StateView, type StateVisualConfig } from "./state-view";
 
 export type ButtonConfig = ClickableConfig & {
   texture: string;

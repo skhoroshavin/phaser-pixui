@@ -1,6 +1,6 @@
 import { GameObjects, Geom, type Types } from "phaser";
 import { Component, type ComponentConfig } from "./component";
-import { Renderable } from "./renderable";
+import { PhaserObject } from "./phaser-object";
 
 export type InteractiveConfig = ComponentConfig & {
   shape?: HitShape;
@@ -9,7 +9,7 @@ export type InteractiveConfig = ComponentConfig & {
 
 export type HitShape = "rect" | "diamond" | "ellipse";
 
-export class Interactive extends Renderable<GameObjects.Zone> {
+export class Interactive extends PhaserObject<GameObjects.Zone> {
   constructor(parent: Component, cfg: InteractiveConfig = {}) {
     super(parent, (scene) => new GameObjects.Zone(scene, 0, 0, 0, 0), {
       ...cfg,

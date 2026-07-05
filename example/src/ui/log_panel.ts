@@ -1,5 +1,5 @@
-import { Component, type ComponentConfig } from "../../../src/core/component";
-import { ScrollArea } from "../../../src/core/scroll-area";
+import { Component, type ComponentConfig } from "../../../src/components/component";
+import { ScrollArea } from "../../../src/components/scroll-area";
 import { frame, text } from "./visuals.ts";
 
 export function log_panel(parent: Component, cfg?: ComponentConfig) {

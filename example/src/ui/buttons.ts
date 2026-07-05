@@ -1,5 +1,5 @@
-import { Component } from "../../../src/core/component";
-import { Button, type ButtonConfig } from "../../../src/widgets/button";
+import { Component } from "../../../src/components/component";
+import { Button, type ButtonConfig } from "../../../src/components/button";
 import { colors, fonts, uiTexture } from "./constants.ts";
 
 export function button(parent: Component, cfg?: Partial<ButtonConfig>): Button {
