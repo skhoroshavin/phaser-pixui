@@ -1,8 +1,8 @@
 import { Clickable, type ClickableConfig } from "./clickable";
-import { Component } from "./component";
+import type { Component } from "./component";
 import { StateView, type StateVisualConfig } from "./state-view";
 
-export type ButtonConfig = ClickableConfig & {
+export type ButtonConfig = Omit<ClickableConfig, "onUpdate"> & {
   texture: string;
   normal: StateVisualConfig;
   hover?: StateVisualConfig;
@@ -15,14 +15,9 @@ export type ButtonConfig = ClickableConfig & {
   textTint?: number;
 };
 
-export class Button extends Clickable {
+export class Button extends StateView {
   constructor(parent: Component, cfg: ButtonConfig) {
     super(parent, {
-      ...cfg,
-      onUpdate: (state) => this._view.setState(state),
-    });
-    this._view = new StateView(this, {
-      texture: cfg.texture,
       states: {
         normal: cfg.normal,
         hover: cfg.hover,
@@ -30,15 +25,36 @@ export class Button extends Clickable {
         disabled: cfg.disabled,
       },
       fallback: "normal",
-      inset: 0,
-      tileX: cfg.tileX,
-      tileY: cfg.tileY,
-      text: cfg.text,
-      font: cfg.font,
-      textTint: cfg.textTint,
+      ...cfg,
     });
-    this._view.setState(this.state);
+
+    this._clickable = new Clickable(this, {
+      ...this._compensatePadding(),
+      shape: cfg.shape,
+      enabled: cfg.enabled,
+      onClick: cfg.onClick,
+      onUpdate: (s) => this.setState(s),
+    });
+
+    this.setState(this._clickable.state);
   }
 
-  private readonly _view: StateView;
+  get enabled(): boolean {
+    return this._clickable.enabled;
+  }
+  set enabled(v: boolean) {
+    this._clickable.enabled = v;
+    this.setState(this._clickable.state);
+  }
+
+  private _compensatePadding() {
+    return {
+      left: -this.node.xAxis.paddingStart,
+      right: -this.node.xAxis.paddingEnd,
+      top: -this.node.yAxis.paddingStart,
+      bottom: -this.node.yAxis.paddingEnd,
+    };
+  }
+
+  private readonly _clickable: Clickable;
 }
