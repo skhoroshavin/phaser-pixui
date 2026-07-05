@@ -6,6 +6,8 @@ import { Text } from "./text";
 export type StateVisualConfig = {
   frame: string;
   textTint?: number;
+  textOffsetX?: number;
+  textOffsetY?: number;
 };
 
 export type StateViewConfig = ComponentConfig & {
@@ -47,7 +49,9 @@ export class StateView extends MultiImage {
   setState(s?: string) {
     const active = this._states[this._validState(s)]!;
     this.setFrame(active.frame);
-    if (this._text && active.textTint !== undefined) {
+    if (!this._text) return;
+    this._text.setRenderOffset(active.textOffsetX ?? 0, active.textOffsetY ?? 0);
+    if (active.textTint !== undefined) {
       this._text.internal.setTint(active.textTint).setTintMode(TintModes.FILL);
     }
   }
