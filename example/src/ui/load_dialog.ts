@@ -1,5 +1,5 @@
-import { Modal } from "../../../src/core/modal";
-import { Component } from "../../../src/core/component";
+import { Modal } from "../../../src/components/modal";
+import { Component } from "../../../src/components/component";
 import { button } from "./buttons";
 import { frame, text } from "./visuals";
 

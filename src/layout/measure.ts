@@ -98,14 +98,17 @@ function measureFlex(node: Node): Size {
   const main = col ? node.yAxis : node.xAxis;
   const cross = col ? node.xAxis : node.yAxis;
 
+  const availableW = node.clampWidth(node.measured.topDownWidth) ?? l.maxWidth;
+  const { width: iw, height: ih } = node.intrinsicSize(availableW);
+
   return col
     ? {
-        width: l.width ?? cross.actualSize(crossMax),
-        height: l.height ?? main.actualSize(mainMax),
+        width: l.width ?? Math.max(iw, cross.actualSize(crossMax)),
+        height: l.height ?? Math.max(ih, main.actualSize(mainMax)),
       }
     : {
-        width: l.width ?? main.actualSize(mainMax),
-        height: l.height ?? cross.actualSize(crossMax),
+        width: l.width ?? Math.max(iw, main.actualSize(mainMax)),
+        height: l.height ?? Math.max(ih, cross.actualSize(crossMax)),
       };
 }
 

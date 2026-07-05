@@ -10,9 +10,11 @@ import { Node, resolve } from "./";
 //    left/right/top/bottom is set; otherwise (no edges, flex parent) the
 //    item is in flex flow.
 // 4. No flex wrapping — items overflow rather than wrap.
-// 5. Absolutely positioned items contribute to an auto-sized container's
+// 5. An auto-sized node (including a flex container) cannot be smaller than
+//    its `intrinsic`.
+// 6. Absolutely positioned items contribute to an auto-sized container's
 //    intrinsic size (block or flex parent).
-// 6. Padding carves the content rect out of the `intrinsic` size rather than
+// 7. Padding carves the content rect out of the `intrinsic` size rather than
 //    adding to it. When padding exceeds the intrinsic size, the padding box
 //    still wins.
 
@@ -107,6 +109,21 @@ describe("deviations", () => {
     // container wraps all sources: flow stack (main 45), start-anchored
     // (main 5+30=35, cross 8+30=38), end-anchored (main 50+15=65, cross 50+10=60)
     expect(flex.rect).toEqual({ x: 0, y: 0, width: 60, height: 65 });
+  });
+
+  it("an auto-sized flex container cannot be smaller than its intrinsic", () => {
+    const root = new Node({ layout: { width: 320, height: 240 } });
+    // intrinsic larger than its flex children → container stays at intrinsic
+    const flex = new Node({
+      layout: { direction: "column" },
+      intrinsicSize: { width: 200, height: 60 },
+    });
+    flex.add(new Node({ layout: { width: 30, height: 20 } }));
+    root.add(flex);
+    resolve(root);
+
+    // max(200, 30) = 200, max(60, 20) = 60 — intrinsic floors the flex path too
+    expect(flex.rect).toEqual({ x: 0, y: 0, width: 200, height: 60 });
   });
 
   it("padding carves content out of intrinsic, or wins if larger", () => {

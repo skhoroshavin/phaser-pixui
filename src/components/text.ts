@@ -1,6 +1,6 @@
 import { TintModes, GameObjects } from "phaser";
 import { Component, type ComponentConfig } from "./component";
-import { Renderable } from "./renderable";
+import { PhaserObject } from "./phaser-object";
 import type { Size } from "../util/size";
 
 export type TextConfig = ComponentConfig & {
@@ -12,7 +12,7 @@ export type TextConfig = ComponentConfig & {
 
 export type TextAlign = "left" | "center" | "right";
 
-export class Text extends Renderable<GameObjects.BitmapText> {
+export class Text extends PhaserObject<GameObjects.BitmapText> {
   constructor(parent: Component, cfg: TextConfig) {
     super(
       parent,

@@ -1,6 +1,6 @@
 import { CANVAS, HEADLESS, VERSION, WEBGL } from "phaser";
 import { ConstraintMode, ResponsiveScene, SceneMount } from "../../src";
-import { Component } from "../../src/core/component.ts";
+import { Component } from "../../src/components/component.ts";
 import { GameWorld } from "./game.ts";
 import { button, settingsButton } from "./ui/buttons.ts";
 import { frame, text } from "./ui/visuals.ts";
