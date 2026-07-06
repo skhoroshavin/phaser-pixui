@@ -2,13 +2,17 @@ import { describe, expect, it } from "vitest";
 import { Node, resolve } from "./";
 
 describe("measure", () => {
-  function viewport(width: number, height: number): Node {
-    return new Node({ layout: { width, height } });
+  function viewport(
+    width: number,
+    height: number,
+    alignItems: "start" | "stretch" = "stretch",
+  ): Node {
+    return new Node({ layout: { width, height, alignItems } });
   }
 
   it("auto-sizes nested containers to a leaf's margin box, explicit size overriding intrinsic", () => {
-    const root = viewport(320, 240);
-    const outer = new Node({ layout: {} });
+    const root = viewport(320, 240, "start");
+    const outer = new Node({ layout: { alignItems: "start" } });
     const inner = new Node({ layout: { marginX: 6, marginY: 3 } });
     // intrinsic on both axes; explicit width (50) overrides intrinsic w (30),
     // height falls back to intrinsic (40); per-axis margins
@@ -31,7 +35,7 @@ describe("measure", () => {
   });
 
   it("auto-sizes a flex container to its children's margin boxes", () => {
-    const root = viewport(320, 240);
+    const root = viewport(320, 240, "start");
     const flex = new Node({ layout: { direction: "column", gap: 4 } });
     const a = new Node({ layout: { width: 50, height: 30, margin: 10 } });
     const b = new Node({ layout: { width: 40, height: 20, margin: 10 } });
@@ -71,18 +75,38 @@ describe("measure", () => {
     expect(root.children[0]!.rect).toEqual({ x: 0, y: 0, width: 200, height: 200 });
   });
 
-  it("uses a closure intrinsic's returned size, passing undefined when nothing limits the width", () => {
-    const root = viewport(200, 200);
+  it("passes the container's content width to a non-stretch child as availableWidth", () => {
+    const root = viewport(200, 200, "start");
     root.add(
       new Node({
         layout: {},
-        intrinsicSize: (aw) => ({ width: aw === undefined ? 50 : 0, height: 30 }),
+        intrinsicSize: (aw) => ({ width: aw === 200 ? 50 : 0, height: 30 }),
       }),
     );
     resolve(root);
-    // closure's returned size is used (height: 30 comes through); it received
-    // undefined (no-wrap signal) only if width is 50, not 0
+    // a non-stretch child is still measured against the container's content width (200);
+    // its max-content (50) fits, so it stays on one line
     expect(root.children[0]!.rect).toEqual({ x: 0, y: 0, width: 50, height: 30 });
+  });
+
+  it("wraps a non-stretch child to the container width instead of overflowing", () => {
+    const root = viewport(320, 240);
+    // left/right + marginX:auto => fit-content (no top-down width); maxWidth caps it
+    const box = new Node({
+      layout: { left: 0, right: 0, marginX: "auto", maxWidth: 100, alignItems: "center" },
+    });
+    box.add(
+      new Node({
+        intrinsicSize: (aw) =>
+          aw !== undefined ? { width: aw, height: 60 } : { width: 150, height: 30 },
+      }),
+    );
+    root.add(box);
+    resolve(root);
+
+    expect(box.rect.width).toBe(100);
+    // wrapped to the 100 budget (height 60), not left as one 150-wide line (height 30)
+    expect(box.children[0]!.rect.height).toBe(60);
   });
 
   it("flows a stretched leaf's wrapped height up to an auto-height parent", () => {
@@ -90,7 +114,6 @@ describe("measure", () => {
     const container = new Node({ layout: { width: 200 } }); // height auto
     container.add(
       new Node({
-        layout: { left: 0, right: 0 },
         intrinsicSize: (aw) => ({ width: 0, height: aw === 200 ? 40 : 0 }),
       }),
     );
@@ -106,7 +129,6 @@ describe("measure", () => {
     const frame = new Node({ layout: { left: 0, right: 0, maxWidth: 224 } });
     frame.add(
       new Node({
-        layout: { left: 0, right: 0 },
         intrinsicSize: (aw) => ({ width: 0, height: aw === 224 ? 48 : 16 }),
       }),
     );
@@ -114,18 +136,6 @@ describe("measure", () => {
     resolve(root);
     expect(frame.rect.width).toBe(224);
     expect(frame.rect.height).toBe(48);
-  });
-
-  it("stretches, not centers, an auto-width element with both edges and auto margins", () => {
-    const root = viewport(320, 240);
-    root.add(
-      new Node({
-        layout: { left: 0, right: 0, marginX: "auto" },
-        intrinsicSize: { width: 50, height: 10 },
-      }),
-    );
-    resolve(root);
-    expect(root.children[0]!.rect).toEqual({ x: 0, y: 0, width: 320, height: 10 });
   });
 
   it("caps the width before auto-margin centering", () => {
@@ -139,7 +149,7 @@ describe("measure", () => {
   });
 
   it("shrink-wraps a parent to a child's maxWidth-capped size", () => {
-    const root = viewport(320, 240);
+    const root = viewport(320, 240, "start");
     const parent = new Node({ layout: {} }); // auto width
     const child = new Node({ layout: { width: 200, maxWidth: 100, height: 10 } });
     parent.add(child);

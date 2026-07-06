@@ -1,55 +1,10 @@
 import { type Node } from "./node";
 
 export function place(node: Node): void {
-  if (node.isFlex) {
-    placeFlex(node);
-    return;
-  }
-
-  for (const child of node.children) {
-    placeBoxChild(child, node);
-  }
-}
-
-function placeBoxChild(child: Node, parent: Node): void {
-  child.setRect({
-    x: childPos(child, parent, "x"),
-    y: childPos(child, parent, "y"),
-    width: child.measured.finalSize.width,
-    height: child.measured.finalSize.height,
-  });
-  place(child);
-}
-
-function childPos(child: Node, parent: Node, axis: "x" | "y"): number {
-  const horizontal = axis === "x";
-  const a = horizontal ? child.xAxis : child.yAxis;
-  const pa = horizontal ? parent.xAxis : parent.yAxis;
-  const size = horizontal ? child.measured.finalSize.width : child.measured.finalSize.height;
-  const base = pa.contentStart(horizontal ? parent.rect.x : parent.rect.y);
-  const len = pa.contentSize(horizontal ? parent.rect.width : parent.rect.height);
-
-  // Auto-margin centering
-  if (a.marginAuto && a.start !== undefined && a.end !== undefined) {
-    const free = len - a.start - a.end - size;
-    return base + a.start + (free > 0 ? Math.ceil(free / 2) : 0);
-  }
-
-  // Positioned by the start edge
-  if (a.start !== undefined) return base + a.start + a.marginStart;
-
-  // Positioned by the end edge
-  if (a.end !== undefined) return base + len - a.end - a.marginEnd - size;
-
-  // Not positioned at all - default to start edge
-  return base + a.marginStart;
-}
-
-function placeFlex(node: Node): void {
   const l = node.layout;
   const gap = l.gap ?? 0;
 
-  const col = l.direction === "column";
+  const col = l.direction !== "row";
   const mainAxis = col ? node.yAxis : node.xAxis;
   const mainLen = mainAxis.contentSize(col ? node.rect.height : node.rect.width);
   const mainBase = mainAxis.contentStart(col ? node.rect.y : node.rect.x);
@@ -59,7 +14,7 @@ function placeFlex(node: Node): void {
   let mainContentSize = 0;
   let first = true;
   for (const childNode of node.children) {
-    if (childNode.isAbsolute(node)) continue;
+    if (childNode.isAbsolute()) continue;
 
     if (!first) mainContentSize += gap;
     first = false;
@@ -79,12 +34,46 @@ function placeFlex(node: Node): void {
   // Pass 2: position each item
   let pos = mainBase + (absorbFreeSpace ? 0 : alignOffset(mainFreeSpace, l.justifyContent));
   for (const child of node.children) {
-    if (child.isAbsolute(node)) {
+    if (child.isAbsolute()) {
       placeBoxChild(child, node);
       continue;
     }
     pos += placeFlexChild(child, node, pos, nextAutoMargin) + gap;
   }
+}
+
+function placeBoxChild(child: Node, parent: Node): void {
+  child.setRect({
+    x: childPos(child, parent, "x"),
+    y: childPos(child, parent, "y"),
+    width: child.measured.finalSize.width,
+    height: child.measured.finalSize.height,
+  });
+  place(child);
+}
+
+function childPos(child: Node, parent: Node, axis: "x" | "y"): number {
+  const horizontal = axis === "x";
+  const a = horizontal ? child.xAxis : child.yAxis;
+  const base = horizontal ? parent.rect.x : parent.rect.y;
+  const len = horizontal ? parent.rect.width : parent.rect.height;
+  const size = horizontal ? child.measured.finalSize.width : child.measured.finalSize.height;
+
+  // Auto-margin distribution, similar to flex rules
+  if ((a.marginStartAuto || a.marginEndAuto) && a.start !== undefined && a.end !== undefined) {
+    const count = (a.marginStartAuto ? 1 : 0) + (a.marginEndAuto ? 1 : 0);
+    const dist = distributeAutoMargins(len - a.start - a.end - size, count);
+    return base + a.start + (a.marginStartAuto ? dist() : 0);
+  }
+
+  // Positioned by the start edge
+  if (a.start !== undefined) return base + a.start + a.marginStart;
+
+  // Positioned by the end edge
+  if (a.end !== undefined) return base + len - a.end - a.marginEnd - size;
+
+  // Not positioned at all - default to start edge
+  return base + a.marginStart;
 }
 
 function placeFlexChild(
@@ -93,7 +82,7 @@ function placeFlexChild(
   pos: number,
   nextAutoMargin: () => number,
 ): number {
-  const col = parent.layout.direction === "column";
+  const col = parent.layout.direction !== "row";
   const main = col ? child.yAxis : child.xAxis;
   const cross = col ? child.xAxis : child.yAxis;
   const mainSize = col ? child.measured.finalSize.height : child.measured.finalSize.width;

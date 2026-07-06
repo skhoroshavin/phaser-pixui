@@ -14,87 +14,61 @@ export function measureTopDown(node: Node): void {
 
 function childTopDownWidth(child: Node, parent: Node): number | undefined {
   // Explicit width always wins
-  const cl = child.layout;
-  if (cl.width !== undefined) return cl.width;
+  if (child.layout.width !== undefined) return child.layout.width;
 
-  // Parent didn't calculate width - we also cannot
-  const parentWidth = parent.measured.topDownWidth;
+  // Parent width unknown and no maxWidth cap - we also cannot
+  const parentWidth = parent.measured.topDownWidth ?? parent.layout.maxWidth;
   if (parentWidth === undefined) return undefined;
 
-  // Flex row children never stretch width
-  const pl = parent.layout;
-  if (pl.direction === "row") return undefined;
-
-  // Plain box child: if both edges are set - just stretch between them
   const x = child.xAxis;
-  const parentContentWidth = parent.xAxis.contentSize(parentWidth);
-  if (pl.direction === undefined) {
+  const pl = parent.layout;
+
+  // Absolute child stretches between both edges (fit-content when a margin is auto)
+  if (child.isAbsolute()) {
     if (!x.hasBothEdges) return undefined;
-    return x.stretch(parentContentWidth);
+    if (x.marginStartAuto || x.marginEndAuto) return undefined;
+    return x.stretch(parentWidth);
   }
 
-  // Flex column: if alignItems is stretch and child is not absolute - stretch it
-  if ((pl.alignItems ?? "stretch") !== "stretch") return undefined;
-  if (child.isAbsolute(parent)) return undefined;
-  return x.stretch(parentContentWidth);
+  // Row flow children never stretch on the main (width) axis
+  if (pl.direction === "row") return undefined;
+
+  // Column children are measured against the container content width so text wraps, not overflows
+  return x.stretch(parent.xAxis.contentSize(parentWidth));
 }
 
 export function measureBottomUp(node: Node): void {
   for (const child of node.children) measureBottomUp(child);
 
-  node.measured.bottomUpSize = node.isFlex ? measureFlex(node) : measureBox(node);
+  node.measured.bottomUpSize = measureFlex(node);
 
   const l = node.layout;
   if (l.maxWidth === undefined) return;
   node.measured.bottomUpSize.width = Math.min(node.measured.bottomUpSize.width, l.maxWidth);
 }
 
-function measureBox(node: Node): Size {
-  const l = node.layout;
-  const availableW = node.clampWidth(node.measured.topDownWidth) ?? l.maxWidth;
-  const { width: iw, height: ih } = node.intrinsicSize(availableW);
-
-  let aggW = 0;
-  let aggH = 0;
-  for (const child of node.children) {
-    const size = child.measured.bottomUpSize;
-    aggW = Math.max(aggW, child.xAxis.extent(size.width));
-    aggH = Math.max(aggH, child.yAxis.extent(size.height));
-  }
-  return {
-    width: l.width ?? Math.max(iw, node.xAxis.actualSize(aggW)),
-    height: l.height ?? Math.max(ih, node.yAxis.actualSize(aggH)),
-  };
-}
-
 function measureFlex(node: Node): Size {
   const l = node.layout;
   const gap = l.gap ?? 0;
-  const col = l.direction === "column";
+  const col = l.direction !== "row";
 
   let mainFlowTotal = 0;
-  let mainAbsMax = 0;
   let crossMax = 0;
   let flowCount = 0;
 
   for (const child of node.children) {
+    if (child.isAbsolute()) continue;
     const size = child.measured.bottomUpSize;
     const main = col ? child.yAxis : child.xAxis;
     const cross = col ? child.xAxis : child.yAxis;
     const mainSize = col ? size.height : size.width;
     const crossSize = col ? size.width : size.height;
 
-    if (child.isAbsolute(node)) {
-      mainAbsMax = Math.max(mainAbsMax, main.extent(mainSize));
-      crossMax = Math.max(crossMax, cross.extent(crossSize));
-    } else {
-      if (flowCount > 0) mainFlowTotal += gap;
-      flowCount++;
-      mainFlowTotal += main.extent(mainSize);
-      crossMax = Math.max(crossMax, cross.extent(crossSize));
-    }
+    if (flowCount > 0) mainFlowTotal += gap;
+    flowCount++;
+    mainFlowTotal += main.extent(mainSize);
+    crossMax = Math.max(crossMax, cross.extent(crossSize));
   }
-  const mainMax = Math.max(mainFlowTotal, mainAbsMax);
   const main = col ? node.yAxis : node.xAxis;
   const cross = col ? node.xAxis : node.yAxis;
 
@@ -104,10 +78,10 @@ function measureFlex(node: Node): Size {
   return col
     ? {
         width: l.width ?? Math.max(iw, cross.actualSize(crossMax)),
-        height: l.height ?? Math.max(ih, main.actualSize(mainMax)),
+        height: l.height ?? Math.max(ih, main.actualSize(mainFlowTotal)),
       }
     : {
-        width: l.width ?? Math.max(iw, main.actualSize(mainMax)),
+        width: l.width ?? Math.max(iw, main.actualSize(mainFlowTotal)),
         height: l.height ?? Math.max(ih, cross.actualSize(crossMax)),
       };
 }
@@ -124,6 +98,9 @@ export function finalizeSize(node: Node): void {
       width: child.clampWidth(childFinalSize(child, node, "x"))!,
       height: childFinalSize(child, node, "y"),
     };
+  }
+  applyGrow(node);
+  for (const child of node.children) {
     finalizeSize(child);
   }
 }
@@ -139,19 +116,69 @@ function childFinalSize(child: Node, parent: Node, axis: "x" | "y"): number {
   // If both edges are set - just stretch between them
   const a = horizontal ? child.xAxis : child.yAxis;
   const pa = horizontal ? parent.xAxis : parent.yAxis;
-  const parentContentSize = pa.contentSize(
-    horizontal ? parent.measured.finalSize.width : parent.measured.finalSize.height,
-  );
-  if (a.hasBothEdges) return a.stretch(parentContentSize);
+  const parentSize = horizontal
+    ? parent.measured.finalSize.width
+    : parent.measured.finalSize.height;
+  // Stretch if both edges are set, unless a margin is auto
+  if (a.hasBothEdges && !a.marginStartAuto && !a.marginEndAuto) return a.stretch(parentSize);
 
-  // Flex cross-axis: if alignItems is stretch and child is not absolute - stretch it
+  // if alignItems is stretch and child is not absolute - stretch it against content edges
   const pl = parent.layout;
   const crossDir = horizontal ? "column" : "row";
   const bottomUp = horizontal
     ? child.measured.bottomUpSize.width
     : child.measured.bottomUpSize.height;
-  if (pl.direction !== crossDir) return bottomUp;
+  if ((pl.direction ?? "column") !== crossDir) return bottomUp;
   if ((pl.alignItems ?? "stretch") !== "stretch") return bottomUp;
-  if (child.isAbsolute(parent)) return bottomUp;
-  return a.stretch(parentContentSize);
+  if (child.isAbsolute()) return bottomUp;
+  return a.stretch(pa.contentSize(parentSize));
+}
+
+function applyGrow(node: Node): void {
+  const l = node.layout;
+  const col = l.direction !== "row";
+  const gap = l.gap ?? 0;
+  const mainAxis = col ? node.yAxis : node.xAxis;
+
+  let free = mainAxis.contentSize(
+    col ? node.measured.finalSize.height : node.measured.finalSize.width,
+  );
+  let totalGrow = 0;
+  let first = true;
+  const shares: { child: Node; g: number; add: number; frac: number }[] = [];
+  for (const child of node.children) {
+    if (child.isAbsolute()) continue;
+
+    if (!first) free -= gap;
+    first = false;
+
+    const cAxis = col ? child.yAxis : child.xAxis;
+    const base = col ? child.measured.finalSize.height : child.measured.finalSize.width;
+    free -= cAxis.extent(base);
+    if (free <= 0) return; // no free space left - cannot grow
+
+    const g = child.layout.grow ?? 0;
+    if (g > 0) {
+      totalGrow += g;
+      shares.push({ child, g, add: 0, frac: 0 });
+    }
+  }
+
+  if (totalGrow === 0) return; // nothing to grow
+
+  // Largest-remainder (Hamilton): floor each share, then hand the leftover pixels
+  // to the children with the largest fractional remainders (ties by document order).
+  let leftover = free;
+  for (const s of shares) {
+    s.add = Math.floor((free * s.g) / totalGrow);
+    s.frac = (free * s.g) % totalGrow;
+    leftover -= s.add;
+  }
+
+  shares.sort((a, b) => b.frac - a.frac); // stable sort → document order on ties
+  shares.forEach((s, i) => {
+    if (i < leftover) s.add++;
+    if (col) s.child.measured.finalSize.height += s.add;
+    else s.child.measured.finalSize.width += s.add;
+  });
 }

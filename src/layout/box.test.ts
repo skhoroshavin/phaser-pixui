@@ -3,7 +3,7 @@ import { Node, resolve } from "./";
 
 describe("box", () => {
   it("uses explicit size, else intrinsic, when no edges set", () => {
-    const root = new Node({ layout: { width: 320, height: 240 } });
+    const root = new Node({ layout: { width: 320, height: 240, alignItems: "start" } });
     const explicit = new Node({
       layout: {
         width: 80,
@@ -24,11 +24,11 @@ describe("box", () => {
     // explicit size overrides intrinsic (100×16 → 80×50)
     expect(explicit.rect).toEqual({ x: 0, y: 0, width: 80, height: 50 });
     // no explicit size → intrinsic fills; intrinsic dominates the padding box
-    expect(intrinsic.rect).toEqual({ x: 0, y: 0, width: 80, height: 20 });
+    expect(intrinsic.rect).toEqual({ x: 0, y: 50, width: 80, height: 20 });
   });
 
   it("auto-sized container stays at intrinsic; padding insets content within (nine-slice frame)", () => {
-    const root = new Node({ layout: { width: 320, height: 240 } });
+    const root = new Node({ layout: { width: 320, height: 240, alignItems: "start" } });
     // a frame backed by a 200×60 image, with padding from its nine-slice slices
     const frame = new Node({
       layout: { paddingLeft: 20, paddingTop: 15, paddingRight: 20, paddingBottom: 15 },
@@ -45,7 +45,7 @@ describe("box", () => {
     expect(label.rect).toEqual({ x: 20, y: 15, width: 100, height: 16 });
   });
 
-  it("positions by content edge with intrinsic size", () => {
+  it("positions by edge with intrinsic size", () => {
     const root = new Node({
       layout: {
         width: 320,
@@ -66,14 +66,14 @@ describe("box", () => {
     });
     root.add(start, end);
     resolve(root);
-    // content rect: x=10, y=20, w=280, h=180
-    // start edges: offset from content origin (10+10, 20+20)
-    expect(start.rect).toEqual({ x: 20, y: 40, width: 100, height: 16 });
-    // end edges: anchored to content extent (10 + 280-4-100, 20 + 180-8-16)
-    expect(end.rect).toEqual({ x: 186, y: 176, width: 100, height: 16 });
+    // abs children resolve against the rect, not the content rect
+    // start edges: offset from the origin (0+10, 0+20)
+    expect(start.rect).toEqual({ x: 10, y: 20, width: 100, height: 16 });
+    // end edges: anchored to the extent (320-4-100, 240-8-16)
+    expect(end.rect).toEqual({ x: 216, y: 216, width: 100, height: 16 });
   });
 
-  it("positions by content start edge with explicit size", () => {
+  it("positions by start edge with explicit size", () => {
     const root = new Node({
       layout: {
         width: 320,
@@ -94,13 +94,12 @@ describe("box", () => {
     });
     root.add(horiz, vert);
     resolve(root);
-    // content rect: x=10, y=20, w=280, h=180
-    // start edge from content origin (10+10, 20+20); the unanchored axis falls at the content origin
-    expect(horiz.rect).toEqual({ x: 20, y: 20, width: 80, height: 16 });
-    expect(vert.rect).toEqual({ x: 10, y: 40, width: 100, height: 50 });
+    // start edge from the origin (0+10, 0+20); the unanchored axis falls at the origin
+    expect(horiz.rect).toEqual({ x: 10, y: 0, width: 80, height: 16 });
+    expect(vert.rect).toEqual({ x: 0, y: 20, width: 100, height: 50 });
   });
 
-  it("positions by content end edge with explicit size", () => {
+  it("positions by end edge with explicit size", () => {
     const root = new Node({
       layout: {
         width: 320,
@@ -121,12 +120,12 @@ describe("box", () => {
     });
     root.add(horiz, vert);
     resolve(root);
-    // end edge anchored to content extent: x = 10 + 280-4-200, y = 20 + 180-8-50
-    expect(horiz.rect).toEqual({ x: 86, y: 20, width: 200, height: 16 });
-    expect(vert.rect).toEqual({ x: 10, y: 142, width: 100, height: 50 });
+    // end edge anchored to the extent: x = 320-4-200, y = 240-8-50
+    expect(horiz.rect).toEqual({ x: 116, y: 0, width: 200, height: 16 });
+    expect(vert.rect).toEqual({ x: 0, y: 182, width: 100, height: 50 });
   });
 
-  it("stretches between content start and end edges, overtaking intrinsic size", () => {
+  it("stretches between start and end edges, overtaking intrinsic size", () => {
     const root = new Node({
       layout: {
         width: 320,
@@ -147,11 +146,10 @@ describe("box", () => {
     });
     root.add(horiz, vert);
     resolve(root);
-    // content rect: x=10, y=20, w=280, h=180
-    // horizontal: width stretches (intrinsic 100 → 250), height stays intrinsic; x from content origin (10+10)
-    expect(horiz.rect).toEqual({ x: 20, y: 20, width: 250, height: 16 });
-    // vertical: height stretches (intrinsic 16 → 150), width stays intrinsic; y from content origin (20+10)
-    expect(vert.rect).toEqual({ x: 10, y: 30, width: 100, height: 150 });
+    // horizontal: width stretches (intrinsic 100 → 290), height stays intrinsic; x from origin (0+10)
+    expect(horiz.rect).toEqual({ x: 10, y: 0, width: 290, height: 16 });
+    // vertical: height stretches (intrinsic 16 → 210), width stays intrinsic; y from origin (0+10)
+    expect(vert.rect).toEqual({ x: 0, y: 10, width: 100, height: 210 });
   });
 
   it("ignores far edge and uses explicit size when overconstrained", () => {
@@ -181,7 +179,7 @@ describe("box", () => {
     expect(end.rect).toEqual({ x: 214, y: 181, width: 80, height: 40 });
   });
 
-  it("centers with auto margins inside content rect when both edges are set, ignored otherwise", () => {
+  it("centers with auto margins when both edges are set, ignored otherwise", () => {
     const root = new Node({
       layout: {
         width: 320,
@@ -202,10 +200,9 @@ describe("box", () => {
     });
     root.add(a, b);
     resolve(root);
-    // content rect: x=10, y=20, w=280, h=180
-    // a: x centered in content (10 + (280-80)/2 = 110), y positioned by top (auto ignored, 20+50)
-    expect(a.rect).toEqual({ x: 110, y: 70, width: 80, height: 40 });
-    // b: y centered in content (20 + (180-40)/2 = 90), x positioned by left (auto ignored, 10+60)
-    expect(b.rect).toEqual({ x: 70, y: 90, width: 80, height: 40 });
+    // a: x centered ((320-80)/2 = 120), y positioned by top (auto ignored, 0+50)
+    expect(a.rect).toEqual({ x: 120, y: 50, width: 80, height: 40 });
+    // b: y centered ((240-40)/2 = 100), x positioned by left (auto ignored, 0+60)
+    expect(b.rect).toEqual({ x: 60, y: 100, width: 80, height: 40 });
   });
 });

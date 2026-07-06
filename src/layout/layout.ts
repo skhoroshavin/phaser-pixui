@@ -27,11 +27,12 @@ export type Layout = {
   margin?: number | "auto";
   marginX?: number | "auto";
   marginY?: number | "auto";
-  // flex
+  // flex, default column direction
   direction?: "row" | "column";
   gap?: number;
   justifyContent?: "start" | "center" | "end";
   alignItems?: "start" | "center" | "end" | "stretch";
+  grow?: number;
   // depth
   zIndex?: number;
 };
