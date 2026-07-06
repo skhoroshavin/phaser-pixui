@@ -1,60 +1,49 @@
-import { Clickable, type ClickableConfig } from "./clickable";
+import { Clickable, type ClickableConfig, type ClickableState } from "./clickable";
 import type { Component } from "./component";
-import { StateView, type StateVisualConfig } from "./state-view";
+import { applyViewState, type ViewState } from "./view-state";
 
 export type ButtonConfig = Omit<ClickableConfig, "onUpdate"> & {
-  texture: string;
-  normal: StateVisualConfig;
-  hover?: StateVisualConfig;
-  pressed?: StateVisualConfig;
-  disabled?: StateVisualConfig;
-  tileX?: boolean;
-  tileY?: boolean;
-  text?: string;
-  font?: string;
-  textTint?: number;
+  normal: ViewState;
+  hover?: ViewState;
+  pressed?: ViewState;
+  disabled?: ViewState;
 };
 
-export class Button extends StateView {
+export class Button extends Clickable {
   constructor(parent: Component, cfg: ButtonConfig) {
+    const { normal, hover, pressed, disabled, ...rest } = cfg;
     super(parent, {
-      states: {
-        normal: cfg.normal,
-        hover: cfg.hover,
-        pressed: cfg.pressed,
-        disabled: cfg.disabled,
-      },
-      fallback: "normal",
-      ...cfg,
+      ...rest,
+      onUpdate: (s) => this._apply(s),
+      justifyContent: cfg.justifyContent ?? "center",
+      alignItems: cfg.alignItems ?? "center",
     });
+    this._view = { normal, hover, pressed, disabled };
 
-    this._clickable = new Clickable(this, {
-      ...this._compensatePadding(),
-      shape: cfg.shape,
-      enabled: cfg.enabled,
-      onClick: cfg.onClick,
-      onUpdate: (s) => this.setState(s),
-    });
-
-    this.setState(this._clickable.state);
-  }
-
-  get enabled(): boolean {
-    return this._clickable.enabled;
-  }
-  set enabled(v: boolean) {
-    this._clickable.enabled = v;
-    this.setState(this._clickable.state);
-  }
-
-  private _compensatePadding() {
-    return {
-      left: -this.node.xAxis.paddingStart,
-      right: -this.node.xAxis.paddingEnd,
-      top: -this.node.yAxis.paddingStart,
-      bottom: -this.node.yAxis.paddingEnd,
+    // Children are added after construction, so reapply on layout.
+    const onLayoutPrev = this.node.onLayout;
+    this.node.onLayout = (rect, depth) => {
+      onLayoutPrev?.(rect, depth);
+      this._apply(this.state);
     };
   }
 
-  private readonly _clickable: Clickable;
+  get enabled(): boolean {
+    return super.enabled;
+  }
+
+  set enabled(v: boolean) {
+    super.enabled = v;
+    this._apply(this.state);
+  }
+
+  private _apply(s: ClickableState) {
+    applyViewState(this.children, this._resolve(s));
+  }
+
+  private _resolve(s: ClickableState): ViewState {
+    return this._view[s] ?? this._view.normal!;
+  }
+
+  private readonly _view: Record<ClickableState, ViewState | undefined>;
 }

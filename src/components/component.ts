@@ -32,7 +32,7 @@ export class Component {
   }
 
   protected addChild(child: Component): void {
-    this._children.push(child);
+    this.children.push(child);
     this.node.add(child.node);
     child._parentVisible = this.visible;
   }
@@ -41,7 +41,7 @@ export class Component {
     // override in subclasses
   }
 
-  private _children: Component[] = [];
+  protected children: Component[] = [];
   private _visible: boolean;
   private _parentVisible: boolean = true;
 
@@ -53,7 +53,7 @@ export class Component {
 
   private _syncVisibility(): void {
     this.onVisibilityChange(this.visible);
-    for (const child of this._children) {
+    for (const child of this.children) {
       child._setParentVisible(this.visible);
     }
   }
