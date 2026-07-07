@@ -8,9 +8,9 @@ export type FrameConfig = ComponentConfig & {
 };
 
 export function frame(parent: Component, cfg: FrameConfig) {
-  return new Image(parent, { texture: uiTexture, tileX: true, tileY: true, ...cfg });
+  return parent.add(Image, { texture: uiTexture, tileX: true, tileY: true, ...cfg });
 }
 
 export function text(parent: Component, cfg: Partial<TextConfig>) {
-  return new Text(parent, { font: fonts.roots, tint: colors.light, ...cfg });
+  return parent.add(Text, { font: fonts.roots, tint: colors.light, ...cfg });
 }

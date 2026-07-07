@@ -18,6 +18,17 @@ export class Component {
     }
   }
 
+  public add<T extends Component, Args extends any[]>(
+    ChildClass:
+      | (new (parent: Component, ...args: Args) => T)
+      | ((parent: Component, ...args: Args) => T),
+    ...args: Args
+  ): T {
+    return ChildClass.prototype
+      ? new (ChildClass as new (parent: Component, ...a: Args) => T)(this, ...args)
+      : (ChildClass as (parent: Component, ...args: Args) => T)(this, ...args);
+  }
+
   readonly node: Node;
   readonly mount: Mount;
 

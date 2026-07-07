@@ -42,9 +42,9 @@ export class Ui extends ResponsiveScene {
     const game = this.scene.get<GameWorld>("game-world");
     this.scene.launch(game);
 
-    const loadDialog = load_dialog(root, (msg) => logger.write(msg));
+    const loadDialog = root.add(load_dialog, (msg) => logger.write(msg));
 
-    text(root, {
+    root.add(text, {
       right: 4,
       bottom: 88,
       font: fonts.branches,
@@ -52,7 +52,7 @@ export class Ui extends ResponsiveScene {
       text: `Phaser PixUI v${PHASER_PIXUI_VERSION}`,
     });
 
-    const headerFrame = frame(root, {
+    const headerFrame = root.add(frame, {
       frame: "header_scroll",
       top: 64,
       width: 224,
@@ -64,14 +64,14 @@ export class Ui extends ResponsiveScene {
       justifyContent: "center",
       alignItems: "center",
     });
-    text(headerFrame, {
+    headerFrame.add(text, {
       font: fonts.trunk,
       tint: colors.dark,
       align: "center",
       text: "Phaser-PixUI demo",
     });
 
-    const mainMenu = new Component(root, {
+    const mainMenu = root.add(Component, {
       inset: 0,
       direction: "column",
       gap: 2,
@@ -79,21 +79,18 @@ export class Ui extends ResponsiveScene {
       alignItems: "center",
     });
 
-    button(mainMenu, {
-      text: "New game",
+    mainMenu.add(button, "New game", {
       onClick: () => logger.write("New game is already started!"),
     });
-    button(mainMenu, {
-      text: "Load game",
+    mainMenu.add(button, "Load game", {
       onClick: () => (loadDialog.visible = true),
     });
-    button(mainMenu, {
-      text: "Exit",
+    mainMenu.add(button, "Exit", {
       enabled: false,
       onClick: () => logger.write("There is no escape :)"),
     });
 
-    settingsButton(root, {
+    root.add(settingsButton, {
       right: 4,
       top: 4,
       width: 32,

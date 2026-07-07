@@ -1,5 +1,7 @@
-import { Clickable, type ClickableConfig, type ClickableState } from "./clickable";
+import { Clickable, type ClickableConfig } from "./clickable";
 import type { Component } from "./component";
+import type { ImageConfig } from "./image";
+import { MultiImage } from "./multi-image";
 import { applyViewState, type ViewState } from "./view-state";
 
 export type ButtonConfig = Omit<ClickableConfig, "onUpdate"> & {
@@ -14,18 +16,30 @@ export class Button extends Clickable {
     const { normal, hover, pressed, disabled, ...rest } = cfg;
     super(parent, {
       ...rest,
-      onUpdate: (s) => this._apply(s),
+      onUpdate: () => applyViewState(this.children, this._viewState()),
       justifyContent: cfg.justifyContent ?? "center",
       alignItems: cfg.alignItems ?? "center",
     });
-    this._view = { normal, hover, pressed, disabled };
+    this._states = { normal, hover, pressed, disabled };
 
     // Children are added after construction, so reapply on layout.
     const onLayoutPrev = this.node.onLayout;
     this.node.onLayout = (rect, depth) => {
       onLayoutPrev?.(rect, depth);
-      this._apply(this.state);
+      applyViewState(this.children, this._viewState());
     };
+  }
+
+  public addImage(cfg: Omit<ImageConfig, "frame">): MultiImage {
+    const frames = [this._states.normal.frame];
+    if (this._states.hover) frames.push(this._states.hover.frame);
+    if (this._states.pressed) frames.push(this._states.pressed.frame);
+    if (this._states.disabled) frames.push(this._states.disabled.frame);
+    return this.add(MultiImage, {
+      ...cfg,
+      frame: this._states.normal.frame,
+      frames,
+    });
   }
 
   get enabled(): boolean {
@@ -34,16 +48,18 @@ export class Button extends Clickable {
 
   set enabled(v: boolean) {
     super.enabled = v;
-    this._apply(this.state);
+    applyViewState(this.children, this._viewState());
   }
 
-  private _apply(s: ClickableState) {
-    applyViewState(this.children, this._resolve(s));
+  private _viewState(): ViewState {
+    const s = this.state;
+    return this._states[s] ?? this._states.normal;
   }
 
-  private _resolve(s: ClickableState): ViewState {
-    return this._view[s] ?? this._view.normal!;
-  }
-
-  private readonly _view: Record<ClickableState, ViewState | undefined>;
+  private readonly _states: {
+    normal: ViewState;
+    hover?: ViewState;
+    pressed?: ViewState;
+    disabled?: ViewState;
+  };
 }
