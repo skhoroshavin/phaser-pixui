@@ -4,8 +4,8 @@ import { frame, text } from "./visuals.ts";
 
 export function log_panel(parent: Component, cfg?: ComponentConfig) {
   const bg = frame(parent, { ...cfg, frame: "frame_light", paddingX: 12, paddingY: 14 });
-  const scroll = new ScrollArea(bg, { axis: "y", inset: 0 });
-  const txt = text(scroll.content, { left: 0, right: 0 });
+  const scroll = new ScrollArea(bg, { axis: "y", grow: 1 });
+  const txt = text(scroll.content, {});
   return {
     write(msg: string) {
       const t = txt.text + msg + "\n";

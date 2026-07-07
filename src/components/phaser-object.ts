@@ -1,4 +1,4 @@
-import type { GameObjects } from "phaser";
+import { TintModes, type GameObjects } from "phaser";
 import { Component, type ComponentConfig } from "./component";
 
 type GameObject = GameObjects.GameObject;
@@ -16,30 +16,60 @@ export class PhaserObject<
 > extends Component {
   constructor(parent: Component, create: (scene: Phaser.Scene) => T, cfg?: PhaserObjectConfig<T>) {
     super(parent, cfg);
+    this._onResize = cfg?.onResize;
     this.internal = create(this.mount.displayHost.scene!);
     this.internal.setOrigin(0, 0);
     this.mount.displayHost.add(this.internal);
     this.node.onLayout = (rect, depth) => {
-      this.internal.setPosition(rect.x + this._renderOffsetX, rect.y + this._renderOffsetY);
+      this.internal.setPosition(rect.x + this._offsetX, rect.y + this._offsetY);
       this.internal.setDepth(depth);
-      cfg?.onResize?.(this.internal, rect.width, rect.height);
+      this._resize(rect.width, rect.height);
     };
     this.internal.setVisible(this.visible);
   }
 
   readonly internal: T;
 
-  setRenderOffset(dx: number, dy: number): void {
-    this.internal.x += dx - this._renderOffsetX;
-    this.internal.y += dy - this._renderOffsetY;
-    this._renderOffsetX = dx;
-    this._renderOffsetY = dy;
+  setTint(color: number): void {
+    const i = this.internal as GameObject | GameObjects.Components.Tint;
+    if ("setTint" in i) i.setTint(color).setTintMode(TintModes.FILL);
+  }
+
+  setOffsetX(dx: number): void {
+    this.internal.x += dx - this._offsetX;
+    this._offsetX = dx;
+  }
+
+  setOffsetY(dy: number): void {
+    this.internal.y += dy - this._offsetY;
+    this._offsetY = dy;
+  }
+
+  setScaleX(x: number): void {
+    this._scaleX = x;
+    this._resize(this.node.rect.width, this.node.rect.height);
+  }
+
+  setScaleY(y: number): void {
+    this._scaleY = y;
+    this._resize(this.node.rect.width, this.node.rect.height);
+  }
+
+  private _resize(width: number, height: number): void {
+    this._onResize?.(
+      this.internal,
+      Math.floor(width * this._scaleX),
+      Math.floor(height * this._scaleY),
+    );
   }
 
   protected onVisibilityChange(v: boolean): void {
     this.internal.setVisible(v);
   }
 
-  private _renderOffsetX = 0;
-  private _renderOffsetY = 0;
+  private readonly _onResize?: (internal: T, width: number, height: number) => void;
+  private _offsetX = 0;
+  private _offsetY = 0;
+  private _scaleX = 1;
+  private _scaleY = 1;
 }

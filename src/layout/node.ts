@@ -94,12 +94,7 @@ export class Node {
     this._intrinsicSize = Node.normalizeIntrinsic(value);
   }
 
-  get isFlex(): boolean {
-    return this.layout.direction !== undefined;
-  }
-
-  isAbsolute(parent?: Node): boolean {
-    if (!(parent?.isFlex ?? false)) return true;
+  isAbsolute(): boolean {
     return this.xAxis.hasEdge || this.yAxis.hasEdge;
   }
 

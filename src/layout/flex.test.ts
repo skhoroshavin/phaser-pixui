@@ -2,6 +2,19 @@ import { describe, expect, it } from "vitest";
 import { Node, resolve } from "./";
 
 describe("flex", () => {
+  it("flows children vertically by default (column), filling the cross axis", () => {
+    const root = new Node({ layout: { width: 200, height: 200 } });
+    const a = new Node({ layout: { height: 40 } }); // width auto → fills
+    const b = new Node({ layout: { width: 50, height: 30 } });
+    root.add(a, b);
+    resolve(root);
+
+    // no direction set: defaults to column (CSS block-flow-like) — a stacks at origin
+    // and stretches to 200 (cross axis), b stacks below at y=40 keeping its explicit width
+    expect(a.rect).toEqual({ x: 0, y: 0, width: 200, height: 40 });
+    expect(b.rect).toEqual({ x: 0, y: 40, width: 50, height: 30 });
+  });
+
   it("places children along the main axis with gap (column and row)", () => {
     const root = new Node({ layout: { width: 320, height: 240 } });
     const col = new Node({
@@ -186,7 +199,7 @@ describe("flex", () => {
   });
 
   it("stacks flex children with nested intrinsic sizes", () => {
-    const root = new Node({ layout: { width: 320, height: 240 } });
+    const root = new Node({ layout: { width: 320, height: 240, alignItems: "start" } });
     const flex = new Node({
       layout: { direction: "column", gap: 4 },
     });
@@ -325,7 +338,7 @@ describe("flex", () => {
   });
 
   it("collapses to zero when flex container has no children", () => {
-    const root = new Node({ layout: { width: 320, height: 240 } });
+    const root = new Node({ layout: { width: 320, height: 240, alignItems: "start" } });
     const flex = new Node({
       layout: {
         direction: "column",
@@ -363,8 +376,8 @@ describe("flex", () => {
 
     resolve(root);
 
-    // inset:0 fills the content rect (160 × 40, at origin 10,20)
-    expect(abs.rect).toEqual({ x: 10, y: 20, width: 160, height: 40 });
+    // inset:0 fills the rect (200 × 100); padding affects in-flow content only
+    expect(abs.rect).toEqual({ x: 0, y: 0, width: 200, height: 100 });
   });
 
   it("absolute flex item does not consume main-axis space", () => {
@@ -418,5 +431,40 @@ describe("flex", () => {
 
     expect(bg.rect).toEqual({ x: 0, y: 0, width: 128, height: 32 });
     expect(label.rect).toEqual({ x: 34, y: 10, width: 60, height: 12 });
+  });
+});
+
+describe("grow", () => {
+  it("a single grow:1 child fills the free main-axis space", () => {
+    const root = new Node({ layout: { width: 100, height: 100, alignItems: "start" } });
+    const a = new Node({ layout: { width: 30, height: 20, grow: 1 } });
+    root.add(a);
+    resolve(root);
+    // free = 100 - 20 = 80; grow absorbs all of it → 100
+    expect(a.rect).toEqual({ x: 0, y: 0, width: 30, height: 100 });
+  });
+
+  it("distributes free space proportionally to grow weights, leaving non-grow items at base size", () => {
+    const root = new Node({ layout: { width: 100, height: 80, alignItems: "start" } });
+    const a = new Node({ layout: { width: 30, height: 10 } }); // no grow
+    const b = new Node({ layout: { width: 30, height: 10, grow: 1 } });
+    const c = new Node({ layout: { width: 30, height: 10, grow: 2 } });
+    root.add(a, b, c);
+    resolve(root);
+    // used = 30, free = 50, totalGrow = 3 → floors 16 + 33 = 49, one leftover pixel;
+    // fracs 50%3=2 (b) > 100%3=1 (c) → largest remainder goes to b → b 27 / c 43; a stays 10
+    expect(a.rect).toEqual({ x: 0, y: 0, width: 30, height: 10 });
+    expect(b.rect).toEqual({ x: 0, y: 10, width: 30, height: 27 });
+    expect(c.rect).toEqual({ x: 0, y: 37, width: 30, height: 43 });
+  });
+
+  it("does nothing when the container has no free main-axis space (auto-sized)", () => {
+    const root = new Node({ layout: { width: 100, alignItems: "start" } }); // height auto
+    const a = new Node({ layout: { width: 30, height: 40, grow: 1 } });
+    root.add(a);
+    resolve(root);
+    // auto height wraps the child → no free space → grow no-op
+    expect(a.rect).toEqual({ x: 0, y: 0, width: 30, height: 40 });
+    expect(root.rect.height).toBe(40);
   });
 });

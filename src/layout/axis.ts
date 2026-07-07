@@ -8,7 +8,6 @@ export class Axis {
     readonly marginEnd: number,
     readonly marginStartAuto: boolean,
     readonly marginEndAuto: boolean,
-    readonly marginAuto = marginStartAuto && marginEndAuto,
     private readonly _start = start ?? 0,
     private readonly _end = end ?? 0,
   ) {}

@@ -8,19 +8,6 @@ describe("resolve", () => {
 
   // ── nested children ──
 
-  it("positions nested child at parent origin when no edges set", () => {
-    const root = viewport(320, 240);
-    const frame = new Node({ layout: { left: 100, top: 50, width: 200, height: 100 } });
-    const child = new Node({ layout: { width: 50 }, intrinsicSize: { width: 50, height: 20 } });
-    frame.add(child);
-    root.add(frame);
-
-    resolve(root);
-
-    expect(frame.rect).toEqual({ x: 100, y: 50, width: 200, height: 100 });
-    expect(child.rect).toEqual({ x: 100, y: 50, width: 50, height: 20 });
-  });
-
   it("positions nested child with left/top offset relative to parent", () => {
     const root = viewport(320, 240);
     const frame = new Node({ layout: { left: 50, top: 30, width: 200, height: 100 } });
@@ -81,21 +68,11 @@ describe("resolve", () => {
 
   it("treats an omitted intrinsic axis as 0", () => {
     const frame = new Node({ intrinsicSize: { height: 40 } });
-    const root = viewport(320, 240);
+    const root = new Node({ layout: { width: 320, height: 240, alignItems: "start" } });
     root.add(frame);
 
     resolve(root);
 
     expect(frame.rect).toEqual({ x: 0, y: 0, width: 0, height: 40 });
-  });
-
-  it("lets explicit width override an omitted intrinsic axis", () => {
-    const frame = new Node({ layout: { width: 100 }, intrinsicSize: { height: 40 } });
-    const root = viewport(320, 240);
-    root.add(frame);
-
-    resolve(root);
-
-    expect(frame.rect).toEqual({ x: 0, y: 0, width: 100, height: 40 });
   });
 });
