@@ -15,9 +15,16 @@
       hover: 2
       down: 1
       disabled: 3
-- name: slider_track
+- name: slider
   image: minifantasy/slider.png
   nineslice: { x: 3, y: 0, w: 31, h: 6 }
+  spritesheet:
+    sprite_width: 37
+    sprite_height: 6
+    sprite_names:
+      track: 0
+      track_hover: 1
+      track_disabled: 2
 - name: slider_thumb
   image: minifantasy/slider-thumb.png
   spritesheet:
@@ -25,23 +32,33 @@
     sprite_height: 8
     sprite_names:
       normal: 0
-      active: 1
+      pressed: 1
+      hover: 2
+      disabled: 3
 - name: check_box
   image: minifantasy/check-box.png
   spritesheet:
     sprite_width: 13
     sprite_height: 13
     sprite_names:
-      unselected: 0
+      normal: 0
       selected: 1
+      hover: 2
+      hover_selected: 3
+      disabled: 4
+      disabled_selected: 5
 - name: radio_button
   image: minifantasy/radio-button.png
   spritesheet:
     sprite_width: 13
     sprite_height: 13
     sprite_names:
-      unselected: 0
+      normal: 0
       selected: 1
+      hover: 2
+      hover_selected: 3
+      disabled: 4
+      disabled_selected: 5
 - name: tab_left
   image: minifantasy/tab-left.png
   nineslice: { x: 7, y: 7, w: 35, h: 3 }

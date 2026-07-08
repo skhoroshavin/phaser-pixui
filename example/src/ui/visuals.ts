@@ -18,5 +18,5 @@ export function frame(parent: Component, cfg: FrameConfig = {}) {
 }
 
 export function text(parent: Component, cfg: Partial<TextConfig>) {
-  return parent.add(Text, { font: fonts.pypx, tint: colors.dark, ...cfg });
+  return parent.add(Text, { font: fonts.normal, tint: colors.dark, ...cfg });
 }

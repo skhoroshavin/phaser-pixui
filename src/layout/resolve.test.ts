@@ -36,7 +36,7 @@ describe("resolve", () => {
 
   // ── onLayout ──
 
-  it("fires onLayout only when rect changes", () => {
+  it("fires onLayout on every resolve", () => {
     const layouts: Rect[] = [];
     const leaf = new Node({
       layout: { right: 4 },
@@ -58,10 +58,10 @@ describe("resolve", () => {
     expect(layouts).toHaveLength(2);
     expect(layouts[1]).toEqual({ x: 296, y: 0, width: 100, height: 16 });
 
-    leaf.onLayout = () => {
-      throw new Error("should not fire");
-    };
+    // Same rect — still fires (onLayout is cheap, not worth dedup).
     resolve(root);
+    expect(layouts).toHaveLength(3);
+    expect(layouts[2]).toEqual({ x: 296, y: 0, width: 100, height: 16 });
   });
 
   // ── per-axis intrinsic (e.g. auto-sized Frame from sprite dims) ──
