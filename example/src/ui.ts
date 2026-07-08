@@ -71,7 +71,6 @@ export class Ui extends ResponsiveScene {
       text: "Phaser-PixUI demo",
     });
 
-
     const mainMenu = root.add(Component, {
       inset: 0,
       direction: "column",
@@ -90,7 +89,6 @@ export class Ui extends ResponsiveScene {
       enabled: false,
       onClick: () => logger.write("There is no escape :)"),
     });
-
 
     const dps = window.devicePixelRatio || 1;
     let rendererType;

@@ -18,7 +18,7 @@ export class Component {
     }
   }
 
-  public add<T extends Component, Args extends any[]>(
+  public add<T extends Component, Args extends unknown[]>(
     ChildClass:
       | (new (parent: Component, ...args: Args) => T)
       | ((parent: Component, ...args: Args) => T),
