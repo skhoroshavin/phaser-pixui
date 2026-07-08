@@ -13,14 +13,25 @@ export type ToggleStates = {
   disabled_selected?: ViewState;
 };
 
-export type ToggleConfig = Omit<ClickableConfig, "onUpdate"> & ToggleStates & {
-  checked?: boolean;
-  onChange?: (checked: boolean) => void;
-};
+export type ToggleConfig = Omit<ClickableConfig, "onUpdate"> &
+  ToggleStates & {
+    checked?: boolean;
+    onChange?: (checked: boolean) => void;
+  };
 
 export class Toggle extends Clickable {
   constructor(parent: Component, cfg: ToggleConfig) {
-    const { normal, selected, hover, disabled, hover_selected, disabled_selected, checked, onChange, ...rest } = cfg;
+    const {
+      normal,
+      selected,
+      hover,
+      disabled,
+      hover_selected,
+      disabled_selected,
+      checked,
+      onChange,
+      ...rest
+    } = cfg;
     super(parent, {
       ...rest,
       onUpdate: () => applyViewState(this.children, this._viewState()),
