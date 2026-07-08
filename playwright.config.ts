@@ -12,7 +12,7 @@ export default defineConfig({
       name: "chromium",
       use: {
         ...devices["Desktop Chrome"],
-        viewport: { width: 640, height: 360 },
+        viewport: { width: 1920, height: 1080 },
         deviceScaleFactor: 1,
         launchOptions: {
           args: ["--use-gl=angle"],

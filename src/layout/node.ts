@@ -36,11 +36,11 @@ export class Node {
     );
     this.measured = {
       topDownWidth: undefined,
-      bottomUpSize: { width: NaN, height: NaN },
-      finalSize: { width: NaN, height: NaN },
+      bottomUpSize: { width: 0, height: 0 },
+      finalSize: { width: 0, height: 0 },
     };
-    this._rect = { x: NaN, y: NaN, width: NaN, height: NaN };
-    this.depth = NaN;
+    this._rect = { x: 0, y: 0, width: 0, height: 0 };
+    this.depth = 0;
   }
 
   // inputs (externally-set)
@@ -69,11 +69,8 @@ export class Node {
   }
 
   setRect(rect: Rect): void {
-    const r = this._rect;
-    if (rect.x !== r.x || rect.y !== r.y || rect.width !== r.width || rect.height !== r.height) {
-      this._rect = rect;
-      this.onLayout?.(rect, this.depth);
-    }
+    this._rect = rect;
+    this.onLayout?.(rect, this.depth);
   }
 
   add(...children: Node[]): this {

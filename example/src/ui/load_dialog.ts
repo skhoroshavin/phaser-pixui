@@ -1,6 +1,6 @@
 import { Modal } from "../../../src/components/modal";
 import { Component } from "../../../src/components/component";
-import { button } from "./buttons";
+import { button } from "./controls";
 import { frame, text } from "./visuals";
 
 export function load_dialog(parent: Component, log: (msg: string) => void) {
