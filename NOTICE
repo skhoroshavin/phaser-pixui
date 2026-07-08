@@ -15,7 +15,21 @@ See the file "LICENSE" at the repository root for the full license text.
 2) Example art assets
 --------------------------------------------------------------------------------
 
-The example project included in this repository uses pixel art assets credited
-to Gabriel Lima (aka "tiopalada"). The repository README states these assets are
-CC0 and may be used for any purpose; attribution to the author is appreciated.
-See the file "example/public/assets/LICENSE" in this repository for details.
+The example app includes third-party pixel art assets that are not part of
+the core library — they are for demonstration only:
+
+  - Minifantasy — UI sprites by Krishna Palacio
+    (https://krishna-palacio.itch.io), from a subset of Minifantasy UI
+    Overhaul (https://krishna-palacio.itch.io/minifantasy-ui-overhaul),
+    used under a commercial license with a special exception for this
+    open-source project. You must credit Krishna Palacio if you use these
+    assets, and you may not redistribute them. Purchasing the original
+    asset pack for access to the full sprite set is still recommended.
+
+  - Pyrious — pypx bitmap font by Ben Frankel
+    (https://pyrious.itch.io), CC0
+
+  - tiopalada — background image, bitmap fonts and older UI assets by Gabriel Lima
+    (https://tiopalada.itch.io), CC0
+
+Full attribution and license terms: see "example/assets/LICENSE".

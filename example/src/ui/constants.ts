@@ -5,9 +5,9 @@ export const colors = {
 };
 
 export const fonts = {
-  roots: "mana_roots",
-  trunk: "mana_trunk",
-  branches: "mana_branches",
+  pypx: "pyrious/pypx",
+  trunk: "tiopalada/mana_trunk",
+  branches: "tiopalada/mana_branches",
 };
 
 export const uiTexture = "mana_soul";

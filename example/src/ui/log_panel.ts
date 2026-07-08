@@ -3,7 +3,7 @@ import { ScrollArea } from "../../../src/components/scroll-area";
 import { frame, text } from "./visuals.ts";
 
 export function log_panel(parent: Component, cfg?: ComponentConfig) {
-  const bg = parent.add(frame, { ...cfg, frame: "frame_light", paddingX: 12, paddingY: 14 });
+  const bg = parent.add(frame, { ...cfg });
   const scroll = bg.add(ScrollArea, { axis: "y", grow: 1 });
   const txt = scroll.content.add(text, {});
   return {

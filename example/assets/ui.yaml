@@ -1,39 +1,66 @@
-- name: frame_light
-  image: ui/20250420manaSoul9SlicesA-Sheet.png
-  nineslice: { x: 30, y: 20, w: 36, h: 60 }
-- name: frame_dark
-  image: ui/20250420manaSoul9SlicesB-Sheet.png
-  nineslice: { x: 32, y: 32, w: 32, h: 32 }
-- name: frame_bright
-  image: ui/20250420manaSoul9SlicesC-Sheet.png
-  nineslice: { x: 32, y: 32, w: 32, h: 32 }
-- name: header_scroll
-  image: ui/20250420manaSoulHeaderA-Sheet.png
-  nineslice: { x: 30, y: 13, w: 38, h: 9 }
-- name: progress_curly
-  image: ui/20250421barA-Sheet.png
-  nineslice: { x: 22, y: 4, w: 51, h: 3 }
-- name: bar_green
-  image: ui/bar_green.png
-  nineslice: { x: 2, y: 2, w: 4, h: 4 }
+- name: frame
+  image: minifantasy/frame.png
+  nineslice: { x: 22, y: 21, w: 6, h: 6 }
+- name: frame-header
+  image: minifantasy/frame-header.png
+  nineslice: { x: 13, y: 8, w: 23, h: 3 }
 - name: button
-  image: ui/20250421manaSoulButtonB-Sheet.png
-  nineslice: { x: 10, y: 0, w: 70, h: 22 }
+  image: minifantasy/button.png
+  nineslice: { x: 7, y: 7, w: 35, h: 3 }
   spritesheet:
-    sprite_width: 96
-    sprite_height: 22
+    sprite_width: 49
+    sprite_height: 17
     sprite_names:
       up: 0
-      hover: 1
-      down: 2
+      hover: 2
+      down: 1
       disabled: 3
-- name: button_settings
-  image: ui/20250425optionsButton-Sheet.png
+- name: slider_track
+  image: minifantasy/slider.png
+  nineslice: { x: 3, y: 0, w: 31, h: 6 }
+- name: slider_thumb
+  image: minifantasy/slider-thumb.png
   spritesheet:
-    sprite_width: 32
-    sprite_height: 32
+    sprite_width: 8
+    sprite_height: 8
+    sprite_names:
+      normal: 0
+      active: 1
+- name: check_box
+  image: minifantasy/check-box.png
+  spritesheet:
+    sprite_width: 13
+    sprite_height: 13
+    sprite_names:
+      unselected: 0
+      selected: 1
+- name: radio_button
+  image: minifantasy/radio-button.png
+  spritesheet:
+    sprite_width: 13
+    sprite_height: 13
+    sprite_names:
+      unselected: 0
+      selected: 1
+- name: tab_left
+  image: minifantasy/tab-left.png
+  nineslice: { x: 7, y: 7, w: 35, h: 3 }
+  spritesheet:
+    sprite_width: 42
+    sprite_height: 17
     sprite_names:
       up: 0
-      hover: 1
-      down: 2
+      hover: 2
+      down: 1
+      disabled: 3
+- name: tab_right
+  image: minifantasy/tab-right.png
+  nineslice: { x: 2, y: 4, w: 20, h: 8 }
+  spritesheet:
+    sprite_width: 26
+    sprite_height: 17
+    sprite_names:
+      up: 0
+      hover: 2
+      down: 1
       disabled: 3

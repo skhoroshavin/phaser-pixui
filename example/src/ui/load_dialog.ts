@@ -10,10 +10,9 @@ export function load_dialog(parent: Component, log: (msg: string) => void) {
   });
 
   const panel = modal.content.add(frame, {
-    frame: "frame_bright",
-    width: 256,
-    height: 80,
     direction: "column",
+    paddingX: 16,
+    paddingY: 12,
     gap: 10,
     justifyContent: "center",
     alignItems: "center",

@@ -1,11 +1,45 @@
-CC0 1.0 Universal (CC0 1.0) Public Domain Dedication
+All assets in this directory are included exclusively for the example/demo
+application. They are not part of the core phaser-pixui library.
 
-To the extent possible under law, the person who associated CC0 with this
-work has waived all copyright and related or neighboring rights to this work.
-You can copy, modify, distribute and perform the work, even for commercial
-purposes, all without asking permission.
+## Minifantasy
 
-Attribution to original author, Gabriel Lima (aka "tiopalada",
-https://tiopalada.itch.io), is still appreciated.
+Files: `minifantasy/*.png`
 
-For more information about CC0, see: https://creativecommons.org/publicdomain/zero/1.0/
+Author: Krishna Palacio (https://krishna-palacio.itch.io)
+Sources:
+- Minifantasy UI Overhaul (https://krishna-palacio.itch.io/minifantasy-ui-overhaul)
+License: Commercial, with a special exception for this open-source project.
+
+You are allowed to:
+- Use these assets in your own non-commercial or commercial video game or
+  audio-visual digital project.
+- Edit and alter these assets for inclusion in your own projects.
+
+You are NOT allowed to:
+- Re-distribute or re-sell these assets (or altered versions) as standalone
+  game assets, images, or NFTs.
+
+You must credit Krishna Palacio in your project credits.
+
+## Pyrious
+
+Files: `pyrious/*.png`
+
+Author: Ben Frankel aka Pyrious (https://pyrious.itch.io)
+Sources:
+- PyPX Fonts (https://pyrious.itch.io/pypx-fonts)
+License: CC0 (https://creativecommons.org/publicdomain/zero/1.0/)
+
+## tiopalada
+
+Files: `tiopalada/*.png`
+
+Author: Gabriel Lima aka tiopalada (https://tiopalada.itch.io)
+Sources:
+- Tiny RPG Battle Kit I (https://tiopalada.itch.io/tiny-rpg-battle-kit-1) (background)
+- Tiny RPG Font Kit II (https://tiopalada.itch.io/tiny-rpg-font-kit-ii) (fonts)
+- Mana Soul GUI (https://tiopalada.itch.io/tiny-rpg-mana-soul-gui)
+License: CC0 (https://creativecommons.org/publicdomain/zero/1.0/)
+
+Previous versions of this project also included the full Mana Soul GUI
+spritesheet and additional font variants — all CC0-licensed.
