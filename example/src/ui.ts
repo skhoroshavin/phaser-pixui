@@ -2,7 +2,7 @@ import { CANVAS, HEADLESS, VERSION, WEBGL } from "phaser";
 import { ConstraintMode, ResponsiveScene, SceneMount } from "../../src";
 import { Component } from "../../src/components/component.ts";
 import { GameWorld } from "./game.ts";
-import { button, settingsButton } from "./ui/buttons.ts";
+import { button } from "./ui/buttons.ts";
 import { frame, text } from "./ui/visuals.ts";
 import { log_panel } from "./ui/log_panel.ts";
 import { load_dialog } from "./ui/load_dialog.ts";
@@ -15,7 +15,7 @@ export class Ui extends ResponsiveScene {
       active: true,
       viewportConstraints: {
         mode: ConstraintMode.Minimum,
-        height: 320,
+        height: 240,
       },
     });
   }
@@ -37,24 +37,24 @@ export class Ui extends ResponsiveScene {
     });
     const root = new Component(mount);
 
-    const logger = log_panel(root, { bottom: 2, left: 2, right: 2, height: 84 });
+    const logger = log_panel(root, { bottom: 2, insetX: 2, height: 60 });
 
     const game = this.scene.get<GameWorld>("game-world");
     this.scene.launch(game);
 
-    const loadDialog = load_dialog(root, (msg) => logger.write(msg));
+    const loadDialog = root.add(load_dialog, (msg) => logger.write(msg));
 
-    text(root, {
+    root.add(text, {
       right: 4,
-      bottom: 88,
+      bottom: 64,
       font: fonts.branches,
       tint: colors.dark,
       text: `Phaser PixUI v${PHASER_PIXUI_VERSION}`,
     });
 
-    const headerFrame = frame(root, {
-      frame: "header_scroll",
-      top: 64,
+    const headerFrame = root.add(frame, {
+      frame: "frame-header",
+      top: 32,
       width: 224,
       height: 32,
       left: 0,
@@ -64,41 +64,30 @@ export class Ui extends ResponsiveScene {
       justifyContent: "center",
       alignItems: "center",
     });
-    text(headerFrame, {
+    headerFrame.add(text, {
       font: fonts.trunk,
       tint: colors.dark,
       align: "center",
       text: "Phaser-PixUI demo",
     });
 
-    const mainMenu = new Component(root, {
+    const mainMenu = root.add(Component, {
       inset: 0,
       direction: "column",
-      gap: 2,
+      gap: 4,
       justifyContent: "center",
       alignItems: "center",
     });
 
-    button(mainMenu, {
-      text: "New game",
+    mainMenu.add(button, "New game", {
       onClick: () => logger.write("New game is already started!"),
     });
-    button(mainMenu, {
-      text: "Load game",
+    mainMenu.add(button, "Load game", {
       onClick: () => (loadDialog.visible = true),
     });
-    button(mainMenu, {
-      text: "Exit",
+    mainMenu.add(button, "Exit", {
       enabled: false,
       onClick: () => logger.write("There is no escape :)"),
-    });
-
-    settingsButton(root, {
-      right: 4,
-      top: 4,
-      width: 32,
-      height: 32,
-      onClick: () => logger.write("What do you want to customize here?"),
     });
 
     const dps = window.devicePixelRatio || 1;

@@ -14,7 +14,7 @@ export class GameWorld extends ResponsiveScene {
 
   preload() {
     this.load.setPath("packed_assets");
-    this.load.image("bg_plains00");
+    this.load.image("bg_plains00", "tiopalada/bg_plains00.png");
   }
 
   create() {

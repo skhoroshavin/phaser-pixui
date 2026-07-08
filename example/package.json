@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --config vite/config.dev.mjs",
+    "prebuild": "mkdir -p public/packed_assets/tiopalada public/packed_assets/pyrious",
     "build": "tsc && vite build --config vite/config.prod.mjs",
     "preview": "vite preview --config vite/config.prod.mjs"
   },

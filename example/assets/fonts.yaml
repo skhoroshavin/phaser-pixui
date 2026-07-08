@@ -1,4 +1,4 @@
-- name: mana_branches
+- name: tiopalada/mana_branches
   size: 16
   line_spacing: 1
   letter_spacing: 1
@@ -11,7 +11,7 @@
     - "âåãÏÍÌÎïíìîÜÚÙÛüúùûÖÓÒÔÕöó"
     - "òôõËÉÈÊëéèêŸÝỲÿýỳÇçÑñÆæŒœß"
     - "ðÐþÞ¿¡"
-- name: mana_roots
+- name: tiopalada/mana_trunk
   size: 16
   line_spacing: 1
   letter_spacing: 1
@@ -24,16 +24,15 @@
     - "âåãÏÍÌÎïíìîÜÚÙÛüúùûÖÓÒÔÕöó"
     - "òôõËÉÈÊëéèêŸÝỲÿýỳÇçÑñÆæŒœß"
     - "ðÐþÞ¿¡"
-- name: mana_trunk
+- name: pyrious/pypx
   size: 16
   line_spacing: 1
   letter_spacing: 1
   space_width: 4
   letters:
-    - "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    - "abcdefghijklmnopqrstuvwxyz"
-    - '0123456789!"#$%&''()*+,-./:'
-    - ";<=>?[]\\^_`{}|~@·ÄÁÀÂÅÃäáà"
-    - "âåãÏÍÌÎïíìîÜÚÙÛüúùûÖÓÒÔÕöó"
-    - "òôõËÉÈÊëéèêŸÝỲÿýỳÇçÑñÆæŒœß"
-    - "ðÐþÞ¿¡"
+    - '!"#$%&''()*+,-./0'
+    - "123456789:;<=>?@"
+    - "ABCDEFGHIJKLMNOP"
+    - "QRSTUVWXYZ[\\]^_`"
+    - "abcdefghijklmnop"
+    - "qrstuvwxyz{|}~"

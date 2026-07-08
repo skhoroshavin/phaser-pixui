@@ -4,27 +4,25 @@ import { button } from "./buttons";
 import { frame, text } from "./visuals";
 
 export function load_dialog(parent: Component, log: (msg: string) => void) {
-  const modal = new Modal(parent, {
+  const modal = parent.add(Modal, {
     dismissOnBackdropClick: true,
     onDismiss: () => log("Dialog dismissed by backdrop click"),
   });
 
-  const panel = frame(modal.content, {
-    frame: "frame_bright",
-    width: 256,
-    height: 80,
+  const panel = modal.content.add(frame, {
     direction: "column",
+    paddingX: 16,
+    paddingY: 12,
     gap: 10,
     justifyContent: "center",
     alignItems: "center",
   });
 
-  text(panel, {
+  panel.add(text, {
     text: "There are no saved games",
   });
 
-  button(panel, {
-    text: "OK",
+  panel.add(button, "OK", {
     width: 64,
     onClick: () => (modal.visible = false),
   });
