@@ -1,4 +1,4 @@
-import { CANVAS, HEADLESS, VERSION, WEBGL } from "phaser";
+import { CANVAS, GameObjects, HEADLESS, VERSION, WEBGL } from "phaser";
 import { Component, ConstraintMode, ResponsiveScene, SceneMount } from "phaser-pixui";
 import { GameWorld } from "./game.ts";
 import { button } from "./ui/controls.ts";
@@ -23,13 +23,18 @@ export class Ui extends ResponsiveScene {
   preload() {
     this.load.setPath("packed_assets");
     this.load.atlas(uiTexture, uiTexture + ".png", uiTexture + ".atlas");
+    this.load.image("fonts", "fonts.png");
     for (const font of Object.values(fonts)) {
-      this.load.bitmapFont(font, "fonts.png", font + ".bmfont");
+      this.load.xml(font, font + ".bmfont");
     }
   }
 
   create() {
     super.create();
+    for (const font of Object.values(fonts)) {
+      GameObjects.BitmapText.ParseFromAtlas(this, font, "fonts", "__BASE", font);
+    }
+
     this.scene.bringToTop("ui");
 
     const mount = new SceneMount(this, {
