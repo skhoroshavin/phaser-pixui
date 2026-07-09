@@ -1,6 +1,5 @@
 import { CANVAS, HEADLESS, VERSION, WEBGL } from "phaser";
-import { ConstraintMode, ResponsiveScene, SceneMount } from "../../src";
-import { Component } from "../../src/components/component.ts";
+import { Component, ConstraintMode, ResponsiveScene, SceneMount } from "phaser-pixui";
 import { GameWorld } from "./game.ts";
 import { button } from "./ui/controls.ts";
 import { frame, text } from "./ui/visuals.ts";

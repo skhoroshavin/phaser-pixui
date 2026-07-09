@@ -1,9 +1,15 @@
-import { Component } from "../../../src/components/component";
-import { Button, type ButtonConfig } from "../../../src/components/button";
-import { RadioGroup, type RadioGroupConfig } from "../../../src/components/radiogroup";
-import { Slider, type SliderConfig } from "../../../src/components/slider";
-import { Text } from "../../../src/components/text";
-import { Toggle, type ToggleConfig } from "../../../src/components/toggle";
+import {
+  Button,
+  type ButtonConfig,
+  Component,
+  RadioGroup,
+  type RadioGroupConfig,
+  Slider,
+  type SliderConfig,
+  Text,
+  Toggle,
+  type ToggleConfig,
+} from "phaser-pixui";
 import { colors, fonts, uiTexture } from "./constants";
 
 /** Button with themed frame and label. */

@@ -1,4 +1,4 @@
-import { ConstraintMode, ResponsiveScene } from "../../src";
+import { ConstraintMode, ResponsiveScene } from "phaser-pixui";
 
 export class GameWorld extends ResponsiveScene {
   constructor() {

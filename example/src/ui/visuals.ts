@@ -1,6 +1,4 @@
-import { Component, type ComponentConfig } from "../../../src/components/component";
-import { Image } from "../../../src/components/image";
-import { Text, type TextConfig } from "../../../src/components/text";
+import { Component, type ComponentConfig, Image, Text, type TextConfig } from "phaser-pixui";
 import { colors, fonts, uiTexture } from "./constants.ts";
 
 export type FrameConfig = ComponentConfig & { frame?: string };

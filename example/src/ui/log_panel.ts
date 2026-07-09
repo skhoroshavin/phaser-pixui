@@ -1,5 +1,4 @@
-import { Component, type ComponentConfig } from "../../../src/components/component";
-import { ScrollArea } from "../../../src/components/scroll-area";
+import { Component, type ComponentConfig, ScrollArea } from "phaser-pixui";
 import { frame, text } from "./visuals.ts";
 
 export function log_panel(parent: Component, cfg?: ComponentConfig) {

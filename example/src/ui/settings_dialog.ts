@@ -1,5 +1,4 @@
-import { Component } from "../../../src/components/component";
-import { Modal } from "../../../src/components/modal";
+import { Component, Modal } from "phaser-pixui";
 import { button, checkbox, radiogroup, slider } from "./controls";
 import { frame, text } from "./visuals";
 import { fonts } from "./constants";
@@ -43,10 +42,10 @@ export function settings_dialog(parent: Component, log: (msg: string) => void) {
   const difficulty = panel.add(radiogroup, difficulties, {
     direction: "row",
     gap: 8,
-    selectedIndex: 0,
+    selectedIndex: 1,
     onChange: (i) => log(`Difficulty: ${difficulties[i]}`),
   });
-  difficulty.toggles[2].enabled = false;
+  difficulty.toggles[2]!.enabled = false;
 
   panel.add(button, "Done", {
     width: 64,
