@@ -1,6 +1,6 @@
 import type { Scene } from "phaser";
 import { Mount, type DisplayHost } from "./mount";
-import type { Size } from "../util/size";
+import type { Size } from "../shared/size";
 
 export type SceneMountConfig = {
   viewport: () => Size;

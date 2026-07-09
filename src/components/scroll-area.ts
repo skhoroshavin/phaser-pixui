@@ -1,22 +1,20 @@
 import { Math as PMath } from "phaser";
+import { Scrollable } from "../behaviours/scrollable";
+import { type Axis } from "../shared/axis";
 import { Component, type ComponentConfig } from "./component";
-import { Draggable } from "./draggable";
+import { Interactive } from "./interactive";
 import { MaskMount } from "../mounts/mask-mount";
 import { resolve, type Rect } from "../layout";
 
-type Axis = "x" | "y" | "both";
-
 export type ScrollAreaConfig = ComponentConfig & {
   axis?: Axis;
-  wheel?: boolean;
-  kinetic?: boolean;
 };
 
 export class ScrollArea extends Component {
   constructor(parent: Component, cfg: ScrollAreaConfig = {}) {
     super(parent, cfg);
 
-    this._axis = cfg.axis ?? "both";
+    this._axis = cfg.axis;
 
     const scene = this.mount.displayHost.scene!;
     this._maskMount = new MaskMount(scene);
@@ -38,13 +36,12 @@ export class ScrollArea extends Component {
       this._applyScroll();
     };
 
-    new Draggable(this, {
-      inset: 0,
+    this._surface = new Interactive(this, { inset: 0 });
+    this._scrollable = new Scrollable({
       axis: this._axis,
-      wheel: cfg.wheel ?? true,
-      kinetic: cfg.kinetic ?? true,
       onScroll: (dx, dy) => this.scrollBy(dx, dy),
     });
+    this._surface.addBehaviour(this._scrollable);
   }
 
   readonly content: Component;
@@ -115,8 +112,10 @@ export class ScrollArea extends Component {
     this._scroll.y = PMath.Clamp(this._scroll.y, 0, this._maxScroll.y);
   }
 
-  private readonly _axis: Axis;
+  private readonly _axis?: Axis;
   private readonly _maskMount: MaskMount;
+  private readonly _surface: Interactive;
+  private readonly _scrollable: Scrollable;
   private _viewport?: Rect;
   private readonly _scroll = new PMath.Vector2();
   private readonly _maxScroll = new PMath.Vector2();

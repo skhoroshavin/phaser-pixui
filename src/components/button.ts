@@ -1,32 +1,38 @@
-import { Clickable, type ClickableConfig } from "./clickable";
+import { Clickable } from "../behaviours/clickable";
+import { Hoverable } from "../behaviours/hoverable";
 import type { Component } from "./component";
+import { Interactive, type InteractiveConfig } from "./interactive";
 import type { ImageConfig } from "./image";
 import { MultiImage } from "./multi-image";
 import { applyViewState, type ViewState } from "./view-state";
 
-export type ButtonConfig = Omit<ClickableConfig, "onUpdate"> & {
+export type ButtonConfig = InteractiveConfig & {
+  onClick?: () => void;
   normal: ViewState;
   hover?: ViewState;
   pressed?: ViewState;
   disabled?: ViewState;
 };
 
-export class Button extends Clickable {
+export class Button extends Interactive {
   constructor(parent: Component, cfg: ButtonConfig) {
-    const { normal, hover, pressed, disabled, ...rest } = cfg;
-    super(parent, {
-      ...rest,
-      onUpdate: () => applyViewState(this.children, this._viewState()),
-      justifyContent: cfg.justifyContent ?? "center",
-      alignItems: cfg.alignItems ?? "center",
-    });
-    this._states = { normal, hover, pressed, disabled };
+    super(parent, { justifyContent: "center", alignItems: "center", ...cfg });
+    this._states = {
+      normal: cfg.normal,
+      hover: cfg.hover,
+      pressed: cfg.pressed,
+      disabled: cfg.disabled,
+    };
 
-    // Children are added after construction, so reapply on layout.
+    this._click = this.addBehaviour(
+      new Clickable({ onClick: cfg.onClick, onUpdate: () => this._update() }),
+    );
+    this._hover = this.addBehaviour(new Hoverable({ onUpdate: () => this._update() }));
+
     const onLayoutPrev = this.node.onLayout;
     this.node.onLayout = (rect, depth) => {
       onLayoutPrev?.(rect, depth);
-      applyViewState(this.children, this._viewState());
+      this._update();
     };
   }
 
@@ -42,20 +48,23 @@ export class Button extends Clickable {
     });
   }
 
-  get enabled(): boolean {
-    return super.enabled;
+  protected onEnabledChange(): void {
+    this._update();
   }
 
-  set enabled(v: boolean) {
-    super.enabled = v;
+  private _update(): void {
     applyViewState(this.children, this._viewState());
   }
 
   private _viewState(): ViewState {
-    const s = this.state;
-    return this._states[s] ?? this._states.normal;
+    if (!this.enabled) return this._states.disabled ?? this._states.normal;
+    if (this._click.pressed) return this._states.pressed ?? this._states.normal;
+    if (this._hover.hovered) return this._states.hover ?? this._states.normal;
+    return this._states.normal;
   }
 
+  private readonly _click: Clickable;
+  private readonly _hover: Hoverable;
   private readonly _states: {
     normal: ViewState;
     hover?: ViewState;

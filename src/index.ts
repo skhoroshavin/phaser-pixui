@@ -5,4 +5,4 @@ export * from "./scene/responsive";
 export * from "./mounts/scene-mount";
 
 // Utilities
-export * from "./util/size";
+export * from "./shared/size";

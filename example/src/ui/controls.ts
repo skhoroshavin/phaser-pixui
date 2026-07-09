@@ -1,6 +1,5 @@
 import { Component } from "../../../src/components/component";
-import { Button } from "../../../src/components/button";
-import type { ClickableConfig } from "../../../src/components/clickable";
+import { Button, type ButtonConfig } from "../../../src/components/button";
 import { RadioGroup, type RadioGroupConfig } from "../../../src/components/radiogroup";
 import { Slider, type SliderConfig } from "../../../src/components/slider";
 import { Text } from "../../../src/components/text";
@@ -8,7 +7,7 @@ import { Toggle, type ToggleConfig } from "../../../src/components/toggle";
 import { colors, fonts, uiTexture } from "./constants";
 
 /** Button with themed frame and label. */
-export function button(parent: Component, text: string, cfg?: ClickableConfig): Button {
+export function button(parent: Component, text: string, cfg?: Partial<ButtonConfig>): Button {
   const btn = parent.add(Button, {
     width: 96,
     paddingX: 5,

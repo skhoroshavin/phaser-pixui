@@ -1,4 +1,4 @@
-import { frameDimensions } from "../util/frame";
+import { frameDimensions } from "../shared/frame";
 import { Component } from "./component";
 import { Image, type ImageConfig } from "./image";
 

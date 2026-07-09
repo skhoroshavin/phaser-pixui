@@ -1,7 +1,7 @@
+import { Clickable } from "../behaviours/clickable";
 import type { Component, ComponentConfig } from "./component";
-import { Clickable } from "./clickable";
-import { Rectangle } from "./rectangle";
 import { Interactive } from "./interactive";
+import { Rectangle } from "./rectangle";
 
 export type ModalConfig = ComponentConfig & {
   backdropColor?: number;
@@ -10,8 +10,8 @@ export type ModalConfig = ComponentConfig & {
   onDismiss?: () => void;
 };
 
-export class Modal extends Clickable {
-  constructor(parent: Component, cfg?: ModalConfig) {
+export class Modal extends Interactive {
+  constructor(parent: Component, cfg: ModalConfig = {}) {
     super(parent, {
       inset: 0,
       zIndex: 100,
@@ -19,17 +19,18 @@ export class Modal extends Clickable {
       direction: "column",
       justifyContent: "center",
       alignItems: "center",
-      onClick: () => this._onBackdropClick(),
-      visible: cfg?.visible ?? false,
+      visible: cfg.visible ?? false,
     });
 
-    this._onDismiss = cfg?.onDismiss;
-    this._dismissOnBackdropClick = cfg?.dismissOnBackdropClick ?? false;
+    this._onDismiss = cfg.onDismiss;
+    this._dismissOnBackdropClick = cfg.dismissOnBackdropClick ?? false;
+
+    this.addBehaviour(new Clickable({ onClick: () => this._onBackdropClick() }));
 
     new Rectangle(this, {
       inset: 0,
-      fillColor: cfg?.backdropColor ?? 0x000000,
-      fillAlpha: cfg?.backdropAlpha ?? 0.5,
+      fillColor: cfg.backdropColor ?? 0x000000,
+      fillAlpha: cfg.backdropAlpha ?? 0.5,
     });
 
     this.content = new Interactive(this, {});
