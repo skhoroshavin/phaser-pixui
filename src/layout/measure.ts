@@ -1,5 +1,5 @@
 import { type Node } from "./node";
-import type { Size } from "../util/size";
+import type { Size } from "../shared/size";
 
 export function seedRootWidth(node: Node): void {
   node.measured.topDownWidth = node.clampWidth(node.layout.width);

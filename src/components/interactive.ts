@@ -1,4 +1,5 @@
 import { GameObjects, Geom, type Types } from "phaser";
+import { type Behaviour } from "../behaviours/behaviour";
 import { Component, type ComponentConfig } from "./component";
 import { PhaserObject } from "./phaser-object";
 
@@ -26,7 +27,29 @@ export class Interactive extends PhaserObject<GameObjects.Zone> {
     return this._enabled;
   }
   set enabled(v: boolean) {
+    if (this._enabled === v) return;
     this._enabled = v;
+    for (const b of this._behaviours) b.setActive(v);
+    this.onEnabledChange(v);
+  }
+
+  protected onEnabledChange(_v: boolean): void {}
+
+  protected onVisibilityChange(v: boolean): void {
+    super.onVisibilityChange(v);
+    for (const b of this._behaviours) b.setActive(v && this._enabled);
+  }
+
+  addBehaviour<T extends Behaviour>(b: T): T {
+    b.attach(this.internal);
+    b.setActive(this._enabled && this.visible);
+    this._behaviours.push(b);
+    return b;
+  }
+
+  removeBehaviour(b: Behaviour): void {
+    b.detach();
+    this._behaviours = this._behaviours.filter((x) => x !== b);
   }
 
   private _updateHitArea(width: number, height: number): void {
@@ -64,4 +87,5 @@ export class Interactive extends PhaserObject<GameObjects.Zone> {
 
   private _shape: HitShape;
   private _enabled: boolean;
+  private _behaviours: Behaviour[] = [];
 }

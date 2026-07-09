@@ -1,5 +1,5 @@
 import { GameObjects } from "phaser";
-import { frameDimensions } from "../util/frame";
+import { frameDimensions } from "../shared/frame";
 import { Component, type ComponentConfig } from "./component";
 import { PhaserObject } from "./phaser-object";
 

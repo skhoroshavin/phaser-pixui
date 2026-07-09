@@ -1,7 +1,7 @@
 import { TintModes, GameObjects } from "phaser";
 import { Component, type ComponentConfig } from "./component";
 import { PhaserObject } from "./phaser-object";
-import type { Size } from "../util/size";
+import type { Size } from "../shared/size";
 
 export type TextConfig = ComponentConfig & {
   font: string;

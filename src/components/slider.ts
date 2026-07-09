@@ -1,9 +1,10 @@
+import { Draggable } from "../behaviours/draggable";
+import { Hoverable } from "../behaviours/hoverable";
 import type { Component } from "./component";
-import { type ComponentConfig } from "./component";
-import { Draggable } from "./draggable";
+import { Interactive, type InteractiveConfig } from "./interactive";
 import { MultiImage } from "./multi-image";
 
-export type SliderConfig = ComponentConfig & {
+export type SliderConfig = InteractiveConfig & {
   texture: string;
   trackFrame: string;
   trackHoverFrame?: string;
@@ -16,33 +17,16 @@ export type SliderConfig = ComponentConfig & {
   onChange?: (value: number) => void;
 };
 
-export class Slider extends Draggable {
+export class Slider extends Interactive {
   constructor(parent: Component, cfg: SliderConfig) {
     super(parent, {
       ...cfg,
-      axis: "x",
-      wheel: false,
-      kinetic: false,
       justifyContent: cfg.justifyContent ?? "center",
       alignItems: cfg.alignItems ?? "start",
-      onDragStart: (x) => {
-        if (!this.enabled) return;
-        this._dragging = true;
-        this._applyThumbFrame();
-        this._dragThumb(x);
-      },
-      onDrag: (x) => {
-        if (this.enabled) this._dragThumb(x);
-      },
-      onDragEnd: () => {
-        this._dragging = false;
-        this._applyThumbFrame();
-      },
     });
 
     this._value = cfg.value ?? 0;
     this._onChange = cfg.onChange;
-
     this._trackNormal = cfg.trackFrame;
     this._trackHover = cfg.trackHoverFrame;
     this._trackDisabled = cfg.trackDisabledFrame;
@@ -50,6 +34,26 @@ export class Slider extends Draggable {
     this._thumbHover = cfg.thumbHoverFrame;
     this._thumbPressed = cfg.thumbPressedFrame;
     this._thumbDisabled = cfg.thumbDisabledFrame;
+
+    this._drag = this.addBehaviour(
+      new Draggable({
+        axis: "x",
+        onDragStart: (x) => {
+          this._updateThumbFrame();
+          this._dragThumb(x);
+        },
+        onDrag: (x) => this._dragThumb(x),
+        onDragEnd: () => this._updateThumbFrame(),
+      }),
+    );
+    this._hover = this.addBehaviour(
+      new Hoverable({
+        onUpdate: () => {
+          this._updateThumbFrame();
+          this._updateTrackFrame();
+        },
+      }),
+    );
 
     const trackFrames = [cfg.trackFrame];
     if (cfg.trackHoverFrame) trackFrames.push(cfg.trackHoverFrame);
@@ -63,7 +67,6 @@ export class Slider extends Draggable {
       marginY: "auto",
     });
     this._track = track;
-
     this.node.setIntrinsicSize(track.node.intrinsicSize());
 
     const thumbFrames = [cfg.thumbFrame];
@@ -87,23 +90,8 @@ export class Slider extends Draggable {
       this._thumb.setOffsetX(Math.floor(this._value * this._thumbTravel));
     };
 
-    const zone = this.internal;
-    const isDesktop = this.mount.displayHost.scene!.sys.game.device.os.desktop;
-    zone.on("pointerover", () => {
-      if (!this.enabled || !isDesktop) return;
-      this._hovered = true;
-      this._applyThumbFrame();
-      this._applyTrackFrame();
-    });
-    zone.on("pointerout", () => {
-      if (!this.enabled) return;
-      this._hovered = false;
-      this._applyThumbFrame();
-      this._applyTrackFrame();
-    });
-
-    this._applyThumbFrame();
-    this._applyTrackFrame();
+    this._updateThumbFrame();
+    this._updateTrackFrame();
   }
 
   get value(): number {
@@ -116,13 +104,17 @@ export class Slider extends Draggable {
     this._thumb.setOffsetX(Math.floor(this._value * this._thumbTravel));
   }
 
-  get enabled(): boolean {
-    return super.enabled;
+  protected onEnabledChange(): void {
+    this._updateThumbFrame();
+    this._updateTrackFrame();
   }
-  set enabled(v: boolean) {
-    super.enabled = v;
-    this._applyThumbFrame();
-    this._applyTrackFrame();
+
+  protected onVisibilityChange(v: boolean): void {
+    super.onVisibilityChange(v);
+    if (v) {
+      this._updateThumbFrame();
+      this._updateTrackFrame();
+    }
   }
 
   private _dragThumb(localX: number): void {
@@ -132,19 +124,21 @@ export class Slider extends Draggable {
     if (this._value !== prev) this._onChange?.(this._value);
   }
 
-  private _applyThumbFrame(): void {
+  private _updateThumbFrame(): void {
     let frame: string;
     if (!this.enabled) frame = this._thumbDisabled ?? this._thumbNormal;
-    else if (this._dragging) frame = this._thumbPressed ?? this._thumbHover ?? this._thumbNormal;
-    else if (this._hovered) frame = this._thumbHover ?? this._thumbNormal;
+    else if (this._drag.dragging)
+      frame = this._thumbPressed ?? this._thumbHover ?? this._thumbNormal;
+    else if (this._hover.hovered) frame = this._thumbHover ?? this._thumbNormal;
     else frame = this._thumbNormal;
     this._thumb.setFrame(frame);
   }
 
-  private _applyTrackFrame(): void {
+  private _updateTrackFrame(): void {
     let frame: string;
     if (!this.enabled) frame = this._trackDisabled ?? this._trackNormal;
-    else if (this._hovered || this._dragging) frame = this._trackHover ?? this._trackNormal;
+    else if (this._hover.hovered || this._drag.dragging)
+      frame = this._trackHover ?? this._trackNormal;
     else frame = this._trackNormal;
     this._track.setFrame(frame);
   }
@@ -160,8 +154,8 @@ export class Slider extends Draggable {
   private _thumbHover?: string;
   private _thumbPressed?: string;
   private _thumbDisabled?: string;
-  private _hovered = false;
-  private _dragging = false;
+  private readonly _drag: Draggable;
+  private readonly _hover: Hoverable;
   private _thumbHalf = 0;
   private _thumbTravel = 0;
 }
