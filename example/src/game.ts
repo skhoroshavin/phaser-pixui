@@ -1,6 +1,8 @@
 import type { GameObjects } from "phaser";
 import { ConstraintMode, ResponsiveScene } from "phaser-pixui";
 
+const testMode = new URLSearchParams(window.location.search).has("test");
+
 export class GameWorld extends ResponsiveScene {
   constructor() {
     super({
@@ -47,10 +49,13 @@ export class GameWorld extends ResponsiveScene {
       });
     }
 
-    this.npc = this.add.sprite(0, 0, "npc", "npc_walk_right00");
-    const placeNpc = () => this.npc.setY(this.viewport.height - 48);
+    this.npc = this.add.sprite(30, 0, "npc", "npc_walk_right00");
+    const placeNpc = () => this.npc.setY(this.viewport.height - 56);
     placeNpc();
     this.scale.on("resize", placeNpc);
+
+    if (testMode) return;
+
     this.npc.play("npc-walk-right");
     this.tweens.add({
       targets: this.npc,

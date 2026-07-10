@@ -14,6 +14,8 @@ import { load_dialog } from "./ui/load_dialog.ts";
 import { settings_dialog } from "./ui/settings_dialog.ts";
 import { colors, fonts, uiTexture } from "./ui/constants.ts";
 
+const testMode = new URLSearchParams(window.location.search).has("test");
+
 export class Ui extends ResponsiveScene {
   constructor() {
     super({
@@ -65,11 +67,14 @@ export class Ui extends ResponsiveScene {
     header(root, "Phaser-PixUI demo", { top: 32, insetX: 0 });
 
     game.events.once("create", () => {
+      const phrases = ["Catch me if you can!", "Ha-ha!", ""];
+
       const npcMount = new GameObjectMount(this, game.npc);
       const npcRoot = new Component(npcMount);
-      const { bubble, bubbleText } = chat_bubble(npcRoot, { right: 32, bottom: 32 });
+      const { bubble, bubbleText } = chat_bubble(npcRoot, phrases[0], { right: 32, bottom: 32 });
 
-      const phrases = ["Catch me if you can!", "Ha-ha!", ""];
+      if (testMode) return;
+
       this.time.addEvent({
         delay: 2000,
         loop: true,

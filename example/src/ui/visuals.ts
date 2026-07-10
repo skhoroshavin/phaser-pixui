@@ -38,6 +38,7 @@ export function header(parent: Component, title: string, cfg: ComponentConfig = 
 
 export function chat_bubble(
   parent: Component,
+  content: string,
   cfg: ComponentConfig = {},
 ): { bubble: Image; bubbleText: Text } {
   const bubble = parent.add(Image, {
@@ -47,9 +48,8 @@ export function chat_bubble(
     maxWidth: 80,
     paddingX: 8,
     paddingY: 6,
-    visible: false,
     ...cfg,
   });
-  const bubbleText = bubble.add(text, {});
+  const bubbleText = bubble.add(text, { text: content });
   return { bubble, bubbleText };
 }
