@@ -6,10 +6,11 @@ import {
   seedRootWidth,
 } from "./measure";
 import { type Node } from "./node";
+import type { Rect } from "../shared/rect";
 import { place } from "./place";
 
 /** Resolve a layout tree. */
-export function resolve(root: Node): void {
+export function resolve(root: Node, bounds?: Rect): Rect {
   assignDepths(root, { next: 0 });
 
   seedRootWidth(root);
@@ -18,7 +19,7 @@ export function resolve(root: Node): void {
 
   seedRootRect(root);
   finalizeSize(root);
-  place(root);
+  return place(root, bounds);
 }
 
 function assignDepths(node: Node, c: { next: number }): void {

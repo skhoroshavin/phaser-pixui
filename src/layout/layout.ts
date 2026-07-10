@@ -11,6 +11,8 @@ export type Layout = {
   inset?: number;
   insetX?: number;
   insetY?: number;
+  // anchor fallbacks
+  positionTryFallbacks?: FlipMode[];
   // padding + shorthands (absent = 0)
   paddingLeft?: number;
   paddingTop?: number;
@@ -36,3 +38,5 @@ export type Layout = {
   // depth
   zIndex?: number;
 };
+
+export type FlipMode = "flip-block" | "flip-inline" | "flip-start";

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { Node, resolve, type Rect } from "./";
+import { Node, resolve } from "./";
+import type { Rect } from "../shared/rect";
 
 describe("resolve", () => {
   function viewport(width: number, height: number): Node {

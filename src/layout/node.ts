@@ -1,8 +1,8 @@
 import { Axis } from "./axis";
 import { type Layout } from "./layout";
 import type { Size } from "../shared/size.ts";
+import type { Rect } from "../shared/rect";
 
-export type Rect = { x: number; y: number; width: number; height: number };
 export type IntrinsicSize = Partial<Size> | IntrinsicSizeFn;
 type IntrinsicSizeFn = (availableWidth?: number) => Size;
 

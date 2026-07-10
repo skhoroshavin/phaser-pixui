@@ -1,5 +1,5 @@
 import { GameObjects, type Scene } from "phaser";
-import type { Rect } from "../layout";
+import type { Rect } from "../shared/rect";
 import { Mount } from "./mount";
 
 export class MaskMount extends Mount {

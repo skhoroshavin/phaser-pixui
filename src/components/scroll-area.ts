@@ -4,7 +4,8 @@ import { type Axis } from "../shared/axis";
 import { Component, type ComponentConfig } from "./component";
 import { Interactive } from "./interactive";
 import { MaskMount } from "../mounts/mask-mount";
-import { resolve, type Rect } from "../layout";
+import { resolve } from "../layout";
+import type { Rect } from "../shared/rect";
 
 export type ScrollAreaConfig = ComponentConfig & {
   axis?: Axis;
