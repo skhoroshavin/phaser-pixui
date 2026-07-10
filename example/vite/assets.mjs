@@ -3,5 +3,8 @@ export const assetsConfig = {
   destination_path: "public/packed_assets",
   copy: [{ source: "tiopalada/bg_plains00.png" }],
   fonts: [{ source: "fonts.yaml" }],
-  atlases: [{ source: "ui.yaml", target: "mana_soul" }],
+  atlases: [
+    { source: "ui.yaml", target: "mana_soul" },
+    { source: "npc.yaml", target: "npc" },
+  ],
 };

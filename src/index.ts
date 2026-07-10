@@ -27,6 +27,7 @@ export * from "./behaviours/scrollable";
 // Mounts
 export * from "./mounts/mount";
 export * from "./mounts/scene-mount";
+export * from "./mounts/game-object-mount";
 export * from "./mounts/mask-mount";
 
 // Layout
