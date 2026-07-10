@@ -59,25 +59,6 @@
       hover_selected: 3
       disabled: 4
       disabled_selected: 5
-- name: tab_left
-  image: minifantasy/tab-left.png
-  nineslice: { x: 7, y: 7, w: 35, h: 3 }
-  spritesheet:
-    sprite_width: 42
-    sprite_height: 17
-    sprite_names:
-      up: 0
-      hover: 2
-      down: 1
-      disabled: 3
-- name: tab_right
-  image: minifantasy/tab-right.png
-  nineslice: { x: 2, y: 4, w: 20, h: 8 }
-  spritesheet:
-    sprite_width: 26
-    sprite_height: 17
-    sprite_names:
-      up: 0
-      hover: 2
-      down: 1
-      disabled: 3
+- name: chat_bubble
+  image: minifantasy/chat-bubble.png
+  nineslice: { x: 15, y: 5, w: 8, h: 5 }

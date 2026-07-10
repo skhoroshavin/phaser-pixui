@@ -25,11 +25,13 @@ export class Clickable extends Behaviour {
     this.zone = zone;
     zone.on("pointerdown", this._onDown, this);
     zone.on("pointerup", this._onUp, this);
+    zone.on("pointerout", this._onOut, this);
   }
 
   detach(): void {
     this.zone.off("pointerdown", this._onDown, this);
     this.zone.off("pointerup", this._onUp, this);
+    this.zone.off("pointerout", this._onOut, this);
   }
 
   protected onActiveChange(active: boolean): void {
@@ -49,6 +51,12 @@ export class Clickable extends Behaviour {
     if (!this.active || !this._pressed) return;
     this._pressed = false;
     this._onClick?.();
+    this._onUpdate?.(false);
+  }
+
+  private _onOut(): void {
+    if (!this.active || !this._pressed) return;
+    this._pressed = false;
     this._onUpdate?.(false);
   }
 }

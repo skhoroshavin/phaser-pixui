@@ -1,6 +1,12 @@
 import { type Node } from "./node";
+import { type FlipMode } from "./layout";
+import { type Rect, fits } from "../shared/rect";
 
-export function place(node: Node): void {
+/** Per-axis edge mirroring for position fallbacks (x = left↔right, y = top↔bottom). */
+type Mirror = { x?: boolean; y?: boolean };
+
+/** Place a subtree; returns the bounding box of the node and all descendants. */
+export function place(node: Node, bounds?: Rect): Rect {
   const l = node.layout;
   const gap = l.gap ?? 0;
 
@@ -33,47 +39,80 @@ export function place(node: Node): void {
 
   // Pass 2: position each item
   let pos = mainBase + (absorbFreeSpace ? 0 : alignOffset(mainFreeSpace, l.justifyContent));
+  let bbox: Rect = { ...node.rect };
   for (const child of node.children) {
     if (child.isAbsolute()) {
-      placeBoxChild(child, node);
+      bbox = union(bbox, placeBoxChild(child, node, bounds));
       continue;
     }
-    pos += placeFlexChild(child, node, pos, nextAutoMargin) + gap;
+    const r = placeFlexChild(child, node, pos, nextAutoMargin, bounds);
+    pos += r.extent + gap;
+    bbox = union(bbox, r.bbox);
   }
+  return bbox;
 }
 
-function placeBoxChild(child: Node, parent: Node): void {
-  child.setRect({
-    x: childPos(child, parent, "x"),
-    y: childPos(child, parent, "y"),
+function placeBoxChild(child: Node, parent: Node, bounds?: Rect): Rect {
+  child.setRect(fitRect(child, parent, bounds));
+  return place(child, bounds);
+}
+
+function fitRect(child: Node, parent: Node, bounds?: Rect): Rect {
+  const rect = childRect(child, parent);
+  if (!bounds || fits(rect, bounds)) return rect;
+  for (const mode of child.layout.positionTryFallbacks ?? []) {
+    const r = childRect(child, parent, mirrorOf(mode));
+    if (fits(r, bounds)) return r;
+  }
+  return rect;
+}
+
+/** A positioned child's rect against `parent`, optionally with edges mirrored. */
+function childRect(child: Node, parent: Node, mirror: Mirror = {}): Rect {
+  return {
+    x: childPos(child, parent, "x", mirror.x),
+    y: childPos(child, parent, "y", mirror.y),
     width: child.measured.finalSize.width,
     height: child.measured.finalSize.height,
-  });
-  place(child);
+  };
 }
 
-function childPos(child: Node, parent: Node, axis: "x" | "y"): number {
+function mirrorOf(mode: FlipMode): Mirror {
+  if (mode === "flip-block") return { y: true }; // block axis = vertical
+  if (mode === "flip-inline") return { x: true }; // inline axis = horizontal
+  return { x: true, y: true }; // flip-start
+}
+
+function childPos(child: Node, parent: Node, axis: "x" | "y", mirror?: boolean): number {
   const horizontal = axis === "x";
   const a = horizontal ? child.xAxis : child.yAxis;
+  // Mirror swaps start/end and their margins on this axis
+  const start = mirror ? a.end : a.start;
+  const end = mirror ? a.start : a.end;
+  const marginStart = mirror ? a.marginEnd : a.marginStart;
+  const marginEnd = mirror ? a.marginStart : a.marginEnd;
+  const marginStartAuto = mirror ? a.marginEndAuto : a.marginStartAuto;
+  const marginEndAuto = mirror ? a.marginStartAuto : a.marginEndAuto;
+
   const base = horizontal ? parent.rect.x : parent.rect.y;
   const len = horizontal ? parent.rect.width : parent.rect.height;
   const size = horizontal ? child.measured.finalSize.width : child.measured.finalSize.height;
 
   // Auto-margin distribution, similar to flex rules
-  if ((a.marginStartAuto || a.marginEndAuto) && a.start !== undefined && a.end !== undefined) {
-    const count = (a.marginStartAuto ? 1 : 0) + (a.marginEndAuto ? 1 : 0);
-    const dist = distributeAutoMargins(len - a.start - a.end - size, count);
-    return base + a.start + (a.marginStartAuto ? dist() : 0);
+  if ((marginStartAuto || marginEndAuto) && start !== undefined && end !== undefined) {
+    const count = (marginStartAuto ? 1 : 0) + (marginEndAuto ? 1 : 0);
+    const dist = distributeAutoMargins(len - start - end - size, count);
+    return base + start + (marginStartAuto ? dist() : 0);
   }
 
   // Positioned by the start edge
-  if (a.start !== undefined) return base + a.start + a.marginStart;
+  if (start !== undefined) return base + start + marginStart;
 
   // Positioned by the end edge
-  if (a.end !== undefined) return base + len - a.end - a.marginEnd - size;
+  if (end !== undefined) return base + len - end - marginEnd - size;
 
   // Not positioned at all - default to start edge
-  return base + a.marginStart;
+  return base + marginStart;
 }
 
 function placeFlexChild(
@@ -81,7 +120,8 @@ function placeFlexChild(
   parent: Node,
   pos: number,
   nextAutoMargin: () => number,
-): number {
+  bounds?: Rect,
+): { extent: number; bbox: Rect } {
   const col = parent.layout.direction !== "row";
   const main = col ? child.yAxis : child.xAxis;
   const cross = col ? child.xAxis : child.yAxis;
@@ -103,9 +143,18 @@ function placeFlexChild(
 
   if (col) child.setRect({ x: crossPos, y: mainPos, width: crossSize, height: mainSize });
   else child.setRect({ x: mainPos, y: crossPos, width: mainSize, height: crossSize });
-  place(child);
+  return { extent: mStart + mainSize + mEnd, bbox: place(child, bounds) };
+}
 
-  return mStart + mainSize + mEnd;
+function union(a: Rect, b: Rect): Rect {
+  const x = Math.min(a.x, b.x);
+  const y = Math.min(a.y, b.y);
+  return {
+    x,
+    y,
+    width: Math.max(a.x + a.width, b.x + b.width) - x,
+    height: Math.max(a.y + a.height, b.y + b.height) - y,
+  };
 }
 
 function distributeAutoMargins(freeSpace: number, count: number): () => number {

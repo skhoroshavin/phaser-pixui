@@ -1,13 +1,20 @@
-import { CANVAS, HEADLESS, VERSION, WEBGL } from "phaser";
-import { ConstraintMode, ResponsiveScene, SceneMount } from "../../src";
-import { Component } from "../../src/components/component.ts";
+import { CANVAS, GameObjects, HEADLESS, VERSION, WEBGL } from "phaser";
+import {
+  Component,
+  ConstraintMode,
+  GameObjectMount,
+  ResponsiveScene,
+  SceneMount,
+} from "phaser-pixui";
 import { GameWorld } from "./game.ts";
 import { button } from "./ui/controls.ts";
-import { frame, text } from "./ui/visuals.ts";
+import { chat_bubble, header, text } from "./ui/visuals.ts";
 import { log_panel } from "./ui/log_panel.ts";
 import { load_dialog } from "./ui/load_dialog.ts";
 import { settings_dialog } from "./ui/settings_dialog.ts";
 import { colors, fonts, uiTexture } from "./ui/constants.ts";
+
+const testMode = new URLSearchParams(window.location.search).has("test");
 
 export class Ui extends ResponsiveScene {
   constructor() {
@@ -24,13 +31,20 @@ export class Ui extends ResponsiveScene {
   preload() {
     this.load.setPath("packed_assets");
     this.load.atlas(uiTexture, uiTexture + ".png", uiTexture + ".atlas");
+    this.load.image("fonts", "fonts.png");
     for (const font of Object.values(fonts)) {
-      this.load.bitmapFont(font, "fonts.png", font + ".bmfont");
+      this.load.xml(font, font + ".bmfont");
     }
   }
 
   create() {
     super.create();
+    for (const font of Object.values(fonts)) {
+      GameObjects.BitmapText.ParseFromAtlas(this, font, "fonts", "__BASE", font);
+    }
+
+    const game = this.scene.get<GameWorld>("game-world");
+    this.scene.launch(game);
     this.scene.bringToTop("ui");
 
     const mount = new SceneMount(this, {
@@ -39,10 +53,6 @@ export class Ui extends ResponsiveScene {
     const root = new Component(mount);
 
     const logger = log_panel(root, { bottom: 2, insetX: 2, height: 60 });
-
-    const game = this.scene.get<GameWorld>("game-world");
-    this.scene.launch(game);
-
     const loadDialog = root.add(load_dialog, (msg) => logger.write(msg));
     const settingsDialog = root.add(settings_dialog, (msg) => logger.write(msg));
 
@@ -54,19 +64,26 @@ export class Ui extends ResponsiveScene {
       text: `Phaser PixUI v${PHASER_PIXUI_VERSION}`,
     });
 
-    const headerFrame = root.add(frame, {
-      frame: "frame-header",
-      top: 32,
-      insetX: 0,
-      marginX: "auto",
-      paddingX: 16,
-      alignItems: "center",
-    });
-    headerFrame.add(text, {
-      font: fonts.title,
-      tint: colors.dark,
-      align: "center",
-      text: "Phaser-PixUI demo",
+    header(root, "Phaser-PixUI demo", { top: 32, insetX: 0 });
+
+    game.events.once("create", () => {
+      const phrases = ["Catch me if you can!", "Ha-ha!", ""];
+
+      const npcMount = new GameObjectMount(this, game.npc);
+      const npcRoot = new Component(npcMount);
+      const { bubble, bubbleText } = chat_bubble(npcRoot, phrases[0], { right: 32, bottom: 32 });
+
+      if (testMode) return;
+
+      this.time.addEvent({
+        delay: 2000,
+        loop: true,
+        callback: () => {
+          const phrase = phrases[Math.floor(Math.random() * phrases.length)] ?? "";
+          bubble.visible = phrase !== "";
+          bubbleText.text = phrase;
+        },
+      });
     });
 
     const mainMenu = root.add(Component, {

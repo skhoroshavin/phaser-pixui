@@ -1,5 +1,4 @@
-import { Modal } from "../../../src/components/modal";
-import { Component } from "../../../src/components/component";
+import { Component, Modal } from "phaser-pixui";
 import { button } from "./controls";
 import { frame, text } from "./visuals";
 
