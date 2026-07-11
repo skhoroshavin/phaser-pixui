@@ -1,32 +1,36 @@
 # Phaser PixUI
 
-A UI library for the Phaser game engine, built with pixel-art games in mind.
-Implements a subset of the CSS layout and a rich set of composable
-UI components.
+A lightweight, but flexible UI library for the Phaser game engine,
+built with pixel-art games in mind.
 
 ## Features
 
 - A faithful implementation of a subset of the CSS layout: box model,
-  padding and margins (including auto), edge anchoring with overflow fallbacks,
-  flexbox with grow, and `zIndex`
-- Components `Button`, `Toggle`, `Slider`, `RadioGroup`, `ScrollArea`, `Modal`,
-  and primitives `Image`, `MultiImage`, `Rectangle`, `Text`, `Interactive`
-- UI trees can be mounted to a whole scene, or attached to any Phaser `GameObject`
-  and automatically follow it
+  padding and margins, edge anchoring with overflow fallbacks, z-index,
+  and, last but not least, flexbox including gaps, justify-content,
+  align-items and grow, all interacting correctly with auto margins.
+- Components ranging from primitives like Image and Text to more complex
+  containers like ScrollArea and Modal, to fully customizable controls
+  like Button, Toggle, RadioGroup and Slider.
+- UI trees can be statically mounted to any Phaser Scene, or attached
+  to a Phaser GameObject and automatically follow it
 - Written in TypeScript with full type definitions
 
 ## Design principles
 
-- Easy to use and hard to misuse library API
+- Easy to use strongly typed library API
 - Does not dictate the architecture of your application or scene.
-- Layout system familiar to anyone with CSS experience, also robust enough to
-  handle pixel-art edge cases.
-- Composable core components to easily build higher-level game-specific
-  components.
+- Layout system familiar to anyone with CSS experience
+- Composable to easily build game-specific components.
 - No built-in look or theme; appearance is fully defined by the assets used.
-- Performance is a priority. A deep component tree still renders to flat
-  Phaser game object lists for static elements, and dynamic elements use
-  direct coordinate updates without triggering layout resolution.
+
+Highly performant:
+- Deep static component trees are flattened into plain GameObject lists
+- Layout resolution runs on demand, not every frame
+- Highly dynamic elements like slider thumbs or scrollable content are handled
+  without needing to resolve layout
+- Elements requiring frequent layout resolution, like dynamic text, can be made
+  part of a separate tree, to avoid resolving the whole UI on their updates
 
 ## Installation and usage
 
