@@ -1,34 +1,38 @@
 # Phaser PixUI
 
-A UI library for the Phaser game engine, built with pixel-art games in mind.
-Implements a subset of the CSS layout and a rich set of composable
-UI components.
+A lightweight, but flexible UI library for the Phaser game engine,
+built with pixel-art games in mind.
 
 ## Features
 
 - A faithful implementation of a subset of the CSS layout: box model,
-  padding and margins (including auto), edge anchoring with overflow fallbacks,
-  flexbox with grow, and `zIndex`
-- Components `Button`, `Toggle`, `Slider`, `RadioGroup`, `ScrollArea`, `Modal`,
-  and primitives `Image`, `MultiImage`, `Rectangle`, `Text`, `Interactive`
-- UI trees can be mounted to a whole scene, or attached to any Phaser `GameObject`
-  and automatically follow it
+  padding and margins, edge anchoring with overflow fallbacks, z-index,
+  and, last but not least, flexbox including gaps, justify-content,
+  align-items and grow, all interacting correctly with auto margins.
+- Components ranging from primitives like Image and Text to more complex
+  containers like ScrollArea and Modal, to fully customizable controls
+  like Button, Toggle, RadioGroup and Slider.
+- UI trees can be statically mounted to any Phaser Scene, or attached
+  to a Phaser GameObject and automatically follow it
 - Written in TypeScript with full type definitions
 
 ## Design principles
 
-- Easy to use and hard to misuse library API
+- Easy to use strongly typed library API
 - Does not dictate the architecture of your application or scene.
-- Layout system familiar to anyone with CSS experience, also robust enough to
-  handle pixel-art edge cases.
-- Composable core components to easily build higher-level game-specific
-  components.
+- Layout system familiar to anyone with CSS experience
+- Composable to easily build game-specific components.
 - No built-in look or theme; appearance is fully defined by the assets used.
-- Performance is a priority. A deep component tree still renders to flat
-  Phaser game object lists for static elements, and dynamic elements use
-  direct coordinate updates without triggering layout resolution.
 
-## Installation and usage
+Highly performant:
+- Deep static component trees are flattened into plain GameObject lists
+- Layout resolution runs on demand, not every frame
+- Highly dynamic elements like slider thumbs or scrollable content are handled
+  without needing to resolve layout
+- Elements requiring frequent layout resolution, like dynamic text, can be made
+  part of a separate tree, to avoid resolving the whole UI on their updates
+
+## Getting started
 
 ```bash
 npm install phaser-pixui
@@ -40,7 +44,40 @@ Requires Phaser 4 as a peer dependency:
 npm install phaser@^4.1.0
 ```
 
-For a usage example, see the bundled [example](https://github.com/skhoroshavin/phaser-pixui/tree/main/example)
+Create a `SceneMount` from your scene, create a root component attached to it,
+Phaser scene, make a root `Component` attached to it, then attach child components
+to it:
+
+```ts
+import { Component, SceneMount, Rectangle, Text } from "phaser-pixui";
+
+const mount = new SceneMount(scene, {
+  viewport: () => ({ width: 320, height: 240 }),
+});
+const root = new Component(mount);
+
+const row = root.add(Component, { direction: "row", gap: 8, alignItems: "center" });
+row.add(Rectangle, { width: 40, height: 40, fillColor: 0xff0000 });
+row.add(Text, { font: "myFont", text: "Hello" });
+```
+
+Layout is a subset of CSS. Children flow in a column by default; `direction: "row"`
+makes a row. Use `gap`, `justifyContent`, `alignItems`, and `grow` as in flexbox.
+Setting any of `left`/`top`/`right`/`bottom` (or `inset`) anchors a child and takes
+it out of flow. `margin: "auto"` absorbs free space, which is handy for centering.
+
+To attach a UI to a game object so it follows the object around the world, use a
+`GameObjectMount` instead of a `SceneMount`:
+
+```ts
+import { Component, GameObjectMount } from "phaser-pixui";
+
+const mount = new GameObjectMount(scene, npc);
+const root = new Component(mount);
+```
+
+For a complete example with themed buttons, sliders, modals, and scroll areas,
+see the bundled [example](https://github.com/skhoroshavin/phaser-pixui/tree/main/example)
 project and its [demo page](https://skhoroshavin.itch.io/phaser-pixui).
 
 ## Development
