@@ -32,7 +32,7 @@ Highly performant:
 - Elements requiring frequent layout resolution, like dynamic text, can be made
   part of a separate tree, to avoid resolving the whole UI on their updates
 
-## Installation and usage
+## Getting started
 
 ```bash
 npm install phaser-pixui
@@ -44,7 +44,40 @@ Requires Phaser 4 as a peer dependency:
 npm install phaser@^4.1.0
 ```
 
-For a usage example, see the bundled [example](https://github.com/skhoroshavin/phaser-pixui/tree/main/example)
+Create a `SceneMount` from your scene, create a root component attached to it,
+Phaser scene, make a root `Component` attached to it, then attach child components
+to it:
+
+```ts
+import { Component, SceneMount, Rectangle, Text } from "phaser-pixui";
+
+const mount = new SceneMount(scene, {
+  viewport: () => ({ width: 320, height: 240 }),
+});
+const root = new Component(mount);
+
+const row = root.add(Component, { direction: "row", gap: 8, alignItems: "center" });
+row.add(Rectangle, { width: 40, height: 40, fillColor: 0xff0000 });
+row.add(Text, { font: "myFont", text: "Hello" });
+```
+
+Layout is a subset of CSS. Children flow in a column by default; `direction: "row"`
+makes a row. Use `gap`, `justifyContent`, `alignItems`, and `grow` as in flexbox.
+Setting any of `left`/`top`/`right`/`bottom` (or `inset`) anchors a child and takes
+it out of flow. `margin: "auto"` absorbs free space, which is handy for centering.
+
+To attach a UI to a game object so it follows the object around the world, use a
+`GameObjectMount` instead of a `SceneMount`:
+
+```ts
+import { Component, GameObjectMount } from "phaser-pixui";
+
+const mount = new GameObjectMount(scene, npc);
+const root = new Component(mount);
+```
+
+For a complete example with themed buttons, sliders, modals, and scroll areas,
+see the bundled [example](https://github.com/skhoroshavin/phaser-pixui/tree/main/example)
 project and its [demo page](https://skhoroshavin.itch.io/phaser-pixui).
 
 ## Development
