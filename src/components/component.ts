@@ -1,36 +1,30 @@
 import { Node, type Layout } from "../layout";
-import type { Mount } from "../mounts/mount";
+import { Mount, type DisplayHost } from "../mounts/mount";
 
 export type ComponentConfig = Layout & {
   visible?: boolean;
 };
 
-export class Component {
-  constructor(parent: Component | Mount, cfg?: ComponentConfig) {
-    this.node = new Node({ layout: cfg });
+export class Component extends Mount {
+  constructor(parent: Mount, cfg?: ComponentConfig) {
+    super(new Node({ layout: cfg }));
     this._visible = cfg?.visible ?? true;
     if (parent instanceof Component) {
-      this.mount = parent.mount;
-      parent.addChild(this);
+      this._mount = parent._mount;
+      parent._attach(this);
     } else {
-      this.mount = parent;
-      this.mount.setRootNode(this.node);
+      this._mount = parent;
+      this._mount.node.add(this.node);
     }
   }
 
-  public add<T extends Component, Args extends unknown[]>(
-    ChildClass:
-      | (new (parent: Component, ...args: Args) => T)
-      | ((parent: Component, ...args: Args) => T),
-    ...args: Args
-  ): T {
-    return ChildClass.prototype
-      ? new (ChildClass as new (parent: Component, ...a: Args) => T)(this, ...args)
-      : (ChildClass as (parent: Component, ...args: Args) => T)(this, ...args);
+  get displayHost(): DisplayHost {
+    return this._mount.displayHost;
   }
 
-  readonly node: Node;
-  readonly mount: Mount;
+  resolveLayout(): void {
+    this._mount.resolveLayout();
+  }
 
   get visible(): boolean {
     return this._visible && this._parentVisible;
@@ -42,19 +36,20 @@ export class Component {
     this._syncVisibility();
   }
 
-  protected addChild(child: Component): void {
-    this.children.push(child);
-    this.node.add(child.node);
-    child._parentVisible = this.visible;
-  }
-
   protected onVisibilityChange(_visible: boolean): void {
     // override in subclasses
   }
 
   protected children: Component[] = [];
+  private readonly _mount: Mount;
   private _visible: boolean;
   private _parentVisible: boolean = true;
+
+  private _attach(child: Component): void {
+    this.children.push(child);
+    this.node.add(child.node);
+    child._parentVisible = this.visible;
+  }
 
   private _setParentVisible(v: boolean): void {
     if (v === this._parentVisible) return;

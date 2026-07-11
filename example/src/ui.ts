@@ -50,13 +50,11 @@ export class Ui extends ResponsiveScene {
     const mount = new SceneMount(this, {
       viewport: () => this.viewport,
     });
-    const root = new Component(mount);
+    const logger = mount.add(log_panel, { bottom: 2, insetX: 2, height: 60 });
+    const loadDialog = mount.add(load_dialog, (msg) => logger.write(msg));
+    const settingsDialog = mount.add(settings_dialog, (msg) => logger.write(msg));
 
-    const logger = log_panel(root, { bottom: 2, insetX: 2, height: 60 });
-    const loadDialog = root.add(load_dialog, (msg) => logger.write(msg));
-    const settingsDialog = root.add(settings_dialog, (msg) => logger.write(msg));
-
-    root.add(text, {
+    mount.add(text, {
       right: 4,
       bottom: 64,
       font: fonts.alternative,
@@ -64,14 +62,16 @@ export class Ui extends ResponsiveScene {
       text: `Phaser PixUI v${PHASER_PIXUI_VERSION}`,
     });
 
-    header(root, "Phaser-PixUI demo", { top: 32, insetX: 0 });
+    mount.add(header, "Phaser-PixUI demo", { top: 32, insetX: 0 });
 
     game.events.once("create", () => {
       const phrases = ["Catch me if you can!", "Ha-ha!", ""];
 
       const npcMount = new GameObjectMount(this, game.npc);
-      const npcRoot = new Component(npcMount);
-      const { bubble, bubbleText } = chat_bubble(npcRoot, phrases[0], { right: 32, bottom: 32 });
+      const { bubble, bubbleText } = npcMount.add(chat_bubble, phrases[0], {
+        right: 32,
+        bottom: 32,
+      });
 
       if (testMode) return;
 
@@ -86,7 +86,7 @@ export class Ui extends ResponsiveScene {
       });
     });
 
-    const mainMenu = root.add(Component, {
+    const mainMenu = mount.add(Component, {
       inset: 0,
       direction: "column",
       gap: 4,

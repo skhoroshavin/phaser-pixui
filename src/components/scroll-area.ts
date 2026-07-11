@@ -2,6 +2,7 @@ import { Math as PMath } from "phaser";
 import { Scrollable } from "../behaviours/scrollable";
 import { type Axis } from "../shared/axis";
 import { Component, type ComponentConfig } from "./component";
+import type { Mount } from "../mounts/mount";
 import { Interactive } from "./interactive";
 import { MaskMount } from "../mounts/mask-mount";
 import { resolve } from "../layout";
@@ -12,14 +13,14 @@ export type ScrollAreaConfig = ComponentConfig & {
 };
 
 export class ScrollArea extends Component {
-  constructor(parent: Component, cfg: ScrollAreaConfig = {}) {
+  constructor(parent: Mount, cfg: ScrollAreaConfig = {}) {
     super(parent, cfg);
 
     this._axis = cfg.axis;
 
-    const scene = this.mount.displayHost.scene!;
+    const scene = this.displayHost.scene!;
     this._maskMount = new MaskMount(scene);
-    this.mount.displayHost.add(this._maskMount.displayHost);
+    this.displayHost.add(this._maskMount.displayHost);
     this.content = new Component(this._maskMount);
 
     this.node.onLayout = (rect, depth) => {

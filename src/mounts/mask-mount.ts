@@ -1,6 +1,7 @@
 import { GameObjects, type Scene } from "phaser";
 import type { Rect } from "../shared/rect";
 import { Mount } from "./mount";
+import { resolve } from "../layout";
 
 export class MaskMount extends Mount {
   private readonly host: GameObjects.Container;
@@ -17,11 +18,15 @@ export class MaskMount extends Mount {
     this.host.filters!.external.addMask(this.maskRect, false);
   }
 
+  setMaskRect(r: Rect): void {
+    this.maskRect.setPosition(r.x, r.y).setSize(r.width, r.height);
+  }
+
   get displayHost(): GameObjects.Container {
     return this.host;
   }
 
-  setMaskRect(r: Rect): void {
-    this.maskRect.setPosition(r.x, r.y).setSize(r.width, r.height);
+  resolveLayout(): void {
+    resolve(this.node);
   }
 }

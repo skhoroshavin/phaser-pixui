@@ -1,6 +1,7 @@
 import { GameObjects, Geom, type Types } from "phaser";
 import { type Behaviour } from "../behaviours/behaviour";
-import { Component, type ComponentConfig } from "./component";
+import { type ComponentConfig } from "./component";
+import type { Mount } from "../mounts/mount";
 import { PhaserObject } from "./phaser-object";
 
 export type InteractiveConfig = ComponentConfig & {
@@ -11,7 +12,7 @@ export type InteractiveConfig = ComponentConfig & {
 export type HitShape = "rect" | "diamond" | "ellipse";
 
 export class Interactive extends PhaserObject<GameObjects.Zone> {
-  constructor(parent: Component, cfg: InteractiveConfig = {}) {
+  constructor(parent: Mount, cfg: InteractiveConfig = {}) {
     super(parent, (scene) => new GameObjects.Zone(scene, 0, 0, 0, 0), {
       ...cfg,
       onResize: (_zone, w, h) => this._updateHitArea(w, h),

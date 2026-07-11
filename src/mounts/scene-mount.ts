@@ -1,5 +1,6 @@
 import type { Scene } from "phaser";
 import { Mount, type DisplayHost } from "./mount";
+import { resolve } from "../layout";
 import type { Size } from "../shared/size";
 
 export type SceneMountConfig = {
@@ -23,10 +24,18 @@ export class SceneMount extends Mount {
     return this.scene.children;
   }
 
+  resolveLayout(): void {
+    const { width, height } = this.node.layout;
+    if (width === undefined || height === undefined) {
+      resolve(this.node);
+      return;
+    }
+    resolve(this.node, { x: 0, y: 0, width, height });
+  }
+
   private _resize({ width, height }: Size): void {
-    if (!this._root) return;
-    this._root.layout.width = width;
-    this._root.layout.height = height;
+    this.node.layout.width = width;
+    this.node.layout.height = height;
     this.resolveLayout();
   }
 }

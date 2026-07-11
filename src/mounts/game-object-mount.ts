@@ -18,10 +18,6 @@ export class GameObjectMount extends Mount {
     this.target = target ?? null;
   }
 
-  get displayHost(): GameObjects.Container {
-    return this._host;
-  }
-
   get target(): GameObjectTarget | null {
     return this._target;
   }
@@ -36,18 +32,22 @@ export class GameObjectMount extends Mount {
     this._update();
   }
 
-  resolveLayout(): void {
-    if (!this._root) return;
-    this._baseBox = resolve(this._root);
-    this._currentBox = resolve(this._root, this._viewBounds());
-    this._host.sort("depth");
-  }
-
   destroy(): void {
     this._scene.game.events.off("poststep", this._update, this);
     this._scene.events.off("shutdown", this.destroy, this);
     this._detach();
     this._host.destroy(true);
+  }
+
+  get displayHost(): GameObjects.Container {
+    return this._host;
+  }
+
+  resolveLayout(): void {
+    if (this.node.children.length === 0) return;
+    this._baseBox = resolve(this.node);
+    this._currentBox = resolve(this.node, this._viewBounds());
+    this._host.sort("depth");
   }
 
   private _detach(): void {
@@ -59,7 +59,7 @@ export class GameObjectMount extends Mount {
   }
 
   private _update(): void {
-    if (!this._root || !this._target) return;
+    if (!this._target) return;
     const t = this._target;
     const uiCam = this._scene.cameras.main;
     const box = rectFromCanvas(uiCam, rectToCanvas(t.scene.cameras.main, gameObjectRect(t)));
@@ -76,8 +76,8 @@ export class GameObjectMount extends Mount {
       return;
     }
 
-    this._root.layout.width = Math.round(box.width);
-    this._root.layout.height = Math.round(box.height);
+    this.node.layout.width = Math.round(box.width);
+    this.node.layout.height = Math.round(box.height);
     if (!this._baseBox || this._wasHidden || this._flipWanted()) this.resolveLayout();
     this._wasHidden = false;
   }

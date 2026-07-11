@@ -1,6 +1,6 @@
 import { Clickable } from "../behaviours/clickable";
 import { Hoverable } from "../behaviours/hoverable";
-import type { Component } from "./component";
+import type { Mount } from "../mounts/mount";
 import type { ImageConfig } from "./image";
 import { Interactive, type InteractiveConfig } from "./interactive";
 import { MultiImage } from "./multi-image";
@@ -22,7 +22,7 @@ export type ToggleConfig = InteractiveConfig &
   };
 
 export class Toggle extends Interactive {
-  constructor(parent: Component, cfg: ToggleConfig) {
+  constructor(parent: Mount, cfg: ToggleConfig) {
     super(parent, { justifyContent: "center", alignItems: "center", ...cfg });
     this._states = {
       normal: cfg.normal,

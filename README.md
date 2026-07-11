@@ -5,7 +5,7 @@ built with pixel-art games in mind.
 
 ## Features
 
-- A faithful implementation of a subset of the CSS layout: box model,
+- A faithful implementation of a subset of the CSS layout: box model with
   padding and margins, edge anchoring with overflow fallbacks, z-index,
   and, last but not least, flexbox including gaps, justify-content,
   align-items and grow, all interacting correctly with auto margins.
@@ -25,6 +25,7 @@ built with pixel-art games in mind.
 - No built-in look or theme; appearance is fully defined by the assets used.
 
 Highly performant:
+
 - Deep static component trees are flattened into plain GameObject lists
 - Layout resolution runs on demand, not every frame
 - Highly dynamic elements like slider thumbs or scrollable content are handled
@@ -41,12 +42,11 @@ npm install phaser-pixui
 Requires Phaser 4 as a peer dependency:
 
 ```bash
-npm install phaser@^4.1.0
+npm install phaser@^4.0.0
 ```
 
-Create a `SceneMount` from your scene, create a root component attached to it,
-Phaser scene, make a root `Component` attached to it, then attach child components
-to it:
+Create a `SceneMount` attached to your scene, which acts as a root container,
+and add your components directly to it:
 
 ```ts
 import { Component, SceneMount, Rectangle, Text } from "phaser-pixui";
@@ -54,9 +54,8 @@ import { Component, SceneMount, Rectangle, Text } from "phaser-pixui";
 const mount = new SceneMount(scene, {
   viewport: () => ({ width: 320, height: 240 }),
 });
-const root = new Component(mount);
 
-const row = root.add(Component, { direction: "row", gap: 8, alignItems: "center" });
+const row = mount.add(Component, { direction: "row", gap: 8, alignItems: "center" });
 row.add(Rectangle, { width: 40, height: 40, fillColor: 0xff0000 });
 row.add(Text, { font: "myFont", text: "Hello" });
 ```
@@ -70,10 +69,10 @@ To attach a UI to a game object so it follows the object around the world, use a
 `GameObjectMount` instead of a `SceneMount`:
 
 ```ts
-import { Component, GameObjectMount } from "phaser-pixui";
+import { GameObjectMount, Text } from "phaser-pixui";
 
 const mount = new GameObjectMount(scene, npc);
-const root = new Component(mount);
+mount.add(Text, { font: "myFont", text: "Hello", bottom: 32 });
 ```
 
 For a complete example with themed buttons, sliders, modals, and scroll areas,
