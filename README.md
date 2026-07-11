@@ -1,15 +1,32 @@
 # Phaser PixUI
 
-A UI library for the Phaser game engine providing responsive and customizable
-UI components, tailored for pixel art games.
+A UI library for the Phaser game engine, built with pixel-art games in mind.
+Implements a subset of the CSS layout and a rich set of composable
+UI components.
 
 ## Features
 
-- `ResponsiveScene` with viewport constraints and integer scaling
-- Implements a subset of CSS, including box model and flexbox layout
-- Buttons with hover/pressed/disabled states, modals, scroll areas
-- NineSlice frames and spritesheet-backed multi-image views
+- A faithful implementation of a subset of the CSS layout: box model,
+  padding and margins (including auto), edge anchoring with overflow fallbacks,
+  flexbox with grow, and `zIndex`
+- Components `Button`, `Toggle`, `Slider`, `RadioGroup`, `ScrollArea`, `Modal`,
+  and primitives `Image`, `MultiImage`, `Rectangle`, `Text`, `Interactive`
+- UI trees can be mounted to a whole scene, or attached to any Phaser `GameObject`
+  and automatically follow it
 - Written in TypeScript with full type definitions
+
+## Design principles
+
+- Easy to use and hard to misuse library API
+- Does not dictate the architecture of your application or scene.
+- Layout system familiar to anyone with CSS experience, also robust enough to
+  handle pixel-art edge cases.
+- Composable core components to easily build higher-level game-specific
+  components.
+- No built-in look or theme; appearance is fully defined by the assets used.
+- Performance is a priority. A deep component tree still renders to flat
+  Phaser game object lists for static elements, and dynamic elements use
+  direct coordinate updates without triggering layout resolution.
 
 ## Installation and usage
 
