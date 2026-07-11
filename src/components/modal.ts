@@ -1,5 +1,6 @@
 import { Clickable } from "../behaviours/clickable";
-import type { Component, ComponentConfig } from "./component";
+import type { ComponentConfig } from "./component";
+import type { Mount } from "../mounts/mount";
 import { Interactive } from "./interactive";
 import { Rectangle } from "./rectangle";
 
@@ -11,7 +12,7 @@ export type ModalConfig = ComponentConfig & {
 };
 
 export class Modal extends Interactive {
-  constructor(parent: Component, cfg: ModalConfig = {}) {
+  constructor(parent: Mount, cfg: ModalConfig = {}) {
     super(parent, {
       inset: 0,
       zIndex: 100,

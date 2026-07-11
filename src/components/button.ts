@@ -1,6 +1,6 @@
 import { Clickable } from "../behaviours/clickable";
 import { Hoverable } from "../behaviours/hoverable";
-import type { Component } from "./component";
+import type { Mount } from "../mounts/mount";
 import { Interactive, type InteractiveConfig } from "./interactive";
 import type { ImageConfig } from "./image";
 import { MultiImage } from "./multi-image";
@@ -15,7 +15,7 @@ export type ButtonConfig = InteractiveConfig & {
 };
 
 export class Button extends Interactive {
-  constructor(parent: Component, cfg: ButtonConfig) {
+  constructor(parent: Mount, cfg: ButtonConfig) {
     super(parent, { justifyContent: "center", alignItems: "center", ...cfg });
     this._states = {
       normal: cfg.normal,

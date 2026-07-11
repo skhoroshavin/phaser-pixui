@@ -1,6 +1,6 @@
 import { Draggable } from "../behaviours/draggable";
 import { Hoverable } from "../behaviours/hoverable";
-import type { Component } from "./component";
+import type { Mount } from "../mounts/mount";
 import { Interactive, type InteractiveConfig } from "./interactive";
 import { MultiImage } from "./multi-image";
 
@@ -18,7 +18,7 @@ export type SliderConfig = InteractiveConfig & {
 };
 
 export class Slider extends Interactive {
-  constructor(parent: Component, cfg: SliderConfig) {
+  constructor(parent: Mount, cfg: SliderConfig) {
     super(parent, {
       ...cfg,
       justifyContent: cfg.justifyContent ?? "center",

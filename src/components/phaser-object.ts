@@ -1,5 +1,6 @@
 import { TintModes, type GameObjects } from "phaser";
 import { Component, type ComponentConfig } from "./component";
+import type { Mount } from "../mounts/mount";
 
 type GameObject = GameObjects.GameObject;
 type Transform = GameObjects.Components.Transform;
@@ -14,12 +15,12 @@ type PhaserObjectConfig<T> = ComponentConfig & {
 export class PhaserObject<
   T extends GameObject & Transform & Origin & Visible & Depth,
 > extends Component {
-  constructor(parent: Component, create: (scene: Phaser.Scene) => T, cfg?: PhaserObjectConfig<T>) {
+  constructor(parent: Mount, create: (scene: Phaser.Scene) => T, cfg?: PhaserObjectConfig<T>) {
     super(parent, cfg);
     this._onResize = cfg?.onResize;
-    this.internal = create(this.mount.displayHost.scene!);
+    this.internal = create(this.displayHost.scene!);
     this.internal.setOrigin(0, 0);
-    this.mount.displayHost.add(this.internal);
+    this.displayHost.add(this.internal);
     this.node.onLayout = (rect, depth) => {
       this.internal.setPosition(rect.x + this._offsetX, rect.y + this._offsetY);
       this.internal.setDepth(depth);

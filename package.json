@@ -63,7 +63,7 @@
     "phaser": "^4.2.0",
     "prettier": "3.8.1",
     "prettier-plugin-organize-imports": "^4.3.0",
-    "tsup": "^6.5.0",
+    "tsup": "^8.5.1",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.56.1",
     "vitest": "^4.1.9"

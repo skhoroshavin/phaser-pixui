@@ -1,5 +1,6 @@
 import { GameObjects } from "phaser";
-import { Component, type ComponentConfig } from "./component";
+import { type ComponentConfig } from "./component";
+import type { Mount } from "../mounts/mount";
 import { PhaserObject } from "./phaser-object";
 
 export type RectangleConfig = ComponentConfig & {
@@ -8,7 +9,7 @@ export type RectangleConfig = ComponentConfig & {
 };
 
 export class Rectangle extends PhaserObject<GameObjects.Rectangle> {
-  constructor(parent: Component, cfg?: RectangleConfig) {
+  constructor(parent: Mount, cfg?: RectangleConfig) {
     super(parent, (scene) => new GameObjects.Rectangle(scene, 0, 0, 0, 0), {
       ...cfg,
       onResize: (r, w, h) => r.setSize(w, h),
