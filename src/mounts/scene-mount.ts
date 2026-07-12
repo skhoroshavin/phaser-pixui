@@ -13,28 +13,25 @@ export class SceneMount extends Mount {
   private readonly _viewport: () => Size;
 
   constructor(scene: Scene, cfg: SceneMountConfig) {
-    super();
+    super(scene);
     this.scene = scene;
     this._viewport = cfg.viewport;
     scene.scale.on("resize", this._resize, this);
     scene.events.once("create", () => scene.scale.refresh());
-    scene.events.once("shutdown", () => scene.scale.off("resize", this._resize, this));
   }
 
   get displayHost(): DisplayHost {
     return this.scene.children;
   }
 
-  resolveLayout(): void {
+  protected doResolve(): void {
     const { width, height } = this.node.layout;
-    if (width === undefined || height === undefined) {
-      resolve(this.node);
-      return;
-    }
-    resolve(this.node, { x: 0, y: 0, width, height });
+    if (width === undefined || height === undefined) resolve(this.node);
+    else resolve(this.node, { x: 0, y: 0, width, height });
   }
 
   protected onDestroy(): void {
+    super.onDestroy();
     this.scene.scale.off("resize", this._resize, this);
   }
 

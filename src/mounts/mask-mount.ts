@@ -8,7 +8,7 @@ export class MaskMount extends Mount {
   private readonly maskRect: GameObjects.Rectangle;
 
   constructor(scene: Scene) {
-    super();
+    super(scene);
     this.host = new GameObjects.Container(scene, 0, 0);
 
     this.maskRect = new GameObjects.Rectangle(scene, 0, 0, 0, 0);
@@ -26,11 +26,12 @@ export class MaskMount extends Mount {
     return this.host;
   }
 
-  resolveLayout(): void {
+  protected doResolve(): void {
     resolve(this.node);
   }
 
   protected onDestroy(): void {
+    super.onDestroy();
     this.host.destroy(true);
     this.maskRect.destroy();
   }
