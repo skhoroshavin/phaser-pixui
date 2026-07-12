@@ -2,7 +2,10 @@ import { Draggable } from "../behaviours/draggable";
 import { Hoverable } from "../behaviours/hoverable";
 import { Component } from "../primitives/component";
 import { Interactive, type InteractiveConfig } from "../primitives/interactive";
-import { MultiImage } from "../primitives/multi-image";
+import { StatefulImage } from "../stateful/image";
+import { StatefulComponentList } from "../stateful/base";
+
+type SliderState = "normal" | "hover" | "pressed" | "disabled";
 
 export type SliderConfig = InteractiveConfig & {
   texture: string;
@@ -27,58 +30,47 @@ export class Slider extends Interactive {
 
     this._value = cfg.value ?? 0;
     this._onChange = cfg.onChange;
-    this._trackNormal = cfg.trackFrame;
-    this._trackHover = cfg.trackHoverFrame;
-    this._trackDisabled = cfg.trackDisabledFrame;
-    this._thumbNormal = cfg.thumbFrame;
-    this._thumbHover = cfg.thumbHoverFrame;
-    this._thumbPressed = cfg.thumbPressedFrame;
-    this._thumbDisabled = cfg.thumbDisabledFrame;
 
     this._drag = this.addBehaviour(
       new Draggable({
         axis: "x",
         onDragStart: (x) => {
-          this._updateThumbFrame();
+          this._update();
           this._dragThumb(x);
         },
         onDrag: (x) => this._dragThumb(x),
-        onDragEnd: () => this._updateThumbFrame(),
+        onDragEnd: () => this._update(),
       }),
     );
-    this._hover = this.addBehaviour(
-      new Hoverable({
-        onUpdate: () => {
-          this._updateThumbFrame();
-          this._updateTrackFrame();
-        },
-      }),
-    );
+    this._hover = this.addBehaviour(new Hoverable({ onUpdate: () => this._update() }));
 
-    const trackFrames = [cfg.trackFrame];
-    if (cfg.trackHoverFrame) trackFrames.push(cfg.trackHoverFrame);
-    if (cfg.trackDisabledFrame) trackFrames.push(cfg.trackDisabledFrame);
-
-    const track = this.add(MultiImage, {
+    const trackHover = cfg.trackHoverFrame ? { frame: cfg.trackHoverFrame } : undefined;
+    this._track = this.add(StatefulImage, {
       texture: cfg.texture,
       frame: cfg.trackFrame,
-      frames: trackFrames,
       inset: 0,
       marginY: "auto",
+      states: {
+        hover: trackHover,
+        pressed: trackHover,
+        disabled: cfg.trackDisabledFrame ? { frame: cfg.trackDisabledFrame } : undefined,
+      },
     });
-    this._track = track;
-    this.node.setIntrinsicSize(track.node.intrinsicSize());
+    this._statefulChildren.add(this._track);
+    this.node.setIntrinsicSize(this._track.node.intrinsicSize());
 
-    const thumbFrames = [cfg.thumbFrame];
-    if (cfg.thumbHoverFrame) thumbFrames.push(cfg.thumbHoverFrame);
-    if (cfg.thumbPressedFrame) thumbFrames.push(cfg.thumbPressedFrame);
-    if (cfg.thumbDisabledFrame) thumbFrames.push(cfg.thumbDisabledFrame);
-
-    this._thumb = this.add(MultiImage, {
+    const thumbHover = cfg.thumbHoverFrame ? { frame: cfg.thumbHoverFrame } : undefined;
+    const thumbPressed = cfg.thumbPressedFrame ? { frame: cfg.thumbPressedFrame } : thumbHover;
+    this._thumb = this.add(StatefulImage, {
       texture: cfg.texture,
       frame: cfg.thumbFrame,
-      frames: thumbFrames,
+      states: {
+        hover: thumbHover,
+        pressed: thumbPressed,
+        disabled: cfg.thumbDisabledFrame ? { frame: cfg.thumbDisabledFrame } : undefined,
+      },
     });
+    this._statefulChildren.add(this._thumb);
 
     const thumbOrigLayout = this._thumb.node.onLayout;
     this._thumb.node.onLayout = (rect, depth) => {
@@ -87,11 +79,10 @@ export class Slider extends Interactive {
       const cw = this.node.xAxis.contentSize(this.node.rect.width);
       this._thumbHalf = tw / 2;
       this._thumbTravel = Math.max(0, cw - tw);
-      this._thumb.setOffsetX(Math.floor(this._value * this._thumbTravel));
+      this._positionThumb();
     };
 
-    this._updateThumbFrame();
-    this._updateTrackFrame();
+    this._update();
   }
 
   get value(): number {
@@ -101,20 +92,16 @@ export class Slider extends Interactive {
     v = Math.max(0, Math.min(1, v));
     if (this._value === v) return;
     this._value = v;
-    this._thumb.setOffsetX(Math.floor(this._value * this._thumbTravel));
+    this._positionThumb();
   }
 
   protected onEnabledChange(): void {
-    this._updateThumbFrame();
-    this._updateTrackFrame();
+    this._update();
   }
 
   protected onVisibilityChange(v: boolean): void {
     super.onVisibilityChange(v);
-    if (v) {
-      this._updateThumbFrame();
-      this._updateTrackFrame();
-    }
+    if (v) this._update();
   }
 
   private _dragThumb(localX: number): void {
@@ -124,38 +111,30 @@ export class Slider extends Interactive {
     if (this._value !== prev) this._onChange?.(this._value);
   }
 
-  private _updateThumbFrame(): void {
-    let frame: string;
-    if (!this.enabled) frame = this._thumbDisabled ?? this._thumbNormal;
-    else if (this._drag.dragging)
-      frame = this._thumbPressed ?? this._thumbHover ?? this._thumbNormal;
-    else if (this._hover.hovered) frame = this._thumbHover ?? this._thumbNormal;
-    else frame = this._thumbNormal;
-    this._thumb.setFrame(frame);
+  private _state(): SliderState {
+    if (!this.enabled) return "disabled";
+    if (this._drag.dragging) return "pressed";
+    if (this._hover.hovered) return "hover";
+    return "normal";
   }
 
-  private _updateTrackFrame(): void {
-    let frame: string;
-    if (!this.enabled) frame = this._trackDisabled ?? this._trackNormal;
-    else if (this._hover.hovered || this._drag.dragging)
-      frame = this._trackHover ?? this._trackNormal;
-    else frame = this._trackNormal;
-    this._track.setFrame(frame);
+  private _update(): void {
+    this._statefulChildren.setState(this._state());
+    this._positionThumb();
+  }
+
+  /** Position the thumb from its value (re-applied after state resets offsets). */
+  private _positionThumb(): void {
+    this._thumb.setOffsetX(Math.floor(this._value * this._thumbTravel));
   }
 
   private _value: number;
   private readonly _onChange?: (value: number) => void;
-  private _track: MultiImage;
-  private _trackNormal: string;
-  private _trackHover?: string;
-  private _trackDisabled?: string;
-  private _thumb: MultiImage;
-  private _thumbNormal: string;
-  private _thumbHover?: string;
-  private _thumbPressed?: string;
-  private _thumbDisabled?: string;
+  private readonly _track: StatefulImage;
+  private readonly _thumb: StatefulImage;
   private readonly _drag: Draggable;
   private readonly _hover: Hoverable;
+  private readonly _statefulChildren = new StatefulComponentList();
   private _thumbHalf = 0;
   private _thumbTravel = 0;
 }

@@ -1,4 +1,4 @@
-import { TintModes, type GameObjects } from "phaser";
+import { type GameObjects } from "phaser";
 import { Component, type ComponentConfig } from "./component";
 
 type GameObject = GameObjects.GameObject;
@@ -29,11 +29,6 @@ export class PhaserObject<
   }
 
   readonly internal: T;
-
-  setTint(color: number): void {
-    const i = this.internal as GameObject | GameObjects.Components.Tint;
-    if ("setTint" in i) i.setTint(color).setTintMode(TintModes.FILL);
-  }
 
   setOffsetX(dx: number): void {
     this.internal.x += dx - this._offsetX;

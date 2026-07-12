@@ -4,11 +4,13 @@ export * from "./primitives/container";
 export * from "./primitives/phaser-object";
 export * from "./primitives/interactive";
 export * from "./primitives/image";
-export * from "./primitives/multi-image";
 export * from "./primitives/rectangle";
 export * from "./primitives/text";
-export * from "./primitives/view-state";
 
+// Stateful components
+export * from "./stateful/image";
+export * from "./stateful/text";
+export * from "./stateful/base";
 // Mounts (root components)
 export * from "./mounts/mount";
 export * from "./mounts/scene-mount";
