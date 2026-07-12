@@ -5,14 +5,15 @@ export abstract class Mount extends Component {
   protected constructor(scene: Scene) {
     super();
     this._game = scene.game;
-    this._game.events.on("prerender", this._flush);
     scene.events.once("shutdown", this.destroy, this);
   }
 
   abstract get displayHost(): DisplayHost;
 
   resolveLayout(): void {
+    if (this._dirty) return;
     this._dirty = true;
+    this._game.events.once("prerender", this._flush);
   }
 
   protected abstract doResolve(): void;
@@ -22,11 +23,8 @@ export abstract class Mount extends Component {
   }
 
   private _flush = (): void => {
-    // Loop guards against an onLayout callback re-arming the flag mid-resolve.
-    while (this._dirty) {
-      this._dirty = false;
-      this.doResolve();
-    }
+    this._dirty = false;
+    this.doResolve();
   };
 
   private readonly _game: Game;
