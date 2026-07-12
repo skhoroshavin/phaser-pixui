@@ -40,7 +40,7 @@ export class ScrollArea extends Component {
     this._surface = new Interactive(this, { inset: 0 });
     this._scrollable = new Scrollable({
       axis: this._axis,
-      onScroll: (dx, dy) => this.scrollBy(dx, dy),
+      onScroll: (dx, dy) => this._scrollBy(dx, dy),
     });
     this._surface.addBehaviour(this._scrollable);
   }
@@ -50,23 +50,9 @@ export class ScrollArea extends Component {
   get scrollX(): number {
     return this._scroll.x;
   }
-  set scrollX(v: number) {
-    this._scroll.x = PMath.Clamp(v, 0, this._maxScroll().x);
-    this._applyScroll();
-  }
 
   get scrollY(): number {
     return this._scroll.y;
-  }
-  set scrollY(v: number) {
-    this._scroll.y = PMath.Clamp(v, 0, this._maxScroll().y);
-    this._applyScroll();
-  }
-
-  scrollBy(dx: number, dy: number): void {
-    this._stopChase();
-    this.scrollX = this._scroll.x + dx;
-    this.scrollY = this._scroll.y + dy;
   }
 
   scrollTo(x: number, y: number): void {
@@ -86,27 +72,44 @@ export class ScrollArea extends Component {
     this._maskMount.destroy();
   }
 
+  private _setScroll(x: number, y: number): void {
+    this._scroll.x = PMath.Clamp(x, 0, this._maxScroll().x);
+    this._scroll.y = PMath.Clamp(y, 0, this._maxScroll().y);
+    this._applyScroll();
+  }
+
+  private _scrollBy(dx: number, dy: number): void {
+    this._stopChase();
+    this._setScroll(this._scroll.x + dx, this._scroll.y + dy);
+  }
+
   private _chaseTo(target: () => ScrollTarget): void {
     this._target = target;
     if (this._chasing) return;
     this._chasing = true;
-    this.displayHost.scene!.events.on("update", this._stepChase, this);
+    this.displayHost.scene!.events.on("prerender", this._stepChase, this);
   }
 
   private _stopChase(): void {
     if (!this._chasing) return;
     this._chasing = false;
-    this.displayHost.scene!.events.off("update", this._stepChase, this);
+    this.displayHost.scene!.events.off("prerender", this._stepChase, this);
   }
 
-  private _stepChase(_time: number, delta: number): void {
+  private _stepChase(_renderer: unknown): void {
+    const delta = this.displayHost.scene!.game.loop.delta;
     const k = 1 - Math.exp(-delta / SCROLL_TAU);
-    const t = this._target();
-    this.scrollX += (t.x - this.scrollX) * k;
-    this.scrollY += (t.y - this.scrollY) * k;
-    if (Math.abs(t.x - this.scrollX) < 0.5 && Math.abs(t.y - this.scrollY) < 0.5) {
-      this.scrollX = t.x;
-      this.scrollY = t.y;
+    // Clamp the target to the valid range so an out-of-range request still settles.
+    const r = this._target();
+    const m = this._maxScroll();
+    const tx = PMath.Clamp(r.x, 0, m.x);
+    const ty = PMath.Clamp(r.y, 0, m.y);
+    this._setScroll(
+      this._scroll.x + (tx - this._scroll.x) * k,
+      this._scroll.y + (ty - this._scroll.y) * k,
+    );
+    if (Math.abs(tx - this._scroll.x) < 0.5 && Math.abs(ty - this._scroll.y) < 0.5) {
+      this._setScroll(tx, ty);
       this._stopChase();
     }
   }
@@ -144,7 +147,7 @@ export class ScrollArea extends Component {
   private readonly _scrollable: Scrollable;
   private _viewport?: Rect;
   private readonly _scroll = new PMath.Vector2();
-  private _target: () => ScrollTarget = () => ({ x: 0, y: 0 });
+  private _target = () => ({ x: 0, y: 0 });
   private _chasing = false;
 }
 
