@@ -33,7 +33,6 @@ export class ScrollArea extends Component {
     };
 
     this.content.node.onLayout = () => {
-      this._updateMaxScroll();
       this._clampScroll();
       this._applyScroll();
     };
@@ -52,7 +51,7 @@ export class ScrollArea extends Component {
     return this._scroll.x;
   }
   set scrollX(v: number) {
-    this._scroll.x = PMath.Clamp(v, 0, this._maxScroll.x);
+    this._scroll.x = PMath.Clamp(v, 0, this._maxScroll().x);
     this._applyScroll();
   }
 
@@ -60,25 +59,18 @@ export class ScrollArea extends Component {
     return this._scroll.y;
   }
   set scrollY(v: number) {
-    this._scroll.y = PMath.Clamp(v, 0, this._maxScroll.y);
+    this._scroll.y = PMath.Clamp(v, 0, this._maxScroll().y);
     this._applyScroll();
   }
 
-  get maxScrollX(): number {
-    return this._maxScroll.x;
-  }
-  get maxScrollY(): number {
-    return this._maxScroll.y;
-  }
-
   scrollBy(dx: number, dy: number): void {
+    this._stopChase();
     this.scrollX = this._scroll.x + dx;
     this.scrollY = this._scroll.y + dy;
   }
 
   scrollTo(x: number, y: number): void {
-    this.scrollX = x;
-    this.scrollY = y;
+    this._chaseTo(() => ({ x, y }));
   }
 
   scrollToStart(): void {
@@ -86,11 +78,37 @@ export class ScrollArea extends Component {
   }
 
   scrollToEnd(): void {
-    this.scrollTo(this._maxScroll.x, this._maxScroll.y);
+    this._chaseTo(() => this._maxScroll());
   }
 
   protected onDestroy(): void {
+    this._stopChase();
     this._maskMount.destroy();
+  }
+
+  private _chaseTo(target: () => ScrollTarget): void {
+    this._target = target;
+    if (this._chasing) return;
+    this._chasing = true;
+    this.displayHost.scene!.events.on("update", this._stepChase, this);
+  }
+
+  private _stopChase(): void {
+    if (!this._chasing) return;
+    this._chasing = false;
+    this.displayHost.scene!.events.off("update", this._stepChase, this);
+  }
+
+  private _stepChase(_time: number, delta: number): void {
+    const k = 1 - Math.exp(-delta / SCROLL_TAU);
+    const t = this._target();
+    this.scrollX += (t.x - this.scrollX) * k;
+    this.scrollY += (t.y - this.scrollY) * k;
+    if (Math.abs(t.x - this.scrollX) < 0.5 && Math.abs(t.y - this.scrollY) < 0.5) {
+      this.scrollX = t.x;
+      this.scrollY = t.y;
+      this._stopChase();
+    }
   }
 
   private _applyScroll(): void {
@@ -105,17 +123,19 @@ export class ScrollArea extends Component {
     else if (this._axis === "x") this.content.node.layout.height = this._viewport.height;
   }
 
-  private _updateMaxScroll(): void {
-    const cr = this.content.node.rect;
-    this._maxScroll.set(
-      Math.max(0, cr.width - (this._viewport?.width ?? 0)),
-      Math.max(0, cr.height - (this._viewport?.height ?? 0)),
-    );
+  private _clampScroll(): void {
+    const m = this._maxScroll();
+    this._scroll.x = PMath.Clamp(this._scroll.x, 0, m.x);
+    this._scroll.y = PMath.Clamp(this._scroll.y, 0, m.y);
   }
 
-  private _clampScroll(): void {
-    this._scroll.x = PMath.Clamp(this._scroll.x, 0, this._maxScroll.x);
-    this._scroll.y = PMath.Clamp(this._scroll.y, 0, this._maxScroll.y);
+  private _maxScroll(): ScrollTarget {
+    const cr = this.content.node.rect;
+    const vp = this._viewport;
+    return {
+      x: Math.max(0, cr.width - (vp?.width ?? 0)),
+      y: Math.max(0, cr.height - (vp?.height ?? 0)),
+    };
   }
 
   private readonly _axis?: Axis;
@@ -124,5 +144,10 @@ export class ScrollArea extends Component {
   private readonly _scrollable: Scrollable;
   private _viewport?: Rect;
   private readonly _scroll = new PMath.Vector2();
-  private readonly _maxScroll = new PMath.Vector2();
+  private _target: () => ScrollTarget = () => ({ x: 0, y: 0 });
+  private _chasing = false;
 }
+
+type ScrollTarget = { x: number; y: number };
+
+const SCROLL_TAU = 60;
