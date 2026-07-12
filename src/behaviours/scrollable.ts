@@ -51,14 +51,14 @@ export class Scrollable extends Behaviour {
       pointer.worldY - this.zone.y,
     );
     this._velocity = ZERO;
-    this._timestamp = Date.now();
+    this._timestamp = this.zone.scene!.time.now;
   }
 
   private _onDrag(pointer: Input.Pointer): void {
     if (!this.active) return;
     const pos = axisLock(this._axis, pointer.worldX - this.zone.x, pointer.worldY - this.zone.y);
     const delta: vec2 = { x: pos.x - this._lastPos.x, y: pos.y - this._lastPos.y };
-    const now = Date.now();
+    const now = this.zone.scene!.time.now;
     const dt = now - this._timestamp;
     const sample = scale(delta, 1 / (dt + 1));
     this._velocity = {
