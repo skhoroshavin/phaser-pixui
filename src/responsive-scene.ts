@@ -3,7 +3,7 @@ import { Scene } from "phaser";
 import { Size } from "./shared/size.ts";
 
 export type ResponsiveSceneConfig = Types.Scenes.SettingsConfig & {
-  // Constraints on effective viewport size. Default is minimum 426x240.
+  // Constraints on effective viewport size. Default is minimum 320x240.
   viewportConstraints?: ViewportConstraints;
   // Specifies function that returns world size, which is later used to
   // set camera boundaries. If undefined world will be assumed to have a

@@ -6,7 +6,7 @@ import type { Size } from "../shared/size";
 export type TextConfig = ComponentConfig & {
   font: string;
   text?: string;
-  tint?: number;
+  color?: number;
   align?: TextAlign;
 };
 
@@ -23,7 +23,7 @@ export class Text extends PhaserObject<GameObjects.BitmapText> {
       this.internal.setMaxWidth(availableWidth ?? 0);
       return this.internal.getTextBounds(true).global;
     });
-    if (cfg.tint !== undefined) this.internal.setTint(cfg.tint).setTintMode(TintModes.FILL);
+    if (cfg.color !== undefined) this.setColor(cfg.color);
     switch (cfg.align) {
       case "center":
         this.internal.align = 1;
@@ -40,5 +40,9 @@ export class Text extends PhaserObject<GameObjects.BitmapText> {
   set text(value: string) {
     this.internal.setText(value);
     this.resolveLayout();
+  }
+
+  setColor(color: number): void {
+    this.internal.setTint(color).setTintMode(TintModes.FILL);
   }
 }

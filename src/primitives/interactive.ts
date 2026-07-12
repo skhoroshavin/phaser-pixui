@@ -70,7 +70,7 @@ export class Interactive extends PhaserObject<GameObjects.Zone> {
         break;
       }
       case "ellipse": {
-        hitArea = new Geom.Ellipse(width / 2, width / 2, width, height);
+        hitArea = new Geom.Ellipse(width / 2, height / 2, width, height);
         callback = Geom.Ellipse.Contains;
         break;
       }

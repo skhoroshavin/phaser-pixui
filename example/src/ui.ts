@@ -58,7 +58,7 @@ export class Ui extends ResponsiveScene {
       right: 4,
       bottom: 64,
       font: fonts.alternative,
-      tint: colors.dark,
+      color: colors.dark,
       text: `Phaser PixUI v${PHASER_PIXUI_VERSION}`,
     });
 

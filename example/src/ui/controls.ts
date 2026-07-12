@@ -19,15 +19,26 @@ export function button(parent: Component, text: string, cfg?: Partial<ButtonConf
     width: 96,
     paddingX: 5,
     paddingY: 5,
-    normal: { frame: "button_up" },
-    hover: { frame: "button_hover" },
-    pressed: { frame: "button_down", offsetY: 1 },
-    disabled: { frame: "button_disabled", tint: colors.disabled, offsetY: 1 },
     ...cfg,
   });
-  const frame = btn.addImage({ texture: uiTexture, inset: 0, tileX: true, tileY: true });
+  const frame = btn.addImage({
+    texture: uiTexture,
+    inset: 0,
+    tileX: true,
+    tileY: true,
+    frame: "button_up",
+    hover: { frame: "button_hover" },
+    pressed: { frame: "button_down" },
+    disabled: { frame: "button_disabled" },
+  });
   btn.node.setIntrinsicSize(frame.node.intrinsicSize());
-  btn.add(Text, { font: fonts.normal, text, tint: colors.dark });
+  btn.addText({
+    font: fonts.normal,
+    text,
+    color: colors.dark,
+    pressed: { offsetY: 1 },
+    disabled: { color: colors.disabled, offsetY: 1 },
+  });
   return btn;
 }
 
@@ -37,16 +48,24 @@ export function checkbox(parent: Component, label: string, cfg?: Partial<ToggleC
     direction: "row",
     gap: 4,
     alignItems: "center",
-    normal: { frame: "check_box_normal" },
-    selected: { frame: "check_box_selected" },
-    hover: { frame: "check_box_hover" },
-    disabled: { frame: "check_box_disabled", tint: colors.disabled },
-    hover_selected: { frame: "check_box_hover_selected" },
-    disabled_selected: { frame: "check_box_disabled_selected", tint: colors.disabled },
     ...cfg,
   });
-  tgl.add(Text, { font: fonts.normal, text: label, tint: colors.dark });
-  tgl.addImage({ texture: uiTexture });
+  tgl.addText({
+    font: fonts.normal,
+    text: label,
+    color: colors.dark,
+    disabled: { color: colors.disabled },
+    disabled_selected: { color: colors.disabled },
+  });
+  tgl.addImage({
+    texture: uiTexture,
+    frame: "check_box_normal",
+    selected: { frame: "check_box_selected" },
+    hover: { frame: "check_box_hover" },
+    disabled: { frame: "check_box_disabled" },
+    hover_selected: { frame: "check_box_hover_selected" },
+    disabled_selected: { frame: "check_box_disabled_selected" },
+  });
   return tgl;
 }
 
@@ -66,15 +85,23 @@ export function radiogroup(
       direction: "row",
       gap: 4,
       alignItems: "center",
-      normal: { frame: "radio_button_normal" },
+    });
+    tgl.addText({
+      font: fonts.normal,
+      text: label,
+      color: colors.dark,
+      disabled: { color: colors.disabled },
+      disabled_selected: { color: colors.disabled },
+    });
+    tgl.addImage({
+      texture: uiTexture,
+      frame: "radio_button_normal",
       selected: { frame: "radio_button_selected" },
       hover: { frame: "radio_button_hover" },
-      disabled: { frame: "radio_button_disabled", tint: colors.disabled },
+      disabled: { frame: "radio_button_disabled" },
       hover_selected: { frame: "radio_button_hover_selected" },
-      disabled_selected: { frame: "radio_button_disabled_selected", tint: colors.disabled },
+      disabled_selected: { frame: "radio_button_disabled_selected" },
     });
-    tgl.add(Text, { font: fonts.normal, text: label, tint: colors.dark });
-    tgl.addImage({ texture: uiTexture });
   }
   return group;
 }
@@ -86,7 +113,7 @@ export function slider(parent: Component, label: string, cfg?: Partial<SliderCon
     gap: 4,
     alignItems: "center",
   });
-  row.add(Text, { font: fonts.normal, text: label, tint: colors.dark });
+  row.add(Text, { font: fonts.normal, text: label, color: colors.dark });
   return row.add(Slider, {
     texture: uiTexture,
     trackFrame: "slider_track",

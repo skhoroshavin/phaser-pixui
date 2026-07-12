@@ -16,7 +16,7 @@ export function frame(parent: Component, cfg: FrameConfig = {}) {
 }
 
 export function text(parent: Component, cfg: Partial<TextConfig>) {
-  return parent.add(Text, { font: fonts.normal, tint: colors.dark, ...cfg });
+  return parent.add(Text, { font: fonts.normal, color: colors.dark, ...cfg });
 }
 
 export function header(parent: Component, title: string, cfg: ComponentConfig = {}): Image {
@@ -29,7 +29,7 @@ export function header(parent: Component, title: string, cfg: ComponentConfig = 
   });
   headerFrame.add(text, {
     font: fonts.title,
-    tint: colors.dark,
+    color: colors.dark,
     align: "center",
     text: title,
   });

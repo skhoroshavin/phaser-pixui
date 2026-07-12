@@ -10,11 +10,10 @@ export type GameObjectTarget = GameObjects.GameObject &
 
 export class GameObjectMount extends Mount {
   constructor(scene: Scene, target?: GameObjectTarget) {
-    super();
+    super(scene);
     this._scene = scene;
     this._host = scene.add.container(0, 0);
     scene.game.events.on("poststep", this._update, this);
-    scene.events.once("shutdown", this.destroy, this);
     this.target = target;
   }
 
@@ -36,7 +35,7 @@ export class GameObjectMount extends Mount {
     return this._host;
   }
 
-  resolveLayout(): void {
+  protected doResolve(): void {
     if (this.node.children.length === 0) return;
     this._baseBox = resolve(this.node);
     this._currentBox = resolve(this.node, this._viewBounds());
@@ -44,8 +43,8 @@ export class GameObjectMount extends Mount {
   }
 
   protected onDestroy(): void {
+    super.onDestroy();
     this._scene.game.events.off("poststep", this._update, this);
-    this._scene.events.off("shutdown", this.destroy, this);
     this._detach();
     this._host.destroy(true);
   }
