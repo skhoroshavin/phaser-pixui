@@ -1,10 +1,10 @@
 import { Clickable } from "../behaviours/clickable";
 import { Hoverable } from "../behaviours/hoverable";
-import type { Mount } from "../mounts/mount";
-import { Interactive, type InteractiveConfig } from "./interactive";
-import type { ImageConfig } from "./image";
-import { MultiImage } from "./multi-image";
-import { applyViewState, type ViewState } from "./view-state";
+import { Component } from "../primitives/component";
+import { Interactive, type InteractiveConfig } from "../primitives/interactive";
+import type { ImageConfig } from "../primitives/image";
+import { MultiImage } from "../primitives/multi-image";
+import { applyViewState, type ViewState } from "../primitives/view-state";
 
 export type ButtonConfig = InteractiveConfig & {
   onClick?: () => void;
@@ -15,7 +15,7 @@ export type ButtonConfig = InteractiveConfig & {
 };
 
 export class Button extends Interactive {
-  constructor(parent: Mount, cfg: ButtonConfig) {
+  constructor(parent: Component, cfg: ButtonConfig) {
     super(parent, { justifyContent: "center", alignItems: "center", ...cfg });
     this._states = {
       normal: cfg.normal,
@@ -53,7 +53,7 @@ export class Button extends Interactive {
   }
 
   private _update(): void {
-    applyViewState(this.children, this._viewState());
+    applyViewState(this._children, this._viewState());
   }
 
   private _viewState(): ViewState {

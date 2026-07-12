@@ -1,9 +1,9 @@
-import { type ComponentConfig, type Mount, Image, Text, type TextConfig } from "phaser-pixui";
+import { type ComponentConfig, Component, Image, Text, type TextConfig } from "phaser-pixui";
 import { colors, fonts, uiTexture } from "./constants.ts";
 
 export type FrameConfig = ComponentConfig & { frame?: string };
 
-export function frame(parent: Mount, cfg: FrameConfig = {}) {
+export function frame(parent: Component, cfg: FrameConfig = {}) {
   return parent.add(Image, {
     texture: uiTexture,
     frame: "frame",
@@ -15,11 +15,11 @@ export function frame(parent: Mount, cfg: FrameConfig = {}) {
   });
 }
 
-export function text(parent: Mount, cfg: Partial<TextConfig>) {
+export function text(parent: Component, cfg: Partial<TextConfig>) {
   return parent.add(Text, { font: fonts.normal, tint: colors.dark, ...cfg });
 }
 
-export function header(parent: Mount, title: string, cfg: ComponentConfig = {}): Image {
+export function header(parent: Component, title: string, cfg: ComponentConfig = {}): Image {
   const headerFrame = parent.add(frame, {
     frame: "frame-header",
     marginX: "auto",
@@ -37,7 +37,7 @@ export function header(parent: Mount, title: string, cfg: ComponentConfig = {}):
 }
 
 export function chat_bubble(
-  parent: Mount,
+  parent: Component,
   content: string,
   cfg: ComponentConfig = {},
 ): { bubble: Image; bubbleText: Text } {

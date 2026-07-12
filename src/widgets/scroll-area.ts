@@ -1,9 +1,9 @@
 import { Math as PMath } from "phaser";
 import { Scrollable } from "../behaviours/scrollable";
 import { type Axis } from "../shared/axis";
-import { Component, type ComponentConfig } from "./component";
-import type { Mount } from "../mounts/mount";
-import { Interactive } from "./interactive";
+import { Component, type ComponentConfig } from "../primitives/component";
+import { Container } from "../primitives/container";
+import { Interactive } from "../primitives/interactive";
 import { MaskMount } from "../mounts/mask-mount";
 import { resolve } from "../layout";
 import type { Rect } from "../shared/rect";
@@ -13,7 +13,7 @@ export type ScrollAreaConfig = ComponentConfig & {
 };
 
 export class ScrollArea extends Component {
-  constructor(parent: Mount, cfg: ScrollAreaConfig = {}) {
+  constructor(parent: Component, cfg: ScrollAreaConfig = {}) {
     super(parent, cfg);
 
     this._axis = cfg.axis;
@@ -21,7 +21,7 @@ export class ScrollArea extends Component {
     const scene = this.displayHost.scene!;
     this._maskMount = new MaskMount(scene);
     this.displayHost.add(this._maskMount.displayHost);
-    this.content = new Component(this._maskMount);
+    this.content = new Container(this._maskMount);
 
     this.node.onLayout = (rect, depth) => {
       this._viewport = rect;
@@ -46,7 +46,7 @@ export class ScrollArea extends Component {
     this._surface.addBehaviour(this._scrollable);
   }
 
-  readonly content: Component;
+  readonly content: Container;
 
   get scrollX(): number {
     return this._scroll.x;
@@ -87,6 +87,10 @@ export class ScrollArea extends Component {
 
   scrollToEnd(): void {
     this.scrollTo(this._maxScroll.x, this._maxScroll.y);
+  }
+
+  protected onDestroy(): void {
+    this._maskMount.destroy();
   }
 
   private _applyScroll(): void {

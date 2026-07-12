@@ -1,9 +1,9 @@
-import { type Mount, Modal } from "phaser-pixui";
+import { Component, Modal } from "phaser-pixui";
 import { button, checkbox, radiogroup, slider } from "./controls";
 import { frame, text } from "./visuals";
 import { fonts } from "./constants";
 
-export function settings_dialog(parent: Mount, log: (msg: string) => void) {
+export function settings_dialog(parent: Component, log: (msg: string) => void) {
   const modal = parent.add(Modal, {
     dismissOnBackdropClick: true,
     onDismiss: () => log("Settings dismissed"),

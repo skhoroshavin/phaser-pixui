@@ -1,6 +1,5 @@
 import { TintModes, type GameObjects } from "phaser";
 import { Component, type ComponentConfig } from "./component";
-import type { Mount } from "../mounts/mount";
 
 type GameObject = GameObjects.GameObject;
 type Transform = GameObjects.Components.Transform;
@@ -15,7 +14,7 @@ type PhaserObjectConfig<T> = ComponentConfig & {
 export class PhaserObject<
   T extends GameObject & Transform & Origin & Visible & Depth,
 > extends Component {
-  constructor(parent: Mount, create: (scene: Phaser.Scene) => T, cfg?: PhaserObjectConfig<T>) {
+  constructor(parent: Component, create: (scene: Phaser.Scene) => T, cfg?: PhaserObjectConfig<T>) {
     super(parent, cfg);
     this._onResize = cfg?.onResize;
     this.internal = create(this.displayHost.scene!);
@@ -66,6 +65,10 @@ export class PhaserObject<
 
   protected onVisibilityChange(v: boolean): void {
     this.internal.setVisible(v);
+  }
+
+  protected onDestroy(): void {
+    this.internal.destroy();
   }
 
   private readonly _onResize?: (internal: T, width: number, height: number) => void;

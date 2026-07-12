@@ -1,5 +1,4 @@
-import { Component, type ComponentConfig } from "./component";
-import type { Mount } from "../mounts/mount";
+import { Component, type ComponentConfig } from "../primitives/component";
 import { Toggle, type ToggleConfig } from "./toggle";
 
 export type RadioGroupConfig = ComponentConfig & {
@@ -8,7 +7,7 @@ export type RadioGroupConfig = ComponentConfig & {
 };
 
 export class RadioGroup extends Component {
-  constructor(parent: Mount, cfg: RadioGroupConfig = {}) {
+  constructor(parent: Component, cfg: RadioGroupConfig = {}) {
     const { selectedIndex, onChange, ...layout } = cfg;
     super(parent, layout);
     this._onChange = onChange;
