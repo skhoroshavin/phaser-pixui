@@ -1,8 +1,8 @@
 import { Draggable } from "../behaviours/draggable";
 import { Hoverable } from "../behaviours/hoverable";
-import type { Mount } from "../mounts/mount";
-import { Interactive, type InteractiveConfig } from "./interactive";
-import { MultiImage } from "./multi-image";
+import { Component } from "../primitives/component";
+import { Interactive, type InteractiveConfig } from "../primitives/interactive";
+import { MultiImage } from "../primitives/multi-image";
 
 export type SliderConfig = InteractiveConfig & {
   texture: string;
@@ -18,7 +18,7 @@ export type SliderConfig = InteractiveConfig & {
 };
 
 export class Slider extends Interactive {
-  constructor(parent: Mount, cfg: SliderConfig) {
+  constructor(parent: Component, cfg: SliderConfig) {
     super(parent, {
       ...cfg,
       justifyContent: cfg.justifyContent ?? "center",

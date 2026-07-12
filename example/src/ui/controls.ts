@@ -2,7 +2,7 @@ import {
   Button,
   type ButtonConfig,
   Component,
-  type Mount,
+  Container,
   RadioGroup,
   type RadioGroupConfig,
   Slider,
@@ -14,7 +14,7 @@ import {
 import { colors, fonts, uiTexture } from "./constants";
 
 /** Button with themed frame and label. */
-export function button(parent: Mount, text: string, cfg?: Partial<ButtonConfig>): Button {
+export function button(parent: Component, text: string, cfg?: Partial<ButtonConfig>): Button {
   const btn = parent.add(Button, {
     width: 96,
     paddingX: 5,
@@ -32,7 +32,7 @@ export function button(parent: Mount, text: string, cfg?: Partial<ButtonConfig>)
 }
 
 /** Checkbox with label. Text then box in a row. Returns the Toggle. */
-export function checkbox(parent: Mount, label: string, cfg?: Partial<ToggleConfig>): Toggle {
+export function checkbox(parent: Component, label: string, cfg?: Partial<ToggleConfig>): Toggle {
   const tgl = parent.add(Toggle, {
     direction: "row",
     gap: 4,
@@ -51,7 +51,11 @@ export function checkbox(parent: Mount, label: string, cfg?: Partial<ToggleConfi
 }
 
 /** RadioGroup with label for each option. Returns the RadioGroup. */
-export function radiogroup(parent: Mount, labels: string[], cfg?: RadioGroupConfig): RadioGroup {
+export function radiogroup(
+  parent: Component,
+  labels: string[],
+  cfg?: RadioGroupConfig,
+): RadioGroup {
   const group = parent.add(RadioGroup, {
     direction: "column",
     gap: 4,
@@ -76,8 +80,8 @@ export function radiogroup(parent: Mount, labels: string[], cfg?: RadioGroupConf
 }
 
 /** Slider with label. Row: label then slider. Returns the Slider. */
-export function slider(parent: Mount, label: string, cfg?: Partial<SliderConfig>): Slider {
-  const row = parent.add(Component, {
+export function slider(parent: Component, label: string, cfg?: Partial<SliderConfig>): Slider {
+  const row = parent.add(Container, {
     direction: "row",
     gap: 4,
     alignItems: "center",

@@ -1,5 +1,5 @@
 import { frameDimensions } from "../shared/frame";
-import type { Mount } from "../mounts/mount";
+import { Component } from "./component";
 import { Image, type ImageConfig } from "./image";
 
 export type MultiImageConfig = ImageConfig & {
@@ -7,7 +7,7 @@ export type MultiImageConfig = ImageConfig & {
 };
 
 export class MultiImage extends Image {
-  constructor(parent: Mount, cfg: MultiImageConfig) {
+  constructor(parent: Component, cfg: MultiImageConfig) {
     super(parent, cfg);
     const scene = this.displayHost.scene!;
     this.node.setIntrinsicSize(

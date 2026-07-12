@@ -1,7 +1,7 @@
-import { type ComponentConfig, type Mount, ScrollArea } from "phaser-pixui";
+import { type ComponentConfig, Component, ScrollArea } from "phaser-pixui";
 import { frame, text } from "./visuals.ts";
 
-export function log_panel(parent: Mount, cfg?: ComponentConfig) {
+export function log_panel(parent: Component, cfg?: ComponentConfig) {
   const bg = parent.add(frame, { ...cfg });
   const scroll = bg.add(ScrollArea, { axis: "y", grow: 1 });
   const txt = scroll.content.add(text, {});

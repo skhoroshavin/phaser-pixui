@@ -1,21 +1,27 @@
-// Responsive scene
-export * from "./responsive-scene";
+// Primitives
+export * from "./primitives/component";
+export * from "./primitives/container";
+export * from "./primitives/phaser-object";
+export * from "./primitives/interactive";
+export * from "./primitives/image";
+export * from "./primitives/multi-image";
+export * from "./primitives/rectangle";
+export * from "./primitives/text";
+export * from "./primitives/view-state";
 
-// Components
-export * from "./components/component";
-export * from "./components/phaser-object";
-export * from "./components/interactive";
-export * from "./components/image";
-export * from "./components/multi-image";
-export * from "./components/rectangle";
-export * from "./components/text";
-export * from "./components/button";
-export * from "./components/toggle";
-export * from "./components/slider";
-export * from "./components/scroll-area";
-export * from "./components/radiogroup";
-export * from "./components/modal";
-export * from "./components/view-state";
+// Mounts (root components)
+export * from "./mounts/mount";
+export * from "./mounts/scene-mount";
+export * from "./mounts/game-object-mount";
+export * from "./mounts/mask-mount";
+
+// Widgets (composite components)
+export * from "./widgets/button";
+export * from "./widgets/toggle";
+export * from "./widgets/slider";
+export * from "./widgets/radiogroup";
+export * from "./widgets/modal";
+export * from "./widgets/scroll-area";
 
 // Behaviours
 export * from "./behaviours/behaviour";
@@ -24,11 +30,8 @@ export * from "./behaviours/draggable";
 export * from "./behaviours/hoverable";
 export * from "./behaviours/scrollable";
 
-// Mounts
-export * from "./mounts/mount";
-export * from "./mounts/scene-mount";
-export * from "./mounts/game-object-mount";
-export * from "./mounts/mask-mount";
+// Responsive scene
+export * from "./responsive-scene";
 
 // Layout
 export * from "./layout";

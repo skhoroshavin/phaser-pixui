@@ -49,13 +49,13 @@ Create a `SceneMount` attached to your scene, which acts as a root container,
 and add your components directly to it:
 
 ```ts
-import { Component, SceneMount, Rectangle, Text } from "phaser-pixui";
+import { Container, SceneMount, Rectangle, Text } from "phaser-pixui";
 
 const mount = new SceneMount(scene, {
   viewport: () => ({ width: 320, height: 240 }),
 });
 
-const row = mount.add(Component, { direction: "row", gap: 8, alignItems: "center" });
+const row = mount.add(Container, { direction: "row", gap: 8, alignItems: "center" });
 row.add(Rectangle, { width: 40, height: 40, fillColor: 0xff0000 });
 row.add(Text, { font: "myFont", text: "Hello" });
 ```

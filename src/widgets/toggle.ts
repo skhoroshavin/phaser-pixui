@@ -1,10 +1,10 @@
 import { Clickable } from "../behaviours/clickable";
 import { Hoverable } from "../behaviours/hoverable";
-import type { Mount } from "../mounts/mount";
-import type { ImageConfig } from "./image";
-import { Interactive, type InteractiveConfig } from "./interactive";
-import { MultiImage } from "./multi-image";
-import { applyViewState, type ViewState } from "./view-state";
+import { Component } from "../primitives/component";
+import type { ImageConfig } from "../primitives/image";
+import { Interactive, type InteractiveConfig } from "../primitives/interactive";
+import { MultiImage } from "../primitives/multi-image";
+import { applyViewState, type ViewState } from "../primitives/view-state";
 
 export type ToggleStates = {
   normal: ViewState;
@@ -22,7 +22,7 @@ export type ToggleConfig = InteractiveConfig &
   };
 
 export class Toggle extends Interactive {
-  constructor(parent: Mount, cfg: ToggleConfig) {
+  constructor(parent: Component, cfg: ToggleConfig) {
     super(parent, { justifyContent: "center", alignItems: "center", ...cfg });
     this._states = {
       normal: cfg.normal,
@@ -79,7 +79,7 @@ export class Toggle extends Interactive {
   }
 
   private _update(): void {
-    applyViewState(this.children, this._viewState());
+    applyViewState(this._children, this._viewState());
   }
 
   private _viewState(): ViewState {

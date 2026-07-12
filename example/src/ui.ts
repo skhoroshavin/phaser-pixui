@@ -1,7 +1,7 @@
 import { CANVAS, GameObjects, HEADLESS, VERSION, WEBGL } from "phaser";
 import {
-  Component,
   ConstraintMode,
+  Container,
   GameObjectMount,
   ResponsiveScene,
   SceneMount,
@@ -86,7 +86,7 @@ export class Ui extends ResponsiveScene {
       });
     });
 
-    const mainMenu = mount.add(Component, {
+    const mainMenu = mount.add(Container, {
       inset: 0,
       direction: "column",
       gap: 4,

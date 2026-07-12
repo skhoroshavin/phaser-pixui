@@ -1,7 +1,6 @@
 import { GameObjects } from "phaser";
 import { frameDimensions } from "../shared/frame";
-import { type ComponentConfig } from "./component";
-import type { Mount } from "../mounts/mount";
+import { Component, type ComponentConfig } from "./component";
 import { PhaserObject } from "./phaser-object";
 
 export type ImageConfig = {
@@ -12,7 +11,7 @@ export type ImageConfig = {
 } & ComponentConfig;
 
 export class Image extends PhaserObject<GameObjects.Sprite | GameObjects.NineSlice> {
-  constructor(parent: Mount, cfg: ImageConfig) {
+  constructor(parent: Component, cfg: ImageConfig) {
     const scene = parent.displayHost.scene!;
     const dims = frameDimensions(scene.textures.getFrame(cfg.texture, cfg.frame));
     super(

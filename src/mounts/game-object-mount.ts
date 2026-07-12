@@ -15,14 +15,14 @@ export class GameObjectMount extends Mount {
     this._host = scene.add.container(0, 0);
     scene.game.events.on("poststep", this._update, this);
     scene.events.once("shutdown", this.destroy, this);
-    this.target = target ?? null;
+    this.target = target;
   }
 
-  get target(): GameObjectTarget | null {
+  get target(): GameObjectTarget | undefined {
     return this._target;
   }
 
-  set target(go: GameObjectTarget | null) {
+  set target(go: GameObjectTarget | undefined) {
     if (go === this._target) return;
     this._detach();
     if (!go) return;
@@ -30,13 +30,6 @@ export class GameObjectMount extends Mount {
     go.once("destroy", this._detach, this);
     this._host.setVisible(true);
     this._update();
-  }
-
-  destroy(): void {
-    this._scene.game.events.off("poststep", this._update, this);
-    this._scene.events.off("shutdown", this.destroy, this);
-    this._detach();
-    this._host.destroy(true);
   }
 
   get displayHost(): GameObjects.Container {
@@ -50,10 +43,17 @@ export class GameObjectMount extends Mount {
     this._host.sort("depth");
   }
 
+  protected onDestroy(): void {
+    this._scene.game.events.off("poststep", this._update, this);
+    this._scene.events.off("shutdown", this.destroy, this);
+    this._detach();
+    this._host.destroy(true);
+  }
+
   private _detach(): void {
     const t = this._target;
     if (!t) return;
-    this._target = null;
+    this._target = undefined;
     t.off("destroy", this._detach, this);
     this._host.setVisible(false);
   }
@@ -98,7 +98,7 @@ export class GameObjectMount extends Mount {
 
   private readonly _scene: Scene;
   private readonly _host: GameObjects.Container;
-  private _target: GameObjectTarget | null = null;
+  private _target?: GameObjectTarget;
   private _baseBox?: Rect;
   private _currentBox?: Rect;
   private _wasHidden = false;

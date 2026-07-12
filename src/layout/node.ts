@@ -78,6 +78,11 @@ export class Node {
     return this;
   }
 
+  remove(child: Node): void {
+    const i = this.children.indexOf(child);
+    if (i >= 0) this.children.splice(i, 1);
+  }
+
   intrinsicSize(availableWidth?: number): Size {
     const i = this._intrinsicSize;
     if (typeof i === "function") {

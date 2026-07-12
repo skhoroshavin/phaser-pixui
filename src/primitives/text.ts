@@ -1,6 +1,5 @@
 import { TintModes, GameObjects } from "phaser";
-import { type ComponentConfig } from "./component";
-import type { Mount } from "../mounts/mount";
+import { Component, type ComponentConfig } from "./component";
 import { PhaserObject } from "./phaser-object";
 import type { Size } from "../shared/size";
 
@@ -14,7 +13,7 @@ export type TextConfig = ComponentConfig & {
 export type TextAlign = "left" | "center" | "right";
 
 export class Text extends PhaserObject<GameObjects.BitmapText> {
-  constructor(parent: Mount, cfg: TextConfig) {
+  constructor(parent: Component, cfg: TextConfig) {
     super(
       parent,
       (scene) => new GameObjects.BitmapText(scene, 0, 0, cfg.font, cfg.text ?? ""),

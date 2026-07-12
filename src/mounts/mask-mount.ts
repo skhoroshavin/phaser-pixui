@@ -29,4 +29,9 @@ export class MaskMount extends Mount {
   resolveLayout(): void {
     resolve(this.node);
   }
+
+  protected onDestroy(): void {
+    this.host.destroy(true);
+    this.maskRect.destroy();
+  }
 }

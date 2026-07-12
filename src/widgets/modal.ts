@@ -1,8 +1,8 @@
 import { Clickable } from "../behaviours/clickable";
-import type { ComponentConfig } from "./component";
-import type { Mount } from "../mounts/mount";
-import { Interactive } from "./interactive";
-import { Rectangle } from "./rectangle";
+import type { ComponentConfig } from "../primitives/component";
+import { Component } from "../primitives/component";
+import { Interactive } from "../primitives/interactive";
+import { Rectangle } from "../primitives/rectangle";
 
 export type ModalConfig = ComponentConfig & {
   backdropColor?: number;
@@ -12,7 +12,7 @@ export type ModalConfig = ComponentConfig & {
 };
 
 export class Modal extends Interactive {
-  constructor(parent: Mount, cfg: ModalConfig = {}) {
+  constructor(parent: Component, cfg: ModalConfig = {}) {
     super(parent, {
       inset: 0,
       zIndex: 100,
