@@ -8,8 +8,14 @@ export type TextStateConfig = {
   offsetY?: number;
 };
 
+export type TextValueConfig = {
+  visibleMin?: number;
+  visibleMax?: number;
+};
+
 export type StatefulTextConfig = TextConfig & {
   states: StatesConfig<TextStateConfig>;
+  valueBinding?: TextValueConfig;
 };
 
 export class StatefulText extends Text implements Stateful {
@@ -17,6 +23,9 @@ export class StatefulText extends Text implements Stateful {
     super(parent, cfg);
     this._defaultColor = cfg.color ?? 0xffffff;
     this._states = cfg.states;
+    this._visibleMin = cfg.valueBinding?.visibleMin;
+    this._visibleMax = cfg.valueBinding?.visibleMax;
+    this._applyVisibility();
   }
 
   setState(state: string, fallback?: string): void {
@@ -26,6 +35,21 @@ export class StatefulText extends Text implements Stateful {
     this.setOffsetY(s.offsetY ?? 0);
   }
 
+  setValue(value: number): void {
+    this._value = value;
+    this._applyVisibility();
+  }
+
+  private _applyVisibility(): void {
+    if (this._visibleMin === undefined && this._visibleMax === undefined) return;
+    const lo = this._visibleMin ?? -Infinity;
+    const hi = this._visibleMax ?? Infinity;
+    this.visible = lo <= this._value && this._value <= hi;
+  }
+
   private readonly _defaultColor: number;
   private readonly _states: StatesConfig<TextStateConfig>;
+  private readonly _visibleMin?: number;
+  private readonly _visibleMax?: number;
+  private _value = 0;
 }

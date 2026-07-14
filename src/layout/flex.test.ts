@@ -13,6 +13,9 @@ describe("flex", () => {
     // and stretches to 200 (cross axis), b stacks below at y=40 keeping its explicit width
     expect(a.rect).toEqual({ x: 0, y: 0, width: 200, height: 40 });
     expect(b.rect).toEqual({ x: 0, y: 40, width: 50, height: 30 });
+    // a first (pinned), b last (mobile into trailing free space)
+    expect(a.availableRect).toEqual({ x: 0, y: 0, width: 200, height: 40 });
+    expect(b.availableRect).toEqual({ x: 0, y: 40, width: 200, height: 160 });
   });
 
   it("places children along the main axis with gap (column and row)", () => {
@@ -113,6 +116,10 @@ describe("flex", () => {
     // main-axis: gap 8 → child2.y = 20 + 30 + 8 = 58
     expect(child1.rect).toEqual({ x: 50, y: 20, width: 80, height: 30 });
     expect(child2.rect).toEqual({ x: 60, y: 58, width: 60, height: 20 });
+    // cross-axis available space spans the content box (x 10..170); main: child1
+    // (first) pinned, child2 (last) bounded by the overflowing content end (height 2)
+    expect(child1.availableRect).toEqual({ x: 10, y: 20, width: 160, height: 30 });
+    expect(child2.availableRect).toEqual({ x: 10, y: 58, width: 160, height: 2 });
   });
 
   it("aligns children to cross-axis end when alignItems is end", () => {
@@ -140,6 +147,10 @@ describe("flex", () => {
     // main-axis: gap 8 → child2.y = 0 + 30 + 8 = 38
     expect(child1.rect).toEqual({ x: 120, y: 0, width: 80, height: 30 });
     expect(child2.rect).toEqual({ x: 140, y: 38, width: 60, height: 20 });
+    // cross-axis available space spans the content box (availableRect.x=0 ≠ rect.x,
+    // end-aligned); main: child1 (first) pinned, child2 (last) mobile into trailing free
+    expect(child1.availableRect).toEqual({ x: 0, y: 0, width: 200, height: 30 });
+    expect(child2.availableRect).toEqual({ x: 0, y: 38, width: 200, height: 62 });
   });
 
   it("centers packed children on main-axis when justifyContent is center", () => {
@@ -196,6 +207,10 @@ describe("flex", () => {
     // packed = 30 + 8 + 20 = 58; free in 100 → 42; lead = full free space
     expect(child1.rect).toEqual({ x: 0, y: 42, width: 80, height: 30 });
     expect(child2.rect).toEqual({ x: 0, y: 80, width: 60, height: 20 });
+    // child1 first (mobile), child2 last (pinned); child1 height 72 (=its own end),
+    // NOT 80 (=child2.start) ⇒ the 8px gap is not movable space
+    expect(child1.availableRect).toEqual({ x: 0, y: 0, width: 200, height: 72 });
+    expect(child2.availableRect).toEqual({ x: 0, y: 80, width: 200, height: 20 });
   });
 
   it("stacks flex children with nested intrinsic sizes", () => {
@@ -297,6 +312,8 @@ describe("flex", () => {
 
     // 200 - 40 = 160 free space on main axis → margin-left absorbs it all
     expect(child.rect.x).toBe(160);
+    // sole child ⇒ availableRect spans main content; auto margin only sets rect.x
+    expect(child.availableRect).toEqual({ x: 0, y: 0, width: 200, height: 50 });
   });
 
   it("stretches flex items on the cross axis by default (align-items: stretch)", () => {
@@ -335,6 +352,8 @@ describe("flex", () => {
 
     // align-items: stretch is default, but explicit width=80 overrides it
     expect(child.rect.width).toBe(80);
+    // sole in-flow child ⇒ availableRect spans both content axes (200×100)
+    expect(child.availableRect).toEqual({ x: 0, y: 0, width: 200, height: 100 });
   });
 
   it("collapses to zero when flex container has no children", () => {
@@ -431,6 +450,38 @@ describe("flex", () => {
 
     expect(bg.rect).toEqual({ x: 0, y: 0, width: 128, height: 32 });
     expect(label.rect).toEqual({ x: 34, y: 10, width: 60, height: 12 });
+  });
+
+  it("middle in-flow child with auto margins moves within its auto-margin space", () => {
+    const root = new Node({ layout: { width: 320, height: 240 } });
+    const flex = new Node({
+      layout: {
+        left: 0,
+        top: 0,
+        width: 200,
+        height: 100,
+        direction: "column",
+        justifyContent: "center",
+        paddingTop: 10,
+        paddingBottom: 30,
+      },
+    });
+    const e1 = new Node({ layout: { width: 40, height: 10 } });
+    const e2 = new Node({ layout: { width: 40, height: 10, marginY: "auto" } });
+    const e3 = new Node({ layout: { width: 40, height: 10 } });
+    flex.add(e1, e2, e3);
+    root.add(flex);
+
+    resolve(root);
+
+    // main content Y = [10, 70]; packed 30, free 30 → e2's two auto margins absorb it (15/15)
+    expect(e1.rect).toEqual({ x: 0, y: 10, width: 40, height: 10 });
+    expect(e2.rect).toEqual({ x: 0, y: 35, width: 40, height: 10 });
+    expect(e3.rect).toEqual({ x: 0, y: 60, width: 40, height: 10 });
+    // e1/e3 pinned at the content edges; e2 slides within its auto-margin space [20, 60]
+    expect(e1.availableRect).toEqual({ x: 0, y: 10, width: 200, height: 10 });
+    expect(e2.availableRect).toEqual({ x: 0, y: 20, width: 200, height: 40 });
+    expect(e3.availableRect).toEqual({ x: 0, y: 60, width: 200, height: 10 });
   });
 });
 

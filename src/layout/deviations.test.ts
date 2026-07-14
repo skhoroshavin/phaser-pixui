@@ -97,5 +97,8 @@ describe("deviations", () => {
     expect(centered.rect).toEqual({ x: 135, y: 0, width: 50, height: 10 });
     // single start margin auto: absorbs all free space, pushing to the end edge → 320-50 = 270
     expect(pushedEnd.rect).toEqual({ x: 270, y: 0, width: 50, height: 10 });
+    // availableRect spans the x edge box (intrinsic size); y pinned (no edges)
+    expect(centered.availableRect).toEqual({ x: 0, y: 0, width: 320, height: 10 });
+    expect(pushedEnd.availableRect).toEqual({ x: 0, y: 0, width: 320, height: 10 });
   });
 });

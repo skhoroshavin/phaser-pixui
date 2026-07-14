@@ -1,5 +1,6 @@
 export interface Stateful {
   setState(state: string, fallback?: string): void;
+  setValue(value: number): void;
 }
 
 export type StatesConfig<StateConfig> = Record<string, StateConfig | undefined>;
@@ -21,6 +22,10 @@ export class StatefulComponentList {
 
   setState(state: string, fallback?: string): void {
     for (const c of this._items) c.setState(state, fallback);
+  }
+
+  setValue(value: number): void {
+    for (const c of this._items) c.setValue(value);
   }
 
   private readonly _items: Stateful[] = [];
