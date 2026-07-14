@@ -15,12 +15,13 @@ export type ImageValueMode = "scale" | "position";
 export type ImageValueConfig = {
   mode?: ImageValueMode;
   axis?: Axis;
+  minSize?: number;
   visibleMin?: number;
   visibleMax?: number;
 };
 
 export type StatefulImageConfig = ImageConfig & {
-  states: StatesConfig<ImageStateConfig>;
+  states?: StatesConfig<ImageStateConfig>;
   valueBinding?: ImageValueConfig;
 };
 
@@ -28,16 +29,17 @@ export class StatefulImage extends Image implements Stateful {
   constructor(parent: Component, cfg: StatefulImageConfig) {
     super(parent, cfg);
     this._defaultFrame = cfg.frame;
-    this._states = cfg.states;
+    this._states = cfg.states ?? {};
     const vb = cfg.valueBinding;
     this._valueMode = vb?.mode;
     this._axis = vb?.axis ?? "x";
     this._visibleMin = vb?.visibleMin;
     this._visibleMax = vb?.visibleMax;
+    this._minSize = vb?.mode === "scale" ? vb.minSize : undefined;
 
     const scene = this.displayHost.scene!;
-    const frameNames = Object.values(cfg.states).map((s) => s?.frame ?? cfg.frame);
-    if (frameNames.length === 0) frameNames.push(cfg.frame);
+    const frameNames = Object.values(this._states).map((s) => s?.frame ?? cfg.frame);
+    frameNames.push(cfg.frame);
     const frames = frameNames.map((f) => frameDimensions(scene.textures.getFrame(cfg.texture, f)));
     this.node.setIntrinsicSize(
       frames.reduce(
@@ -60,7 +62,7 @@ export class StatefulImage extends Image implements Stateful {
     this._applyVisibility();
   }
 
-  setState(state: string, fallback?: string): void {
+  setState(state: string | undefined, fallback?: string): void {
     const s = resolveStateConfig(this._states, state, fallback);
     this.internal.setFrame(s.frame ?? this._defaultFrame);
     this.setOffsetX(s.offsetX ?? 0);
@@ -74,23 +76,19 @@ export class StatefulImage extends Image implements Stateful {
     this._applyVisibility();
   }
 
-  /** Travel range of a position-mode element along its axis (0 when pinned). */
-  get travel(): number {
-    const m = this.node.availableRect;
-    const own = this._axis === "x" ? this.node.rect.width : this.node.rect.height;
-    const span = this._axis === "x" ? m.width : m.height;
-    return Math.max(0, span - own);
-  }
-
   private _applyValue(): void {
     if (this._valueMode === undefined) return;
     const v = this._value;
     if (this._valueMode === "scale") {
+      const min = this._minSize ?? 0;
       if (this._axis === "x") {
-        this.setScaleX(v);
+        const width = this.node.rect.width;
+        this.setSizeX(min + Math.floor(v * (width - min)));
       } else {
-        this.setScaleY(v);
-        this.setOffsetY(Math.floor(this.node.rect.height * (1 - v)));
+        const height = this.node.rect.height;
+        const target = min + Math.floor(v * (height - min));
+        this.setSizeY(target);
+        this.setOffsetY(height - target);
       }
     } else {
       const m = this.node.availableRect;
@@ -118,5 +116,6 @@ export class StatefulImage extends Image implements Stateful {
   private readonly _axis: Axis;
   private readonly _visibleMin?: number;
   private readonly _visibleMax?: number;
+  private readonly _minSize?: number;
   private _value = 0;
 }

@@ -7,8 +7,6 @@ import { type Axis } from "../shared/axis";
 import { StatefulComponentList } from "../stateful/base";
 import { type ImageStateConfig, type ImageValueConfig, StatefulImage } from "../stateful/image";
 
-type SliderState = "normal" | "hover" | "pressed" | "disabled";
-
 export type SliderConfig = InteractiveConfig & {
   axis?: Axis;
   value?: number;
@@ -23,22 +21,24 @@ export class Slider extends Interactive {
       alignItems: cfg.alignItems ?? "start",
     });
 
-    this._axis = cfg.axis ?? "x";
+    this._horizontal = cfg.axis != "y";
     this._value = cfg.value ?? 0;
     this._onChange = cfg.onChange;
 
     this._drag = this.addBehaviour(
       new Draggable({
-        axis: this._axis,
+        axis: this._horizontal ? "x" : "y",
         onDragStart: (x, y) => {
-          this._update();
-          this._dragTo(this._axis === "x" ? x : y);
+          this._statefulChildren.setState(this._state());
+          this._dragTo(this._horizontal ? x : y);
         },
-        onDrag: (x, y) => this._dragTo(this._axis === "x" ? x : y),
-        onDragEnd: () => this._update(),
+        onDrag: (x, y) => this._dragTo(this._horizontal ? x : y),
+        onDragEnd: () => this._statefulChildren.setState(this._state()),
       }),
     );
-    this._hover = this.addBehaviour(new Hoverable({ onUpdate: () => this._update() }));
+    this._hover = this.addBehaviour(
+      new Hoverable({ onUpdate: () => this._statefulChildren.setState(this._state()) }),
+    );
   }
 
   public addImage(
@@ -46,16 +46,30 @@ export class Slider extends Interactive {
   ): StatefulImage {
     const img = this.add(StatefulImage, {
       ...cfg,
-      valueBinding: cfg.valueBinding,
       states: {
-        normal: cfg.normal,
         hover: cfg.hover,
         pressed: cfg.pressed,
         disabled: cfg.disabled,
       },
     });
     this._statefulChildren.add(img);
-    if (cfg.valueBinding?.mode === "position" && this._thumb === undefined) this._thumb = img;
+    img.setState(this._state());
+    img.setValue(this._value);
+    return img;
+  }
+
+  public addThumb(cfg: ImageConfig & SliderStates<ImageStateConfig>): StatefulImage {
+    const img = this.add(StatefulImage, {
+      ...cfg,
+      valueBinding: { mode: "position", axis: this._horizontal ? "x" : "y" },
+      states: {
+        hover: cfg.hover,
+        pressed: cfg.pressed,
+        disabled: cfg.disabled,
+      },
+    });
+    this._statefulChildren.add(img);
+    this._thumb = img;
     img.setState(this._state());
     img.setValue(this._value);
     return img;
@@ -72,41 +86,42 @@ export class Slider extends Interactive {
   }
 
   protected onEnabledChange(): void {
-    this._update();
+    this._statefulChildren.setState(this._state());
   }
 
   protected onVisibilityChange(v: boolean): void {
     super.onVisibilityChange(v);
-    if (v) this._update();
+    if (v) this._statefulChildren.setState(this._state());
   }
 
   private _dragTo(local: number): void {
-    const prev = this._value;
-    const thumb = this._thumb;
-    if (thumb !== undefined) {
-      const padding =
-        this._axis === "x" ? this.node.xAxis.paddingStart : this.node.yAxis.paddingStart;
-      const half = (this._axis === "x" ? thumb.node.rect.width : thumb.node.rect.height) / 2;
-      const t = Math.max(1, thumb.travel);
-      let v = (local - padding - half) / t;
-      if (this._axis === "y") v = 1 - v;
-      this.value = v;
-    }
-    if (this._value !== prev) this._onChange?.(this._value);
+    const thumb = this._thumb?.node;
+    if (thumb === undefined) return;
+
+    const currentPos = local + (this._horizontal ? this.node.rect.x : this.node.rect.y);
+    const availableStart = this._horizontal ? thumb.availableRect.x : thumb.availableRect.y;
+
+    const thumbSize = this._horizontal ? thumb.rect.width : thumb.rect.height;
+    const availableSize = this._horizontal ? thumb.availableRect.width : thumb.availableRect.height;
+    const travel = Math.max(1, availableSize - thumbSize);
+
+    let v = (currentPos - thumbSize / 2 - availableStart) / travel;
+    if (!this._horizontal) v = 1 - v;
+    v = Math.max(0, Math.min(1, v));
+    if (v == this.value) return;
+
+    this.value = v;
+    this._onChange?.(v);
   }
 
-  private _state(): SliderState {
+  private _state(): keyof SliderStates<never> | undefined {
     if (!this.enabled) return "disabled";
     if (this._drag.dragging) return "pressed";
     if (this._hover.hovered) return "hover";
-    return "normal";
+    return;
   }
 
-  private _update(): void {
-    this._statefulChildren.setState(this._state());
-  }
-
-  private readonly _axis: Axis;
+  private readonly _horizontal: boolean;
   private _value: number;
   private readonly _onChange?: (value: number) => void;
   private readonly _drag: Draggable;
@@ -116,7 +131,6 @@ export class Slider extends Interactive {
 }
 
 type SliderStates<StateConfig> = {
-  normal?: StateConfig;
   hover?: StateConfig;
   pressed?: StateConfig;
   disabled?: StateConfig;

@@ -42,7 +42,6 @@ export class Toggle extends Interactive {
     const img = this.add(StatefulImage, {
       ...cfg,
       states: {
-        normal: cfg.normal,
         selected: cfg.selected,
         hover: cfg.hover,
         disabled: cfg.disabled,
@@ -58,7 +57,6 @@ export class Toggle extends Interactive {
     const txt = this.add(StatefulText, {
       ...cfg,
       states: {
-        normal: cfg.normal,
         selected: cfg.selected,
         hover: cfg.hover,
         disabled: cfg.disabled,
@@ -83,14 +81,14 @@ export class Toggle extends Interactive {
     this._update();
   }
 
-  private _state(): keyof ToggleStates<never> {
+  private _state(): keyof ToggleStates<never> | undefined {
     if (!this.enabled) return this._checked ? "disabled_selected" : "disabled";
     if (this._hover.hovered) return this._checked ? "hover_selected" : "hover";
-    return this._checked ? "selected" : "normal";
+    return this._checked ? "selected" : undefined;
   }
 
   private _update(): void {
-    this._statefulChildren.setState(this._state(), this._checked ? "selected" : "normal");
+    this._statefulChildren.setState(this._state(), this._checked ? "selected" : undefined);
   }
 
   private _checked: boolean;
@@ -100,7 +98,6 @@ export class Toggle extends Interactive {
 }
 
 type ToggleStates<StateConfig> = {
-  normal?: StateConfig;
   selected?: StateConfig;
   hover?: StateConfig;
   disabled?: StateConfig;

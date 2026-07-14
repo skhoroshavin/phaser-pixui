@@ -3,7 +3,11 @@ import { button, checkbox, radiogroup, slider } from "./controls";
 import { frame, text } from "./visuals";
 import { fonts } from "./constants";
 
-export function settings_dialog(parent: Component, log: (msg: string) => void) {
+export function settings_dialog(
+  parent: Component,
+  log: (msg: string) => void,
+  update: (value: number) => void,
+) {
   const modal = parent.add(Modal, {
     dismissOnBackdropClick: true,
     onDismiss: () => log("Settings dismissed"),
@@ -27,8 +31,12 @@ export function settings_dialog(parent: Component, log: (msg: string) => void) {
 
   const effectsSlider = panel.add(slider, "Effects", {
     value: 0.7,
-    onChange: (v) => log(`Effects: ${Math.round(v * 100)}%`),
+    onChange: (v) => {
+      log(`Effects: ${Math.round(v * 100)}%`);
+      update(v);
+    },
   });
+  update(effectsSlider.value);
 
   panel.add(checkbox, "Enable sound", {
     checked: true,

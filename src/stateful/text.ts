@@ -28,7 +28,7 @@ export class StatefulText extends Text implements Stateful {
     this._applyVisibility();
   }
 
-  setState(state: string, fallback?: string): void {
+  setState(state: string | undefined, fallback?: string): void {
     const s = resolveStateConfig(this._states, state, fallback);
     this.setColor(s.color ?? this._defaultColor);
     this.setOffsetX(s.offsetX ?? 0);

@@ -1,5 +1,5 @@
 import { GameObjects } from "phaser";
-import { frameDimensions } from "../shared/frame";
+import { frameDimensions, type FrameDimensions } from "../shared/frame";
 import { Component, type ComponentConfig } from "./component";
 import { PhaserObject } from "./phaser-object";
 
@@ -36,18 +36,28 @@ export class Image extends PhaserObject<GameObjects.Sprite | GameObjects.NineSli
         }
         return new GameObjects.Sprite(scene, 0, 0, cfg.texture, cfg.frame);
       },
-      {
-        ...cfg,
-        onResize: (i, w, h) => {
-          if (dims.scalableX || dims.scalableY) {
-            const ns = i as GameObjects.NineSlice;
-            if (dims.scalableX) ns.width = w;
-            if (dims.scalableY) ns.height = h;
-          }
-        },
-      },
+      cfg,
     );
 
+    this._dims = dims;
     this.node.setIntrinsicSize(dims);
   }
+
+  protected setSizeX(width: number): void {
+    if (!this._dims.scalableX) return;
+    const ns = this.internal as GameObjects.NineSlice;
+    const min = this._dims.minWidth;
+    ns.width = Math.max(min, width);
+    ns.scaleX = Math.min(1, width / min);
+  }
+
+  protected setSizeY(height: number): void {
+    if (!this._dims.scalableY) return;
+    const ns = this.internal as GameObjects.NineSlice;
+    const min = this._dims.minHeight;
+    ns.height = Math.max(min, height);
+    ns.scaleY = Math.min(1, height / min);
+  }
+
+  private readonly _dims: FrameDimensions;
 }

@@ -62,3 +62,11 @@
 - name: chat_bubble
   image: minifantasy/chat-bubble.png
   nineslice: { x: 15, y: 5, w: 8, h: 5 }
+- name: frame_bar
+  image: minifantasy/frame-bar.png
+  nineslice: { x: 0, y: 7, w: 13, h: 34 }
+- name: redbar
+  image: minifantasy/redbar.png
+  nineslice: { x: 0, y: 4, w: 6, h: 32 }
+- name: redbar_top
+  image: minifantasy/redbar-top.png

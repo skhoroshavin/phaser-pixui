@@ -1,5 +1,5 @@
 export interface Stateful {
-  setState(state: string, fallback?: string): void;
+  setState(state: string | undefined, fallback?: string): void;
   setValue(value: number): void;
 }
 
@@ -7,10 +7,10 @@ export type StatesConfig<StateConfig> = Record<string, StateConfig | undefined>;
 
 export function resolveStateConfig<StateConfig>(
   states: StatesConfig<StateConfig>,
-  state: string,
+  state: string | undefined,
   fallback?: string,
 ): StateConfig {
-  const s = states[state];
+  const s = state === undefined ? undefined : states[state];
   const f = fallback ? states[fallback] : undefined;
   return { ...f, ...s } as StateConfig;
 }
@@ -20,7 +20,7 @@ export class StatefulComponentList {
     this._items.push(child);
   }
 
-  setState(state: string, fallback?: string): void {
+  setState(state: string | undefined, fallback?: string): void {
     for (const c of this._items) c.setState(state, fallback);
   }
 
