@@ -40,6 +40,8 @@ export class Node {
       finalSize: { width: 0, height: 0 },
     };
     this._rect = { x: 0, y: 0, width: 0, height: 0 };
+    this._contentRect = { x: 0, y: 0, width: 0, height: 0 };
+    this._availableRect = { x: 0, y: 0, width: 0, height: 0 };
     this.depth = 0;
   }
 
@@ -62,14 +64,31 @@ export class Node {
 
   // outputs (engine-written as the output of resolve)
   private _rect: Rect;
+  private _contentRect: Rect;
+  private _availableRect: Rect;
   depth: number;
 
   get rect(): Rect {
     return this._rect;
   }
 
-  setRect(rect: Rect): void {
+  get contentRect(): Rect {
+    return this._contentRect;
+  }
+
+  get availableRect(): Rect {
+    return this._availableRect;
+  }
+
+  setRect(rect: Rect, availableRect: Rect = rect): void {
     this._rect = rect;
+    this._availableRect = availableRect;
+    this._contentRect = {
+      x: this.xAxis.contentStart(this._rect.x),
+      y: this.yAxis.contentStart(this._rect.y),
+      width: this.xAxis.contentSize(this._rect.width),
+      height: this.yAxis.contentSize(this._rect.height),
+    };
     this.onLayout?.(rect, this.depth);
   }
 

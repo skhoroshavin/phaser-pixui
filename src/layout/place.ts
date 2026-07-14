@@ -19,11 +19,15 @@ export function place(node: Node, bounds?: Rect): Rect {
   let autoMarginCount = 0;
   let mainContentSize = 0;
   let first = true;
+  let firstInFlow: Node | undefined;
+  let lastInFlow: Node | undefined;
   for (const childNode of node.children) {
     if (childNode.isAbsolute()) continue;
 
     if (!first) mainContentSize += gap;
     first = false;
+    firstInFlow ??= childNode;
+    lastInFlow = childNode;
 
     const child = col ? childNode.yAxis : childNode.xAxis;
     const childSize = col
@@ -45,7 +49,17 @@ export function place(node: Node, bounds?: Rect): Rect {
       bbox = union(bbox, placeBoxChild(child, node, bounds));
       continue;
     }
-    const r = placeFlexChild(child, node, pos, nextAutoMargin, bounds);
+    const r = placeFlexChild(
+      child,
+      node,
+      pos,
+      nextAutoMargin,
+      child === firstInFlow,
+      child === lastInFlow,
+      mainBase,
+      mainBase + mainLen,
+      bounds,
+    );
     pos += r.extent + gap;
     bbox = union(bbox, r.bbox);
   }
@@ -53,27 +67,37 @@ export function place(node: Node, bounds?: Rect): Rect {
 }
 
 function placeBoxChild(child: Node, parent: Node, bounds?: Rect): Rect {
-  child.setRect(fitRect(child, parent, bounds));
+  const { rect, available } = fitRect(child, parent, bounds);
+  child.setRect(rect, available);
   return place(child, bounds);
 }
 
-function fitRect(child: Node, parent: Node, bounds?: Rect): Rect {
-  const rect = childRect(child, parent);
-  if (!bounds || fits(rect, bounds)) return rect;
+function fitRect(child: Node, parent: Node, bounds?: Rect): { rect: Rect; available: Rect } {
+  const placed = childRect(child, parent);
+  if (!bounds || fits(placed.rect, bounds)) return placed;
   for (const mode of child.layout.positionTryFallbacks ?? []) {
     const r = childRect(child, parent, mirrorOf(mode));
-    if (fits(r, bounds)) return r;
+    if (fits(r.rect, bounds)) return r;
   }
-  return rect;
+  return placed;
 }
 
-/** A positioned child's rect against `parent`, optionally with edges mirrored. */
-function childRect(child: Node, parent: Node, mirror: Mirror = {}): Rect {
+/** A positioned child's rect and available space against `parent`, optionally with edges mirrored. */
+function childRect(
+  child: Node,
+  parent: Node,
+  mirror: Mirror = {},
+): { rect: Rect; available: Rect } {
+  const x = childPos(child, parent, "x", mirror.x);
+  const y = childPos(child, parent, "y", mirror.y);
   return {
-    x: childPos(child, parent, "x", mirror.x),
-    y: childPos(child, parent, "y", mirror.y),
-    width: child.measured.finalSize.width,
-    height: child.measured.finalSize.height,
+    rect: {
+      x: x.pos,
+      y: y.pos,
+      width: child.measured.finalSize.width,
+      height: child.measured.finalSize.height,
+    },
+    available: { x: x.availStart, y: y.availStart, width: x.availSize, height: y.availSize },
   };
 }
 
@@ -83,7 +107,12 @@ function mirrorOf(mode: FlipMode): Mirror {
   return { x: true, y: true }; // flip-start
 }
 
-function childPos(child: Node, parent: Node, axis: "x" | "y", mirror?: boolean): number {
+function childPos(
+  child: Node,
+  parent: Node,
+  axis: "x" | "y",
+  mirror?: boolean,
+): { pos: number; availStart: number; availSize: number } {
   const horizontal = axis === "x";
   const a = horizontal ? child.xAxis : child.yAxis;
   // Mirror swaps start/end and their margins on this axis
@@ -98,21 +127,34 @@ function childPos(child: Node, parent: Node, axis: "x" | "y", mirror?: boolean):
   const len = horizontal ? parent.rect.width : parent.rect.height;
   const size = horizontal ? child.measured.finalSize.width : child.measured.finalSize.height;
 
-  // Auto-margin distribution, similar to flex rules
-  if ((marginStartAuto || marginEndAuto) && start !== undefined && end !== undefined) {
-    const count = (marginStartAuto ? 1 : 0) + (marginEndAuto ? 1 : 0);
-    const dist = distributeAutoMargins(len - start - end - size, count);
-    return base + start + (marginStartAuto ? dist() : 0);
+  // Both edges set: available space is the edge stretch-box
+  if (start !== undefined && end !== undefined) {
+    const availStart = base + start + marginStart;
+    const availSize = a.stretch(len);
+    let pos = availStart;
+    if (marginStartAuto || marginEndAuto) {
+      const count = (marginStartAuto ? 1 : 0) + (marginEndAuto ? 1 : 0);
+      const dist = distributeAutoMargins(availSize - size, count);
+      pos = base + start + (marginStartAuto ? dist() : 0);
+    }
+    return { pos, availStart, availSize };
   }
 
   // Positioned by the start edge
-  if (start !== undefined) return base + start + marginStart;
+  if (start !== undefined) {
+    const pos = base + start + marginStart;
+    return { pos, availStart: pos, availSize: size };
+  }
 
   // Positioned by the end edge
-  if (end !== undefined) return base + len - end - marginEnd - size;
+  if (end !== undefined) {
+    const pos = base + len - end - marginEnd - size;
+    return { pos, availStart: pos, availSize: size };
+  }
 
   // Not positioned at all - default to start edge
-  return base + marginStart;
+  const pos = base + marginStart;
+  return { pos, availStart: pos, availSize: size };
 }
 
 function placeFlexChild(
@@ -120,6 +162,10 @@ function placeFlexChild(
   parent: Node,
   pos: number,
   nextAutoMargin: () => number,
+  first: boolean,
+  last: boolean,
+  mainStart: number,
+  mainEnd: number,
   bounds?: Rect,
 ): { extent: number; bbox: Rect } {
   const col = parent.layout.direction !== "row";
@@ -131,19 +177,29 @@ function placeFlexChild(
   const mEnd = main.marginEndAuto ? nextAutoMargin() : main.marginEnd;
 
   const mainPos = pos + mStart;
+  const extent = mStart + mainSize + mEnd;
+  const mainAvailStart = first ? mainStart + main.marginStart : pos + main.marginStart;
+  const mainAvailEnd = last ? mainEnd - main.marginEnd : pos + extent - main.marginEnd;
+  const mainAvailSize = Math.max(0, mainAvailEnd - mainAvailStart);
 
-  const crossSpace = col
-    ? parent.xAxis.contentSize(parent.rect.width)
-    : parent.yAxis.contentSize(parent.rect.height);
-  const crossBase = col
-    ? parent.xAxis.contentStart(parent.rect.x)
-    : parent.yAxis.contentStart(parent.rect.y);
-  const free = crossSpace - cross.extent(crossSize);
-  const crossPos = crossBase + cross.marginStart + alignOffset(free, parent.layout.alignItems);
+  const crossContentStart = col ? parent.contentRect.x : parent.contentRect.y;
+  const crossAvailStart = crossContentStart + cross.marginStart;
+  const crossContentSize = col ? parent.contentRect.width : parent.contentRect.height;
+  const crossAvailSize = cross.stretch(crossContentSize);
+  const free = crossAvailSize - crossSize;
+  const crossPos = crossAvailStart + alignOffset(free, parent.layout.alignItems);
 
-  if (col) child.setRect({ x: crossPos, y: mainPos, width: crossSize, height: mainSize });
-  else child.setRect({ x: mainPos, y: crossPos, width: mainSize, height: crossSize });
-  return { extent: mStart + mainSize + mEnd, bbox: place(child, bounds) };
+  if (col)
+    child.setRect(
+      { x: crossPos, y: mainPos, width: crossSize, height: mainSize },
+      { x: crossAvailStart, y: mainAvailStart, width: crossAvailSize, height: mainAvailSize },
+    );
+  else
+    child.setRect(
+      { x: mainPos, y: crossPos, width: mainSize, height: crossSize },
+      { x: mainAvailStart, y: crossAvailStart, width: mainAvailSize, height: crossAvailSize },
+    );
+  return { extent, bbox: place(child, bounds) };
 }
 
 function union(a: Rect, b: Rect): Rect {

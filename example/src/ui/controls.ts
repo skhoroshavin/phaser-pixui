@@ -114,16 +114,23 @@ export function slider(parent: Component, label: string, cfg?: Partial<SliderCon
     alignItems: "center",
   });
   row.add(Text, { font: fonts.normal, text: label, color: colors.dark });
-  return row.add(Slider, {
+  const sld = row.add(Slider, { width: 80, ...cfg });
+  sld.addImage({
     texture: uiTexture,
-    trackFrame: "slider_track",
-    trackHoverFrame: "slider_track_hover",
-    trackDisabledFrame: "slider_track_disabled",
-    thumbFrame: "slider_thumb_normal",
-    thumbHoverFrame: "slider_thumb_hover",
-    thumbPressedFrame: "slider_thumb_pressed",
-    thumbDisabledFrame: "slider_thumb_disabled",
-    width: 80,
-    ...cfg,
+    frame: "slider_track",
+    inset: 0,
+    marginY: "auto",
+    hover: { frame: "slider_track_hover" },
+    pressed: { frame: "slider_track_hover" },
+    disabled: { frame: "slider_track_disabled" },
   });
+  sld.addImage({
+    texture: uiTexture,
+    frame: "slider_thumb_normal",
+    valueBinding: { mode: "position" },
+    hover: { frame: "slider_thumb_hover" },
+    pressed: { frame: "slider_thumb_pressed" },
+    disabled: { frame: "slider_thumb_disabled" },
+  });
+  return sld;
 }

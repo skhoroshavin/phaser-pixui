@@ -150,6 +150,8 @@ describe("box", () => {
     expect(horiz.rect).toEqual({ x: 10, y: 0, width: 290, height: 16 });
     // vertical: height stretches (intrinsic 16 → 210), width stays intrinsic; y from origin (0+10)
     expect(vert.rect).toEqual({ x: 0, y: 10, width: 100, height: 210 });
+    // stretched to fill its stretch box ⇒ availableRect == rect (no travel)
+    expect(horiz.availableRect).toEqual({ x: 10, y: 0, width: 290, height: 16 });
   });
 
   it("ignores far edge and uses explicit size when overconstrained", () => {
@@ -204,5 +206,9 @@ describe("box", () => {
     expect(a.rect).toEqual({ x: 120, y: 50, width: 80, height: 40 });
     // b: y centered ((240-40)/2 = 100), x positioned by left (auto ignored, 0+60)
     expect(b.rect).toEqual({ x: 60, y: 100, width: 80, height: 40 });
+    // a: x centered (120) but availableRect spans the edge box; y single-edge ⇒ pinned
+    expect(a.availableRect).toEqual({ x: 0, y: 50, width: 320, height: 40 });
+    // b: y centered (100) but availableRect spans the edge box; x single-edge ⇒ pinned
+    expect(b.availableRect).toEqual({ x: 60, y: 0, width: 80, height: 240 });
   });
 });
