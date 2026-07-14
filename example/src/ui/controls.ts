@@ -2,7 +2,10 @@ import {
   Button,
   type ButtonConfig,
   Component,
+  type ComponentConfig,
   Container,
+  Image,
+  ProgressBar,
   RadioGroup,
   type RadioGroupConfig,
   Slider,
@@ -124,13 +127,28 @@ export function slider(parent: Component, label: string, cfg?: Partial<SliderCon
     pressed: { frame: "slider_track_hover" },
     disabled: { frame: "slider_track_disabled" },
   });
-  sld.addImage({
+  sld.addThumb({
     texture: uiTexture,
     frame: "slider_thumb_normal",
-    valueBinding: { mode: "position" },
     hover: { frame: "slider_thumb_hover" },
     pressed: { frame: "slider_thumb_pressed" },
     disabled: { frame: "slider_thumb_disabled" },
   });
   return sld;
+}
+
+/** Vertical health bar (0..1). Returns the ProgressBar. */
+export function health_bar(parent: Component, cfg?: ComponentConfig): ProgressBar {
+  const bar = parent.add(ProgressBar, { width: 13, ...cfg });
+  bar.add(Image, { texture: uiTexture, frame: "frame_bar", inset: 0 });
+  const imgCfg = { texture: uiTexture, axis: "y", bottom: 5, top: 4, left: 4, right: 3 } as const;
+  bar.addImage({ ...imgCfg, frame: "redbar", mode: "scale", minSize: 4 });
+  bar.addImage({
+    ...imgCfg,
+    frame: "redbar_top",
+    mode: "position",
+    visibleMax: 0.999,
+    marginTop: "auto",
+  });
+  return bar;
 }

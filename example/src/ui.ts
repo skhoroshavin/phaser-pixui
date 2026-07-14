@@ -7,7 +7,7 @@ import {
   SceneMount,
 } from "phaser-pixui";
 import { GameWorld } from "./game.ts";
-import { button } from "./ui/controls.ts";
+import { button, health_bar } from "./ui/controls.ts";
 import { chat_bubble, header, text } from "./ui/visuals.ts";
 import { log_panel } from "./ui/log_panel.ts";
 import { load_dialog } from "./ui/load_dialog.ts";
@@ -50,9 +50,23 @@ export class Ui extends ResponsiveScene {
     const mount = new SceneMount(this, {
       viewport: () => this.viewport,
     });
-    const logger = mount.add(log_panel, { bottom: 2, insetX: 2, height: 60 });
+
+    const bottomRow = mount.add(Container, {
+      bottom: 2,
+      insetX: 2,
+      height: 60,
+      direction: "row",
+      gap: 2,
+    });
+    const healthBar = bottomRow.add(health_bar);
+    const logger = bottomRow.add(log_panel, { grow: 1 });
+
     const loadDialog = mount.add(load_dialog, (msg) => logger.write(msg));
-    const settingsDialog = mount.add(settings_dialog, (msg) => logger.write(msg));
+    const settingsDialog = mount.add(
+      settings_dialog,
+      (msg) => logger.write(msg),
+      (v) => (healthBar.value = v),
+    );
 
     mount.add(text, {
       right: 4,

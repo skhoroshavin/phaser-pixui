@@ -33,6 +33,8 @@ export function frameDimensions(frame: Textures.Frame): FrameDimensions {
     height: height,
     scalableX: scalableSize.w < width,
     scalableY: scalableSize.h < height,
+    minWidth: width - scalableSize.w,
+    minHeight: height - scalableSize.h,
   };
 }
 
@@ -43,10 +45,14 @@ export function frameDimensions(frame: Textures.Frame): FrameDimensions {
  * @property height - The frame's source height in pixels
  * @property scalableX - `true` if the frame supports 9-slice scaling horizontally
  * @property scalableY - `true` if the frame supports 9-slice scaling vertically
+ * @property minWidth - Minimum width (fixed left+right borders); 0 if not horizontally scalable
+ * @property minHeight - Minimum height (fixed top+bottom borders); 0 if not vertically scalable
  */
 export type FrameDimensions = {
   width: number;
   height: number;
   scalableX: boolean;
   scalableY: boolean;
+  minWidth: number;
+  minHeight: number;
 };

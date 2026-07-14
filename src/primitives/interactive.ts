@@ -12,10 +12,7 @@ export type HitShape = "rect" | "diamond" | "ellipse";
 
 export class Interactive extends PhaserObject<GameObjects.Zone> {
   constructor(parent: Component, cfg: InteractiveConfig = {}) {
-    super(parent, (scene) => new GameObjects.Zone(scene, 0, 0, 0, 0), {
-      ...cfg,
-      onResize: (_zone, w, h) => this._updateHitArea(w, h),
-    });
+    super(parent, (scene) => new GameObjects.Zone(scene, 0, 0, 0, 0), cfg);
 
     this._shape = cfg.shape ?? "rect";
     this._enabled = cfg.enabled ?? true;
@@ -31,6 +28,14 @@ export class Interactive extends PhaserObject<GameObjects.Zone> {
     this._enabled = v;
     for (const b of this._behaviours) b.setActive(v);
     this.onEnabledChange(v);
+  }
+
+  protected setSizeX(width: number): void {
+    this._updateHitArea(width, this.node.rect.height);
+  }
+
+  protected setSizeY(height: number): void {
+    this._updateHitArea(this.node.rect.width, height);
   }
 
   protected onEnabledChange(_v: boolean): void {}

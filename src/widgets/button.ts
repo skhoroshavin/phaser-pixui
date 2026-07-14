@@ -31,7 +31,6 @@ export class Button extends Interactive {
     const img = this.add(StatefulImage, {
       ...cfg,
       states: {
-        normal: cfg.normal,
         hover: cfg.hover,
         pressed: cfg.pressed,
         disabled: cfg.disabled,
@@ -45,7 +44,6 @@ export class Button extends Interactive {
     const txt = this.add(StatefulText, {
       ...cfg,
       states: {
-        normal: cfg.normal,
         hover: cfg.hover,
         pressed: cfg.pressed,
         disabled: cfg.disabled,
@@ -59,11 +57,11 @@ export class Button extends Interactive {
     this._update();
   }
 
-  private _state(): keyof ButtonStates<never> {
+  private _state(): keyof ButtonStates<never> | undefined {
     if (!this.enabled) return "disabled";
     if (this._click.pressed) return "pressed";
     if (this._hover.hovered) return "hover";
-    return "normal";
+    return;
   }
 
   private _update(): void {
@@ -76,7 +74,6 @@ export class Button extends Interactive {
 }
 
 type ButtonStates<StateConfig> = {
-  normal?: StateConfig;
   hover?: StateConfig;
   pressed?: StateConfig;
   disabled?: StateConfig;
