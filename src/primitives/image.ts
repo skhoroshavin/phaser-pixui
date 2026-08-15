@@ -3,13 +3,22 @@ import { frameDimensions, type FrameDimensions } from "../shared/frame";
 import { Component, type ComponentConfig } from "./component";
 import { PhaserObject } from "./phaser-object";
 
+/** {@link Image} configuration. */
 export type ImageConfig = {
+  /** Texture key. */
   texture: string;
+  /** Frame name within the texture. */
   frame: string;
+  /** Tile horizontally scalable 9-slice regions instead of stretching them. Defaults to `false`. */
   tileX?: boolean;
+  /** Tile vertically scalable 9-slice regions instead of stretching them. Defaults to `false`. */
   tileY?: boolean;
 } & ComponentConfig;
 
+/**
+ * Displays a texture frame. If the frame has 9-slice metadata (for example from Texture Packer)
+ * it uses 9-slice scaling, otherwise displays it as a simple sprite.
+ */
 export class Image extends PhaserObject<GameObjects.Sprite | GameObjects.NineSlice> {
   constructor(parent: Component, cfg: ImageConfig) {
     const scene = parent.displayHost.scene!;
