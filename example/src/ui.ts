@@ -1,11 +1,5 @@
 import { CANVAS, GameObjects, HEADLESS, VERSION, WEBGL } from "phaser";
-import {
-  Container,
-  GameObjectMount,
-  ResponsiveScene,
-  SceneMount,
-  PageStack,
-} from "phaser-pixui";
+import { Container, GameObjectMount, ResponsiveScene, SceneMount, PageStack } from "phaser-pixui";
 import { GameWorld } from "./game.ts";
 import { button, health_bar, tabgroup } from "./ui/controls.ts";
 import { chat_bubble, frame, header, text } from "./ui/visuals.ts";
