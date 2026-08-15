@@ -2,13 +2,22 @@ import type { GameObjects, Input } from "phaser";
 import { axisLock, type Axis } from "../shared/axis";
 import { Behaviour } from "./behaviour";
 
+/** {@link Draggable} configuration. */
 export type DraggableConfig = {
+  /** Drag axis. By default, draggable on both axes. */
   axis?: Axis;
+  /** Called when a drag starts. */
   onDragStart?: (x: number, y: number) => void;
+  /** Called on every drag movement. */
   onDrag?: (x: number, y: number) => void;
+  /** Called when a drag ends. */
   onDragEnd?: () => void;
 };
 
+/**
+ * A behaviour that enables dragging an {@link Interactive} zone. Drag callbacks
+ * receive the pointer position relative to the zone.
+ */
 export class Draggable extends Behaviour {
   private _dragging = false;
   private readonly _axis?: Axis;
@@ -24,6 +33,7 @@ export class Draggable extends Behaviour {
     this._onDragEnd = cfg?.onDragEnd;
   }
 
+  /** Whether the zone is currently being dragged. */
   get dragging(): boolean {
     return this._dragging;
   }

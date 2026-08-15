@@ -1,10 +1,16 @@
 import type { GameObjects } from "phaser";
 import { Behaviour } from "./behaviour";
 
+/** {@link Hoverable} configuration. */
 export type HoverableConfig = {
+  /** Called when the hovered state changes. */
   onUpdate?: (hovered: boolean) => void;
 };
 
+/**
+ * A behaviour that tracks pointer hovering over an {@link Interactive} zone.
+ * Only active on desktop devices, touch pointers cannot hover.
+ */
 export class Hoverable extends Behaviour {
   private _hovered = false;
   private readonly _onUpdate?: (hovered: boolean) => void;
@@ -15,6 +21,7 @@ export class Hoverable extends Behaviour {
     this._onUpdate = cfg?.onUpdate;
   }
 
+  /** Whether the pointer is currently over the zone. */
   get hovered(): boolean {
     return this._hovered;
   }

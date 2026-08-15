@@ -2,11 +2,18 @@ import type { GameObjects, Input } from "phaser";
 import { axisLock, type Axis } from "../shared/axis";
 import { Behaviour } from "./behaviour";
 
+/** {@link Scrollable} configuration. */
 export type ScrollableConfig = {
+  /** Scroll axis. By default, scrollable on both axes. */
   axis?: Axis;
+  /** Called on every scroll increment, from dragging, inertia, or mouse wheel. */
   onScroll?: (dx: number, dy: number) => void;
 };
 
+/**
+ * A behaviour that enables scrolling an {@link Interactive} zone by mouse wheel and
+ * by dragging, with inertia after the drag ends.
+ */
 export class Scrollable extends Behaviour {
   private readonly _axis?: Axis;
   private readonly _onScroll?: (dx: number, dy: number) => void;
