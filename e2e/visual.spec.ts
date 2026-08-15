@@ -4,7 +4,7 @@ test("smoke test", async ({ page }) => {
   const width = 1920;
   const height = 1080;
 
-  await page.goto("http://localhost:8080?test");
+  await page.goto(`http://localhost:${process.env.PORT}/?test`);
 
   const canvas = page.locator("#game-container canvas");
   await canvas.waitFor({ state: "visible", timeout: 15000 });

@@ -22,10 +22,9 @@ export default defineConfig({
   ],
 
   webServer: {
-    command: "cd example && npm run build && npm run preview",
-    port: 8080,
+    command: "cd example && npm run build && npm run preview -- --port 0 --logLevel info",
+    wait: { stdout: /Local:\s+http:\/\/localhost:(?<port>\d+)\// },
     timeout: 60000,
-    reuseExistingServer: !process.env.CI,
   },
 
   expect: {

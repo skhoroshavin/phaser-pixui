@@ -166,8 +166,9 @@ function applyGrow(node: Node, phase: "measureTopDown" | "finalizeSize"): void {
     else free -= gap;
 
     const c = child.measured;
-    if (phase === "measureTopDown") free -= a.extent(c.bottomUpSize.width);
-    else free -= a.extent(c.finalSize.height);
+    const cAxis = horizontal ? child.xAxis : child.yAxis;
+    if (phase === "measureTopDown") free -= cAxis.extent(c.bottomUpSize.width);
+    else free -= cAxis.extent(c.finalSize.height);
     if (free <= 0) return; // no free space left - cannot grow
 
     const g = child.layout.grow ?? 0;
