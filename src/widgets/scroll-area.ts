@@ -20,6 +20,7 @@ export class ScrollArea extends Component {
 
     const scene = this.displayHost.scene!;
     this._maskMount = new MaskMount(scene);
+    this._maskMount.visible = this.visible;
     this.displayHost.add(this._maskMount.displayHost);
     this.content = new Container(this._maskMount);
 
@@ -70,6 +71,11 @@ export class ScrollArea extends Component {
   protected onDestroy(): void {
     this._stopChase();
     this._maskMount.destroy();
+  }
+
+  protected onVisibilityChange(visible: boolean) {
+    super.onVisibilityChange(visible);
+    this._maskMount.visible = visible;
   }
 
   private _setScroll(x: number, y: number): void {
