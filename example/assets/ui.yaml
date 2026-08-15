@@ -70,3 +70,14 @@
   nineslice: { x: 0, y: 4, w: 6, h: 32 }
 - name: redbar_top
   image: minifantasy/redbar-top.png
+- name: tab
+  image: minifantasy/tab.png
+  nineslice: { x: 0, y: 7, w: 16, h: 5 }
+  spritesheet:
+    sprite_width: 30
+    sprite_height: 16
+    sprite_names:
+      normal: 3
+      hover: 2
+      selected: 1
+      selected_hover: 0

@@ -22,6 +22,7 @@ export * from "./widgets/button";
 export * from "./widgets/toggle";
 export * from "./widgets/slider";
 export * from "./widgets/radiogroup";
+export * from "./widgets/page-stack";
 export * from "./widgets/modal";
 export * from "./widgets/progress-bar";
 export * from "./widgets/scroll-area";

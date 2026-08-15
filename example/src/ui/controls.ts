@@ -152,3 +152,38 @@ export function health_bar(parent: Component, cfg?: ComponentConfig): ProgressBa
   });
   return bar;
 }
+
+/** RadioGroup with label for each option. Returns the RadioGroup. */
+export function tabgroup(parent: Component, labels: string[], cfg?: RadioGroupConfig): RadioGroup {
+  const group = parent.add(RadioGroup, {
+    direction: "column",
+    paddingTop: 4,
+    gap: 2,
+    ...cfg,
+  });
+  for (const label of labels) {
+    const tgl = group.addToggle({
+      direction: "row",
+      paddingTop: 5,
+      paddingBottom: 4,
+      paddingLeft: 3,
+      paddingRight: 16,
+      alignItems: "center",
+    });
+    tgl.addImage({
+      texture: uiTexture,
+      inset: 0,
+      frame: "tab_normal",
+      selected: { frame: "tab_selected" },
+      hover: { frame: "tab_hover" },
+      hover_selected: { frame: "tab_selected_hover" },
+    });
+    tgl.addText({
+      font: fonts.normal,
+      text: label,
+      color: colors.dark,
+      selected: { offsetX: 7 },
+    });
+  }
+  return group;
+}

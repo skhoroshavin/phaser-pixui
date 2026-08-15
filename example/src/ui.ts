@@ -5,11 +5,12 @@ import {
   GameObjectMount,
   ResponsiveScene,
   SceneMount,
+  PageStack,
 } from "phaser-pixui";
 import { GameWorld } from "./game.ts";
-import { button, health_bar } from "./ui/controls.ts";
-import { chat_bubble, header, text } from "./ui/visuals.ts";
-import { log_panel } from "./ui/log_panel.ts";
+import { button, health_bar, tabgroup } from "./ui/controls.ts";
+import { chat_bubble, frame, header, text } from "./ui/visuals.ts";
+import { LogPanel } from "./ui/log_panel.ts";
 import { load_dialog } from "./ui/load_dialog.ts";
 import { settings_dialog } from "./ui/settings_dialog.ts";
 import { colors, fonts, uiTexture } from "./ui/constants.ts";
@@ -56,10 +57,14 @@ export class Ui extends ResponsiveScene {
       insetX: 2,
       height: 60,
       direction: "row",
-      gap: 2,
     });
-    const healthBar = bottomRow.add(health_bar);
-    const logger = bottomRow.add(log_panel, { grow: 1 });
+    const healthBar = bottomRow.add(health_bar, { marginRight: 2 });
+    const bottomFrame = bottomRow.add(frame, { grow: 1 });
+    const stack = bottomFrame.add(PageStack, { grow: 1 });
+    bottomRow.add(tabgroup, ["Log", "Inv"], { onChange: (v) => (stack.current = v) });
+
+    const logger = stack.addPage(LogPanel, { inset: 0 });
+    stack.addPage(text, { insetX: 0, text: "Inventory component is still under construction" });
 
     const loadDialog = mount.add(load_dialog, (msg) => logger.write(msg));
     const settingsDialog = mount.add(
