@@ -1,11 +1,16 @@
 import { Math as PMath } from "phaser";
 import { Component, type ComponentConfig, type ComponentCtor } from "../primitives/component";
 
+/**
+ * A container that shows exactly one page at a time, hiding all others.
+ * Pages are added via {@link PageStack.addPage}.
+ */
 export class PageStack extends Component {
   constructor(parent: Component, cfg?: ComponentConfig) {
     super(parent, cfg);
   }
 
+  /** Adds a new page. */
   addPage<T extends Component, A extends unknown[]>(
     Ctor: ComponentCtor<T, A>,
     ...args: NoInfer<A>
@@ -16,6 +21,10 @@ export class PageStack extends Component {
     return page;
   }
 
+  /**
+   * Index of the currently visible page, clamped to the valid range.
+   * Setting it shows the page at that index and hides all others.
+   */
   get current(): number {
     return this._current;
   }
