@@ -1,10 +1,4 @@
-import {
-  finalizeSize,
-  measureBottomUp,
-  measureTopDown,
-  seedRootRect,
-  seedRootWidth,
-} from "./measure";
+import { finalizeSize, measureBottomUp, measureTopDown, seedRootRect, seedWidths } from "./measure";
 import { type Node } from "./node";
 import type { Rect } from "../shared/rect";
 import { place } from "./place";
@@ -13,7 +7,8 @@ import { place } from "./place";
 export function resolve(root: Node, bounds?: Rect): Rect {
   assignDepths(root, { next: 0 });
 
-  seedRootWidth(root);
+  seedWidths(root);
+  measureBottomUp(root);
   measureTopDown(root);
   measureBottomUp(root);
 

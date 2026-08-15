@@ -189,6 +189,29 @@ describe("measure", () => {
     expect(text.rect).toEqual({ x: 120, y: 0, width: 200, height: 40 });
   });
 
+  it("re-measures a growing row item's content when the row shrinks between resolves", () => {
+    const root = viewport(320, 240);
+    root.layout.direction = "row";
+    const tabs = new Node({ layout: { width: 120, height: 20 } });
+    const frame = new Node({ layout: { grow: 1 } });
+    // text with max-content 150: one line (height 10) at width >= 150,
+    // wrapped (height 30) below it
+    const text = new Node({
+      intrinsicSize: (aw) => ({ width: aw ?? 0, height: aw !== undefined && aw < 150 ? 30 : 10 }),
+    });
+    frame.add(text);
+    root.add(tabs, frame);
+
+    // first resolve: grown width 320 - 120 = 200 → no wrap
+    resolve(root);
+    expect(text.rect).toEqual({ x: 120, y: 0, width: 200, height: 10 });
+
+    // shrink the viewport: grown width 220 - 120 = 100 → must re-measure wrapped
+    root.layout.width = 220;
+    resolve(root);
+    expect(text.rect).toEqual({ x: 120, y: 0, width: 100, height: 30 });
+  });
+
   it("re-wraps a stretched flex item's width-dependent content in a definite-width column", () => {
     const root = viewport(400, 200);
     const col = new Node({ layout: { direction: "column", width: 100 } });
