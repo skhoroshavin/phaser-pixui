@@ -1,6 +1,9 @@
 import { type Game, type Scene } from "phaser";
 import { Component, type DisplayHost } from "../primitives/component";
 
+/**
+ * Base class for component mounts - root components of component trees.
+ */
 export abstract class Mount extends Component {
   protected constructor(scene: Scene) {
     super();
@@ -16,6 +19,7 @@ export abstract class Mount extends Component {
     this._game.events.once("prerender", this._flush);
   }
 
+  /** Performs actual layout resolution. Called at most once per frame, when the tree is dirty. */
   protected abstract doResolve(): void;
 
   protected onDestroy(): void {

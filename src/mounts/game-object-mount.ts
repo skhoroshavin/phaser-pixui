@@ -3,11 +3,18 @@ import { type Rect, fits } from "../shared/rect";
 import { resolve } from "../layout";
 import { Mount } from "./mount";
 
+/** A Phaser game object that can be tracked by a {@link GameObjectMount}. */
 export type GameObjectTarget = GameObjects.GameObject &
   GameObjects.Components.Transform &
   GameObjects.Components.Origin &
   GameObjects.Components.Size;
 
+/**
+ * Mounts a component tree that follows a target game object, converting between
+ * the target's and UI camera coordinates. The tree is anchored to the target's
+ * screen-space bounding box, and hidden when the target is off-screen, or when
+ * there is no target.
+ */
 export class GameObjectMount extends Mount {
   constructor(scene: Scene, target?: GameObjectTarget) {
     super(scene);
@@ -17,10 +24,15 @@ export class GameObjectMount extends Mount {
     this.target = target;
   }
 
+  /** Currently tracked game object, `undefined` if detached. */
   get target(): GameObjectTarget | undefined {
     return this._target;
   }
 
+  /**
+   * Sets the tracked game object. The mount detaches automatically when
+   * the target is destroyed.
+   */
   set target(go: GameObjectTarget | undefined) {
     if (go === this._target) return;
     this._detach();
