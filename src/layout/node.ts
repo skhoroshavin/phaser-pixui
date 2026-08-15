@@ -57,9 +57,9 @@ export class Node {
 
   // intermediate (engine-written during resolve)
   measured: {
-    topDownWidth?: number; // written by measureTopDown; read by measureBottomUp
-    bottomUpSize: Size; // written by measureBottomUp; read by finalizeSize
-    finalSize: Size; // written by finalizeSize; read by place
+    topDownWidth?: number; // seedWidths: write, measureBottomUp: read, measureTopDown: update, measureBottomUp: read, finalizeSize: read
+    bottomUpSize: Size; // measureBottomUp: write, measureTopDown: read, measureBottomUp: update, finalizeSize: read
+    finalSize: Size; // finalizeSize: write, place: read
   };
 
   // outputs (engine-written as the output of resolve)

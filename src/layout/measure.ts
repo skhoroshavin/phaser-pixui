@@ -1,11 +1,13 @@
 import { type Node } from "./node";
 import type { Size } from "../shared/size";
 
-export function seedRootWidth(node: Node): void {
+export function seedWidths(node: Node): void {
   node.measured.topDownWidth = node.clampWidth(node.layout.width);
+  for (const child of node.children) seedWidths(child);
 }
 
 export function measureTopDown(node: Node): void {
+  applyGrow(node, "measureTopDown");
   for (const child of node.children) {
     child.measured.topDownWidth = child.clampWidth(childTopDownWidth(child, node));
     measureTopDown(child);
@@ -15,6 +17,9 @@ export function measureTopDown(node: Node): void {
 function childTopDownWidth(child: Node, parent: Node): number | undefined {
   // Explicit width always wins
   if (child.layout.width !== undefined) return child.layout.width;
+
+  // Width assigned earlier wins
+  if (child.measured.topDownWidth !== undefined) return child.measured.topDownWidth;
 
   // Parent width unknown and no maxWidth cap - we also cannot
   const parentWidth = parent.measured.topDownWidth ?? parent.layout.maxWidth;
@@ -99,7 +104,7 @@ export function finalizeSize(node: Node): void {
       height: childFinalSize(child, node, "y"),
     };
   }
-  applyGrow(node);
+  applyGrow(node, "finalizeSize");
   for (const child of node.children) {
     finalizeSize(child);
   }
@@ -122,39 +127,48 @@ function childFinalSize(child: Node, parent: Node, axis: "x" | "y"): number {
   // Stretch if both edges are set, unless a margin is auto
   if (a.hasBothEdges && !a.marginStartAuto && !a.marginEndAuto) return a.stretch(parentSize);
 
-  // if alignItems is stretch and child is not absolute - stretch it against content edges
   const pl = parent.layout;
-  const crossDir = horizontal ? "column" : "row";
   const bottomUp = horizontal
     ? child.measured.bottomUpSize.width
     : child.measured.bottomUpSize.height;
-  if ((pl.direction ?? "column") !== crossDir) return bottomUp;
+
+  // Measuring along parent's main axis
+  if ((pl.direction ?? "column") === (horizontal ? "row" : "column")) {
+    if (!horizontal) return bottomUp;
+    // Snap to previously computed top-down width, if available
+    return child.measured.topDownWidth ?? bottomUp;
+  }
+
+  // Measuring along parent's cross-axis
   if ((pl.alignItems ?? "stretch") !== "stretch") return bottomUp;
   if (child.isAbsolute()) return bottomUp;
+  // If alignItems is stretch and the child is not absolute - stretch it against content edges
   return a.stretch(pa.contentSize(parentSize));
 }
 
-function applyGrow(node: Node): void {
-  const l = node.layout;
-  const col = l.direction !== "row";
-  const gap = l.gap ?? 0;
-  const mainAxis = col ? node.yAxis : node.xAxis;
+function applyGrow(node: Node, phase: "measureTopDown" | "finalizeSize"): void {
+  const horizontal = phase === "measureTopDown";
+  if (horizontal && node.layout.direction !== "row") return;
+  if (!horizontal && node.layout.direction === "row") return;
 
-  let free = mainAxis.contentSize(
-    col ? node.measured.finalSize.height : node.measured.finalSize.width,
-  );
+  const a = horizontal ? node.xAxis : node.yAxis;
+  const containerSize = horizontal ? node.measured.topDownWidth : node.measured.finalSize.height;
+  if (containerSize === undefined) return;
+
+  const gap = node.layout.gap ?? 0;
+  let free = a.contentSize(containerSize);
   let totalGrow = 0;
   let first = true;
   const shares: { child: Node; g: number; add: number; frac: number }[] = [];
   for (const child of node.children) {
     if (child.isAbsolute()) continue;
+    if (first) first = false;
+    else free -= gap;
 
-    if (!first) free -= gap;
-    first = false;
-
-    const cAxis = col ? child.yAxis : child.xAxis;
-    const base = col ? child.measured.finalSize.height : child.measured.finalSize.width;
-    free -= cAxis.extent(base);
+    const c = child.measured;
+    const cAxis = horizontal ? child.xAxis : child.yAxis;
+    if (phase === "measureTopDown") free -= cAxis.extent(c.bottomUpSize.width);
+    else free -= cAxis.extent(c.finalSize.height);
     if (free <= 0) return; // no free space left - cannot grow
 
     const g = child.layout.grow ?? 0;
@@ -163,11 +177,9 @@ function applyGrow(node: Node): void {
       shares.push({ child, g, add: 0, frac: 0 });
     }
   }
+  if (totalGrow === 0) return;
 
-  if (totalGrow === 0) return; // nothing to grow
-
-  // Largest-remainder (Hamilton): floor each share, then hand the leftover pixels
-  // to the children with the largest fractional remainders (ties by document order).
+  // Largest-remainder: floor each share, leftover pixels to the largest fractional remainders
   let leftover = free;
   for (const s of shares) {
     s.add = Math.floor((free * s.g) / totalGrow);
@@ -178,7 +190,8 @@ function applyGrow(node: Node): void {
   shares.sort((a, b) => b.frac - a.frac); // stable sort → document order on ties
   shares.forEach((s, i) => {
     if (i < leftover) s.add++;
-    if (col) s.child.measured.finalSize.height += s.add;
-    else s.child.measured.finalSize.width += s.add;
+    const child = s.child.measured;
+    if (phase === "measureTopDown") child.topDownWidth = child.bottomUpSize.width + s.add;
+    else child.finalSize.height += s.add;
   });
 }
