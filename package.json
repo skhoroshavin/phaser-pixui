@@ -49,6 +49,13 @@
   "author": "Sergei Khoroshavin",
   "license": "MIT",
   "type": "commonjs",
+  "files": [
+    "dist",
+    "doc",
+    "LICENSE",
+    "NOTICE",
+    "README.md"
+  ],
   "peerDependencies": {
     "phaser": "^4.0.0"
   },
