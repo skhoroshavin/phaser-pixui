@@ -1,3 +1,8 @@
+/**
+ * Phaser PixUI - a UI library for the Phaser game engine, tailored for
+ * pixel-art games. See the README for an introduction.
+ */
+
 // Primitives
 export * from "./primitives/component";
 export * from "./primitives/container";
