@@ -8,10 +8,17 @@ import { type ImageStateConfig, StatefulImage } from "../stateful/image";
 import { StatefulText, type TextStateConfig } from "../stateful/text";
 import { StatefulComponentList } from "../stateful/base";
 
+/** {@link Button} configuration. */
 export type ButtonConfig = InteractiveConfig & {
+  /** Called when the button is clicked. */
   onClick?: () => void;
 };
 
+/**
+ * A headless button control. Renders nothing by itself, instead tracks hover and pressed
+ * states, and applies them to child stateful components, added via {@link Button.addImage}
+ * and {@link Button.addText}.
+ */
 export class Button extends Interactive {
   constructor(parent: Component, cfg: ButtonConfig) {
     super(parent, { justifyContent: "center", alignItems: "center", ...cfg });
@@ -27,6 +34,7 @@ export class Button extends Interactive {
     };
   }
 
+  /** Adds an image that changes appearance based on the button state. */
   public addImage(cfg: ImageConfig & ButtonStates<ImageStateConfig>): StatefulImage {
     const img = this.add(StatefulImage, {
       ...cfg,
@@ -40,6 +48,7 @@ export class Button extends Interactive {
     return img;
   }
 
+  /** Adds a text that changes appearance based on the button state. */
   public addText(cfg: TextConfig & ButtonStates<TextStateConfig>): StatefulText {
     const txt = this.add(StatefulText, {
       ...cfg,

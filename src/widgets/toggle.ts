@@ -8,11 +8,19 @@ import { type ImageStateConfig, StatefulImage } from "../stateful/image";
 import { StatefulText, type TextStateConfig } from "../stateful/text";
 import { StatefulComponentList } from "../stateful/base";
 
+/** {@link Toggle} configuration. */
 export type ToggleConfig = InteractiveConfig & {
+  /** Initial checked state. Defaults to `false`. */
   checked?: boolean;
+  /** Called when the checked state changes. */
   onChange?: (checked: boolean) => void;
 };
 
+/**
+ * A headless toggle control. Renders nothing by itself, instead tracks checked, hover,
+ * and disabled states, and applies them to child stateful components, added via
+ * {@link Toggle.addImage} and {@link Toggle.addText}.
+ */
 export class Toggle extends Interactive {
   constructor(parent: Component, cfg: ToggleConfig) {
     super(parent, { justifyContent: "center", alignItems: "center", ...cfg });
@@ -38,6 +46,7 @@ export class Toggle extends Interactive {
     };
   }
 
+  /** Adds an image that changes appearance based on the toggle state. */
   public addImage(cfg: ImageConfig & ToggleStates<ImageStateConfig>): StatefulImage {
     const img = this.add(StatefulImage, {
       ...cfg,
@@ -53,6 +62,7 @@ export class Toggle extends Interactive {
     return img;
   }
 
+  /** Adds a text that changes appearance based on the toggle state. */
   public addText(cfg: TextConfig & ToggleStates<TextStateConfig>): StatefulText {
     const txt = this.add(StatefulText, {
       ...cfg,
@@ -68,6 +78,7 @@ export class Toggle extends Interactive {
     return txt;
   }
 
+  /** Current checked state. */
   get checked(): boolean {
     return this._checked;
   }
