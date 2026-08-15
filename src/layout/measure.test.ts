@@ -161,6 +161,34 @@ describe("measure", () => {
     expect(parent.rect.width).toBe(100);
   });
 
+  it("measures text nested in a growing row item at the grown width", () => {
+    const root = viewport(320, 240);
+    root.layout.direction = "row";
+    const tabs = new Node({ layout: { width: 120, height: 20 } });
+    const frame = new Node({ layout: { grow: 1 } });
+    const page = new Node({ layout: { inset: 0 } });
+    const scrollContent = new Node({ layout: { inset: 0 } });
+    // text that wraps taller (height 40) when given any width up to its
+    // max-content 200, otherwise a single line (height 20)
+    const text = new Node({
+      intrinsicSize: (aw) => ({ width: aw ?? 0, height: aw !== undefined && aw <= 200 ? 40 : 20 }),
+    });
+    scrollContent.add(text);
+    page.add(scrollContent);
+    frame.add(page);
+    root.add(tabs, frame);
+
+    resolve(root);
+
+    // grow distributes 320 - 120 = 200 to the frame
+    expect(frame.rect).toEqual({ x: 120, y: 0, width: 200, height: 240 });
+    // absolute inset:0 containers stretch to the frame
+    expect(page.rect).toEqual({ x: 120, y: 0, width: 200, height: 240 });
+    expect(scrollContent.rect).toEqual({ x: 120, y: 0, width: 200, height: 240 });
+    // text at the bottom of the chain wraps at the grown width, not left unwrapped
+    expect(text.rect).toEqual({ x: 120, y: 0, width: 200, height: 40 });
+  });
+
   it("re-wraps a stretched flex item's width-dependent content in a definite-width column", () => {
     const root = viewport(400, 200);
     const col = new Node({ layout: { direction: "column", width: 100 } });
