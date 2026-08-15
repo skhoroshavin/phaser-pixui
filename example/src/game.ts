@@ -1,5 +1,5 @@
 import type { GameObjects } from "phaser";
-import { ConstraintMode, ResponsiveScene } from "phaser-pixui";
+import { ResponsiveScene } from "phaser-pixui";
 
 const testMode = new URLSearchParams(window.location.search).has("test");
 
@@ -8,7 +8,7 @@ export class GameWorld extends ResponsiveScene {
     super({
       key: "game-world",
       viewportConstraints: {
-        mode: ConstraintMode.Maximum,
+        mode: "maximum",
         width: 384,
         height: 216,
       },

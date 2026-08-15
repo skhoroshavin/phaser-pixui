@@ -17,10 +17,7 @@ export type ViewportConstraints = {
   mode?: ConstraintMode;
 };
 
-export enum ConstraintMode {
-  Minimum,
-  Maximum,
-}
+export type ConstraintMode = "minimum" | "maximum";
 
 export class ResponsiveScene extends Scene {
   constructor(cfg: ResponsiveSceneConfig) {
@@ -68,7 +65,7 @@ export class ResponsiveScene extends Scene {
       const zh = constraints.height ? this._getCanvasHeight() / constraints.height : undefined;
       const zmin = zw === undefined ? zh! : zh === undefined ? zw : Math.min(zw, zh);
       const zmax = zw === undefined ? zh! : zh === undefined ? zw : Math.max(zw, zh);
-      const z = constraints.mode === ConstraintMode.Maximum ? Math.ceil(zmax) : Math.floor(zmin);
+      const z = constraints.mode === "maximum" ? Math.ceil(zmax) : Math.floor(zmin);
       this._zoom = Math.max(1, z + this._zoomAdjustment);
     } else {
       this._zoom = 1;

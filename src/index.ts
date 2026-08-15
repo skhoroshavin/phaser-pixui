@@ -10,7 +10,7 @@ export * from "./primitives/text";
 // Stateful components
 export * from "./stateful/image";
 export * from "./stateful/text";
-export * from "./stateful/base";
+export type { Stateful, StatesConfig } from "./stateful/base";
 // Mounts (root components)
 export * from "./mounts/mount";
 export * from "./mounts/scene-mount";
@@ -41,6 +41,7 @@ export * from "./responsive-scene";
 export * from "./layout";
 
 // Utilities
-export * from "./shared/size";
-export * from "./shared/axis";
+export type { Axis } from "./shared/axis";
+export type { Size } from "./shared/size";
+export type { Rect } from "./shared/rect";
 export * from "./shared/frame";

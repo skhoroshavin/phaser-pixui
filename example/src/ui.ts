@@ -1,6 +1,5 @@
 import { CANVAS, GameObjects, HEADLESS, VERSION, WEBGL } from "phaser";
 import {
-  ConstraintMode,
   Container,
   GameObjectMount,
   ResponsiveScene,
@@ -23,7 +22,7 @@ export class Ui extends ResponsiveScene {
       key: "ui",
       active: true,
       viewportConstraints: {
-        mode: ConstraintMode.Minimum,
+        mode: "minimum",
         height: 240,
       },
     });
