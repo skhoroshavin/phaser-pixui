@@ -6,8 +6,10 @@ import { Mount } from "./mount";
 /** A Phaser game object that can be tracked by a {@link GameObjectMount}. */
 export type GameObjectTarget = GameObjects.GameObject &
   GameObjects.Components.Transform &
-  GameObjects.Components.Origin &
-  GameObjects.Components.Size;
+  GameObjects.Components.Origin & {
+    displayWidth: number;
+    displayHeight: number;
+  };
 
 /**
  * Mounts a component tree that follows a target game object, converting between
