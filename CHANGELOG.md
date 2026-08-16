@@ -1,5 +1,22 @@
 # Changelog
 
+## Unreleased
+
+### Changed
+
+- A positioned child wider than its parent with both edges and `auto` margins
+  now stays centered, overflowing both sides. This is a deviation from CSS,
+  but it is consistent with already existing deviations that enable robust
+  centering of absolutely positioned elements using auto margins.
+
+### Fixed
+
+- `GameObjectMount` without a target rendered its tree at the origin; now
+  hidden until a target is attached
+- `GameObjectTarget` definition was too strict, making it impossible to attach
+  `GameObjectMount` to some valid Phaser objects, like `Rectangle`; now it
+  accepts them
+
 ## 0.3.0
 
 Complete rewrite of the library. The theme system, styled components, and
