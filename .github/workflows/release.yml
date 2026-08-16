@@ -1,22 +1,36 @@
 name: Release
 
 on:
-  push:
-    tags:
-      - "v*"
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: "Bump type"
+        required: true
+        type: choice
+        options: [patch, minor, major]
+      title:
+        description: "Release title"
+        required: true
+        type: string
+      description:
+        description: "Release description"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  id-token: write
 
 jobs:
-  publish:
-    name: Publish
+  release:
+    name: Release
     runs-on: ubuntu-latest
-
-    permissions:
-      contents: read
-      id-token: write
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+        with:
+          ref: main
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -67,8 +81,34 @@ jobs:
             playwright-report/
           retention-days: 7
 
+      - name: Bump version
+        run: npm version ${{ inputs.bump }} --no-git-tag-version
+
+      - name: Regenerate screenshots
+        run: npx playwright test --update-snapshots
+
+      - name: Commit version bump and tag
+        id: bump
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          TAG="v$(node -p "require('./package.json').version")"
+          git add package.json package-lock.json e2e/screenshots
+          git commit -m "Bump version to ${TAG#v}"
+          git tag -a "$TAG" -m "$TAG"
+          git push origin main --follow-tags
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+
       - name: Publish to NPM
-        run: npm publish
+        run: npm publish --provenance
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.bump.outputs.tag }}
+          name: ${{ inputs.title }}
+          body: ${{ inputs.description }}
+          make_latest: true
 
       - name: Publish to itch.io
         uses: XanatosX/butler-publish-itchio-action@fb0a6f13954b75e8fbcfb703dbdb8626452efaba
@@ -78,4 +118,4 @@ jobs:
           ITCH_GAME: phaser-pixui
           ITCH_USER: skhoroshavin
           PACKAGE: example/dist
-          VERSION: ${{ github.ref_name }}
+          VERSION: ${{ steps.bump.outputs.tag }}
