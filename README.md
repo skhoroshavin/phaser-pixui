@@ -89,6 +89,8 @@ npm test                # unit + visual tests
 npm run test:install    # install Playwright browsers
 ```
 
+Release process is described in [release-process.md](https://github.com/skhoroshavin/phaser-pixui/blob/main/doc/release-process.md)
+
 ## License
 
 ### Code
