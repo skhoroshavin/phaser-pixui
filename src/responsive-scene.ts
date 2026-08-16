@@ -2,26 +2,41 @@ import type { Types } from "phaser";
 import { Scene } from "phaser";
 import { Size } from "./shared/size.ts";
 
+/** {@link ResponsiveScene} configuration. */
 export type ResponsiveSceneConfig = Types.Scenes.SettingsConfig & {
-  // Constraints on effective viewport size. Default is minimum 320x240.
+  /** Constraints on effective viewport size. Default is minimum 320x240. */
   viewportConstraints?: ViewportConstraints;
-  // Specifies function that returns world size, which is later used to
-  // set camera boundaries. If undefined world will be assumed to have a
-  // size of a viewport.
+  /**
+   * Returns the world size, which is later used to set camera boundaries.
+   * If undefined, the world is assumed to have the size of the viewport.
+   */
   getWorldSize?: () => Size | undefined;
 };
 
+/** Constraints on effective viewport size. */
 export type ViewportConstraints = {
+  /** Constrained viewport width. */
   width?: number;
+  /** Constrained viewport height. */
   height?: number;
+  /** {@link ConstraintMode}, defaults to `"minimum"`. */
   mode?: ConstraintMode;
 };
 
-export enum ConstraintMode {
-  Minimum,
-  Maximum,
-}
+/**
+ * How to interpret viewport constraints.
+ *
+ * - `"minimum"` - picks the zoom at which the whole constrained area fits
+ *   on screen, viewport may be larger. Useful for UI.
+ * - `"maximum"` - picks the zoom at which the screen fits inside the
+ *   constrained area, viewport may be smaller. Useful for a game world.
+ */
+export type ConstraintMode = "minimum" | "maximum";
 
+/**
+ * A Phaser scene that maintains an integer zoom level based on viewport
+ * constraints, adjusting the effective viewport size to match.
+ */
 export class ResponsiveScene extends Scene {
   constructor(cfg: ResponsiveSceneConfig) {
     super(cfg);
@@ -34,8 +49,10 @@ export class ResponsiveScene extends Scene {
     this._updateViewport();
   }
 
+  /** Constraints applied to the effective viewport size. */
   readonly viewportConstraints: ViewportConstraints;
 
+  /** Zoom adjustment added to the calculated zoom. Useful for implementing zoom-in/out. */
   get zoomAdjustment() {
     return this._zoomAdjustment;
   }
@@ -46,9 +63,11 @@ export class ResponsiveScene extends Scene {
   }
   private _zoomAdjustment = 0;
 
+  /** Current integer zoom level. */
   get zoom() {
     return this._zoom;
   }
+  /** Effective viewport size, in pixels. */
   get viewport() {
     return this._viewport;
   }
@@ -68,7 +87,7 @@ export class ResponsiveScene extends Scene {
       const zh = constraints.height ? this._getCanvasHeight() / constraints.height : undefined;
       const zmin = zw === undefined ? zh! : zh === undefined ? zw : Math.min(zw, zh);
       const zmax = zw === undefined ? zh! : zh === undefined ? zw : Math.max(zw, zh);
-      const z = constraints.mode === ConstraintMode.Maximum ? Math.ceil(zmax) : Math.floor(zmin);
+      const z = constraints.mode === "maximum" ? Math.ceil(zmax) : Math.floor(zmin);
       this._zoom = Math.max(1, z + this._zoomAdjustment);
     } else {
       this._zoom = 1;

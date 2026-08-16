@@ -3,13 +3,21 @@ import { type Behaviour } from "../behaviours/behaviour";
 import { Component, type ComponentConfig } from "./component";
 import { PhaserObject } from "./phaser-object";
 
+/** {@link Interactive} configuration. */
 export type InteractiveConfig = ComponentConfig & {
+  /** Shape of the input hit area. Defaults to `"rect"`. */
   shape?: HitShape;
+  /** Initial enabled state. Defaults to `true`. */
   enabled?: boolean;
 };
 
+/** Shape of an input hit area. */
 export type HitShape = "rect" | "diamond" | "ellipse";
 
+/**
+ * A transparent input zone with a configurable hit area shape. Serves as a
+ * base class for interactive components, hosting input {@link Behaviour}s.
+ */
 export class Interactive extends PhaserObject<GameObjects.Zone> {
   constructor(parent: Component, cfg: InteractiveConfig = {}) {
     super(parent, (scene) => new GameObjects.Zone(scene, 0, 0, 0, 0), cfg);
@@ -20,6 +28,10 @@ export class Interactive extends PhaserObject<GameObjects.Zone> {
     this._updateHitArea(0, 0);
   }
 
+  /**
+   * Enabled state of this component. Disabled component ignores input,
+   * while keeping its visibility unchanged.
+   */
   get enabled(): boolean {
     return this._enabled;
   }
@@ -28,6 +40,20 @@ export class Interactive extends PhaserObject<GameObjects.Zone> {
     this._enabled = v;
     for (const b of this._behaviours) b.setActive(v);
     this.onEnabledChange(v);
+  }
+
+  /** Adds an input behaviour to this component. */
+  addBehaviour<T extends Behaviour>(b: T): T {
+    b.attach(this.internal);
+    b.setActive(this._enabled && this.visible);
+    this._behaviours.push(b);
+    return b;
+  }
+
+  /** Removes a previously added behaviour. */
+  removeBehaviour(b: Behaviour): void {
+    b.detach();
+    this._behaviours = this._behaviours.filter((x) => x !== b);
   }
 
   protected setSizeX(width: number): void {
@@ -48,18 +74,6 @@ export class Interactive extends PhaserObject<GameObjects.Zone> {
   protected onDestroy(): void {
     for (const b of this._behaviours) b.detach();
     super.onDestroy();
-  }
-
-  addBehaviour<T extends Behaviour>(b: T): T {
-    b.attach(this.internal);
-    b.setActive(this._enabled && this.visible);
-    this._behaviours.push(b);
-    return b;
-  }
-
-  removeBehaviour(b: Behaviour): void {
-    b.detach();
-    this._behaviours = this._behaviours.filter((x) => x !== b);
   }
 
   private _updateHitArea(width: number, height: number): void {

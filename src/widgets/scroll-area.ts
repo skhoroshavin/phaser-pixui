@@ -8,10 +8,16 @@ import { MaskMount } from "../mounts/mask-mount";
 import { resolve } from "../layout";
 import type { Rect } from "../shared/rect";
 
+/** {@link ScrollArea} configuration. */
 export type ScrollAreaConfig = ComponentConfig & {
+  /** Scroll axis. Locks the content size on the other axis to the viewport size. */
   axis?: Axis;
 };
 
+/**
+ * A scrollable viewport around its {@link ScrollArea.content} container. Content
+ * larger than the viewport can be scrolled by dragging, with inertia.
+ */
 export class ScrollArea extends Component {
   constructor(parent: Component, cfg: ScrollAreaConfig = {}) {
     super(parent, cfg);
@@ -46,24 +52,30 @@ export class ScrollArea extends Component {
     this._surface.addBehaviour(this._scrollable);
   }
 
+  /** Scrolled content container. */
   readonly content: Container;
 
+  /** Current horizontal scroll offset. */
   get scrollX(): number {
     return this._scroll.x;
   }
 
+  /** Current vertical scroll offset. */
   get scrollY(): number {
     return this._scroll.y;
   }
 
+  /** Smoothly scrolls to the given position, clamped to the valid range. */
   scrollTo(x: number, y: number): void {
     this._chaseTo(() => ({ x, y }));
   }
 
+  /** Smoothly scrolls to the start of the content. */
   scrollToStart(): void {
     this.scrollTo(0, 0);
   }
 
+  /** Smoothly scrolls to the end of the content. */
   scrollToEnd(): void {
     this._chaseTo(() => this._maxScroll());
   }

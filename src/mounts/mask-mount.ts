@@ -3,6 +3,10 @@ import type { Rect } from "../shared/rect";
 import { Mount } from "./mount";
 import { resolve } from "../layout";
 
+/**
+ * Mounts a component tree to a rectangular mask. Content outside
+ * {@link MaskMount.setMaskRect} is clipped.
+ */
 export class MaskMount extends Mount {
   private readonly host: GameObjects.Container;
   private readonly maskRect: GameObjects.Rectangle;
@@ -18,6 +22,7 @@ export class MaskMount extends Mount {
     this.host.filters!.external.addMask(this.maskRect, false);
   }
 
+  /** Updates the mask rectangle to the given rect. */
   setMaskRect(r: Rect): void {
     this.maskRect.setPosition(r.x, r.y).setSize(r.width, r.height);
   }

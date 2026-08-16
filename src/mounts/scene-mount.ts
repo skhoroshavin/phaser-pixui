@@ -4,10 +4,16 @@ import { Mount } from "./mount";
 import { resolve } from "../layout";
 import type { Size } from "../shared/size";
 
+/** {@link SceneMount} configuration. */
 export type SceneMountConfig = {
+  /** Returns the current viewport size. Called on every resize. */
   viewport: () => Size;
 };
 
+/**
+ * Mounts a component tree to a Phaser scene. The tree is sized to the
+ * viewport returned by {@link SceneMountConfig.viewport}.
+ */
 export class SceneMount extends Mount {
   private readonly scene: Scene;
   private readonly _viewport: () => Size;

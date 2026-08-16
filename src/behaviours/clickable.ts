@@ -1,11 +1,17 @@
 import type { GameObjects } from "phaser";
 import { Behaviour } from "./behaviour";
 
+/** {@link Clickable} configuration. */
 export type ClickableConfig = {
+  /** Called when the interactive zone is clicked. */
   onClick?: () => void;
+  /** Called when the pressed state changes. */
   onUpdate?: (pressed: boolean) => void;
 };
 
+/**
+ * A behaviour that tracks press and click on an {@link Interactive} zone.
+ */
 export class Clickable extends Behaviour {
   private _pressed = false;
   private readonly _onClick?: () => void;
@@ -17,6 +23,7 @@ export class Clickable extends Behaviour {
     this._onUpdate = cfg?.onUpdate;
   }
 
+  /** Whether the zone is currently pressed. */
   get pressed(): boolean {
     return this._pressed;
   }

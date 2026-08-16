@@ -2,11 +2,15 @@ import { GameObjects } from "phaser";
 import { Component, type ComponentConfig } from "./component";
 import { PhaserObject } from "./phaser-object";
 
+/** {@link Rectangle} configuration. */
 export type RectangleConfig = ComponentConfig & {
+  /** Fill color. */
   fillColor?: number;
+  /** Fill alpha. Defaults to `1`. */
   fillAlpha?: number;
 };
 
+/** A solid rectangle, useful for backgrounds or debug visualization. */
 export class Rectangle extends PhaserObject<GameObjects.Rectangle> {
   constructor(parent: Component, cfg?: RectangleConfig) {
     super(parent, (scene) => new GameObjects.Rectangle(scene, 0, 0, 0, 0), cfg);

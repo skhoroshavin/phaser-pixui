@@ -4,27 +4,49 @@ import { Component } from "../primitives/component";
 import { Image, type ImageConfig } from "../primitives/image";
 import { resolveStateConfig, Stateful, StatesConfig } from "./base.ts";
 
+/** State-specific {@link StatefulImage} configuration. */
 export type ImageStateConfig = {
+  /** Texture frame to use in this state. */
   frame?: string;
+  /** Horizontal position offset to use in this state. */
   offsetX?: number;
+  /** Vertical position offset to use in this state. */
   offsetY?: number;
 };
 
+/** How the bound value affects the image. */
 export type ImageValueMode = "scale" | "position";
 
+/** Value binding configuration of a {@link StatefulImage}. */
 export type ImageValueConfig = {
+  /**
+   * Value binding mode. `"scale"` scales the image between its minimum size
+   * and its laid out size. `"position"` moves the image between the start and
+   * the end of its available space. If undefined, value binding is disabled.
+   */
   mode?: ImageValueMode;
+  /** Axis of scaling or movement. Defaults to `"x"`. */
   axis?: Axis;
+  /** Minimum size in `"scale"` mode. */
   minSize?: number;
+  /** Value below which the image is hidden. */
   visibleMin?: number;
+  /** Value above which the image is hidden. */
   visibleMax?: number;
 };
 
+/** {@link StatefulImage} configuration. */
 export type StatefulImageConfig = ImageConfig & {
+  /** State-specific configurations, keyed by state name. */
   states?: StatesConfig<ImageStateConfig>;
+  /** Value binding configuration. */
   valueBinding?: ImageValueConfig;
 };
 
+/**
+ * An {@link Image} with state and value bindings. Used by widgets like buttons,
+ * sliders, and progress bars to drive their visuals.
+ */
 export class StatefulImage extends Image implements Stateful {
   constructor(parent: Component, cfg: StatefulImageConfig) {
     super(parent, cfg);
@@ -62,6 +84,7 @@ export class StatefulImage extends Image implements Stateful {
     this._applyVisibility();
   }
 
+  /** Applies the given state, changing the texture frame and position offset. */
   setState(state: string | undefined, fallback?: string): void {
     const s = resolveStateConfig(this._states, state, fallback);
     this.internal.setFrame(s.frame ?? this._defaultFrame);
@@ -70,6 +93,7 @@ export class StatefulImage extends Image implements Stateful {
     this._applyValue();
   }
 
+  /** Applies the given value, scaling or moving the image, and updating its visibility. */
   setValue(value: number): void {
     this._value = value;
     this._applyValue();

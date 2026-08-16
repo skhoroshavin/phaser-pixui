@@ -7,12 +7,21 @@ import { type Axis } from "../shared/axis";
 import { StatefulComponentList } from "../stateful/base";
 import { type ImageStateConfig, type ImageValueConfig, StatefulImage } from "../stateful/image";
 
+/** {@link Slider} configuration. */
 export type SliderConfig = InteractiveConfig & {
+  /** Slider axis. Defaults to `"x"`. */
   axis?: Axis;
+  /** Initial value, between `0` and `1`. Defaults to `0`. */
   value?: number;
+  /** Called when the value changes as a result of dragging. */
   onChange?: (value: number) => void;
 };
 
+/**
+ * A headless slider control. Renders nothing by itself; track and thumb
+ * visuals are provided via {@link Slider.addImage} and {@link Slider.addThumb}.
+ * The value is a number between `0` and `1`.
+ */
 export class Slider extends Interactive {
   constructor(parent: Component, cfg: SliderConfig) {
     super(parent, {
@@ -41,6 +50,7 @@ export class Slider extends Interactive {
     );
   }
 
+  /** Adds a track "fill" image, which can be scaled based on the slider value */
   public addImage(
     cfg: ImageConfig & SliderStates<ImageStateConfig> & { valueBinding?: ImageValueConfig },
   ): StatefulImage {
@@ -58,6 +68,7 @@ export class Slider extends Interactive {
     return img;
   }
 
+  /** Adds a draggable thumb image, positioned based on the slider value. */
   public addThumb(cfg: ImageConfig & SliderStates<ImageStateConfig>): StatefulImage {
     const img = this.add(StatefulImage, {
       ...cfg,
@@ -75,6 +86,7 @@ export class Slider extends Interactive {
     return img;
   }
 
+  /** Current value, clamped to the range `0..1`. */
   get value(): number {
     return this._value;
   }

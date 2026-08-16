@@ -7,6 +7,10 @@ type Origin = GameObjects.Components.Origin;
 type Visible = GameObjects.Components.Visible;
 type Depth = GameObjects.Components.Depth;
 
+/**
+ * Base class for components that wrap a single Phaser game object, keeping it in sync
+ * with its layout rect.
+ */
 export class PhaserObject<
   T extends GameObject & Transform & Origin & Visible & Depth,
 > extends Component {
@@ -24,24 +28,35 @@ export class PhaserObject<
     this.internal.setVisible(this.visible);
   }
 
+  /** The underlying Phaser game object. */
   readonly internal: T;
 
+  /**
+   * Sets horizontal position offset of the game object. Useful for implementing dynamic
+   * UI elements, like slider thumbs, without forcing layout resolution on every frame.
+   */
   protected setOffsetX(x: number): void {
     this.internal.x += x - this._offsetX;
     this._offsetX = x;
   }
 
+  /**
+   * Sets vertical position offset of the game object. Useful for implementing dynamic
+   * UI elements, like slider thumbs, without forcing layout resolution on every frame.
+   */
   protected setOffsetY(y: number): void {
     this.internal.y += y - this._offsetY;
     this._offsetY = y;
   }
 
+  /** Applies new width to the game object, usually called on layout resolution. */
   protected setSizeX(_width: number): void {
     // default: no-op (e.g. sprites keep their intrinsic size)
   }
 
+  /** Applies new height to the game object, usually called on layout resolution. */
   protected setSizeY(_height: number): void {
-    // default: no-op
+    // default: no-op (e.g. sprites keep their intrinsic size)
   }
 
   protected onVisibilityChange(v: boolean): void {

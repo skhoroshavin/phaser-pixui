@@ -4,13 +4,23 @@ import { Component } from "../primitives/component";
 import { Interactive } from "../primitives/interactive";
 import { Rectangle } from "../primitives/rectangle";
 
+/** {@link Modal} configuration. */
 export type ModalConfig = ComponentConfig & {
+  /** Backdrop fill color. Defaults to `0x000000` (black). */
   backdropColor?: number;
+  /** Backdrop fill alpha. Defaults to `0.5`. */
   backdropAlpha?: number;
+  /** Whether clicking the backdrop dismisses the modal. Defaults to `false`. */
   dismissOnBackdropClick?: boolean;
+  /** Called when the modal is dismissed. */
   onDismiss?: () => void;
 };
 
+/**
+ * A modal dialog. Occupies the whole screen (over everything else), renders a dimmed
+ * backdrop, and centers its {@link Modal.content} container. Initially hidden,
+ * show it by setting `visible` to `true`.
+ */
 export class Modal extends Interactive {
   constructor(parent: Component, cfg: ModalConfig = {}) {
     super(parent, {
@@ -37,6 +47,7 @@ export class Modal extends Interactive {
     this.content = new Interactive(this, {});
   }
 
+  /** Container for dialog content, centered inside the modal. */
   readonly content: Interactive;
 
   private _onBackdropClick(): void {

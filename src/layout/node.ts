@@ -6,12 +6,25 @@ import type { Rect } from "../shared/rect";
 export type IntrinsicSize = Partial<Size> | IntrinsicSizeFn;
 type IntrinsicSizeFn = (availableWidth?: number) => Size;
 
+/** Layout tree {@link Node} configuration. */
 export interface NodeConfig {
+  /** {@link Layout} properties of this node. */
   layout?: Layout;
+  /**
+   * Natural size of this node, used when the layout doesn't assign an explicit
+   * one. Can be a function of available width, for example, to measure text.
+   */
   intrinsicSize?: IntrinsicSize;
+  /**
+   * Called when layout is resolved for this node.
+   */
   onLayout?: (rect: Rect, depth: number) => void;
 }
 
+/**
+ * A node of the layout tree. Holds layout properties and resolved geometry,
+ * has zero external dependencies.
+ */
 export class Node {
   constructor(config: NodeConfig = {}) {
     const l = config.layout ?? {};
@@ -46,8 +59,11 @@ export class Node {
   }
 
   // inputs (externally-set)
+  /** Layout properties of this node. */
   readonly layout: Layout;
+  /** Child nodes, in flow order. */
   readonly children: Node[] = [];
+  /** Called with the resolved rect and depth when this node's geometry is assigned. */
   onLayout?: (rect: Rect, depth: number) => void;
   private _intrinsicSize: Size | IntrinsicSizeFn;
 
@@ -68,18 +84,22 @@ export class Node {
   private _availableRect: Rect;
   depth: number;
 
+  /** Resolved rect of this node. */
   get rect(): Rect {
     return this._rect;
   }
 
+  /** Resolved content rect: the rect shrunk by padding. */
   get contentRect(): Rect {
     return this._contentRect;
   }
 
+  /** Resolved maximal potentially available space for this node within its parent. */
   get availableRect(): Rect {
     return this._availableRect;
   }
 
+  /** Assigns geometry to this node and fires {@link Node.onLayout}. */
   setRect(rect: Rect, availableRect: Rect = rect): void {
     this._rect = rect;
     this._availableRect = availableRect;
@@ -92,16 +112,19 @@ export class Node {
     this.onLayout?.(rect, this.depth);
   }
 
+  /** Adds child nodes. */
   add(...children: Node[]): this {
     this.children.push(...children);
     return this;
   }
 
+  /** Removes a child node. */
   remove(child: Node): void {
     const i = this.children.indexOf(child);
     if (i >= 0) this.children.splice(i, 1);
   }
 
+  /** Returns natural size of this node, given available width. */
   intrinsicSize(availableWidth?: number): Size {
     const i = this._intrinsicSize;
     if (typeof i === "function") {
@@ -111,10 +134,12 @@ export class Node {
     return i;
   }
 
+  /** Sets natural size of this node. */
   setIntrinsicSize(value: IntrinsicSize): void {
     this._intrinsicSize = Node.normalizeIntrinsic(value);
   }
 
+  /** Whether this node is positioned absolutely (taken out of flow). */
   isAbsolute(): boolean {
     return this.xAxis.hasEdge || this.yAxis.hasEdge;
   }

@@ -1,11 +1,18 @@
 import { Component, type ComponentConfig } from "../primitives/component";
 import { Toggle, type ToggleConfig } from "./toggle";
 
+/** {@link RadioGroup} configuration. */
 export type RadioGroupConfig = ComponentConfig & {
+  /** Initially selected toggle index. Defaults to `0`. */
   selectedIndex?: number;
+  /** Called when the selection changes as a result of user interaction. */
   onChange?: (index: number) => void;
 };
 
+/**
+ * A group of {@link Toggle} components where exactly one toggle is always
+ * selected. Selection is mutually exclusive.
+ */
 export class RadioGroup extends Component {
   constructor(parent: Component, cfg: RadioGroupConfig = {}) {
     const { selectedIndex, onChange, ...layout } = cfg;
@@ -14,6 +21,7 @@ export class RadioGroup extends Component {
     this._selectedIndex = selectedIndex ?? 0;
   }
 
+  /** Adds a toggle to this group. */
   addToggle(cfg: Omit<ToggleConfig, "onChange" | "checked">): Toggle {
     const index = this._toggles.length;
     const tgl = this.add(Toggle, {
@@ -21,6 +29,7 @@ export class RadioGroup extends Component {
       onChange: (checked: boolean) => {
         if (checked) {
           this.selectedIndex = index;
+          this._onChange?.(index);
         } else {
           tgl.checked = true; // Toggle tried to uncheck itself.
         }
@@ -31,10 +40,12 @@ export class RadioGroup extends Component {
     return tgl;
   }
 
+  /** Toggles belonging to this group, in the order they were added. */
   get toggles(): readonly Toggle[] {
     return this._toggles;
   }
 
+  /** Index of the currently selected toggle. */
   get selectedIndex(): number {
     return this._selectedIndex;
   }
@@ -43,7 +54,6 @@ export class RadioGroup extends Component {
     this._checkCurrentToggle(false);
     this._selectedIndex = i;
     this._checkCurrentToggle(true);
-    this._onChange?.(i);
   }
 
   private _checkCurrentToggle(v: boolean): void {

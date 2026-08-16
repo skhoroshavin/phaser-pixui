@@ -3,15 +3,25 @@ import { Component, type ComponentConfig } from "./component";
 import { PhaserObject } from "./phaser-object";
 import type { Size } from "../shared/size";
 
+/** {@link Text} configuration. */
 export type TextConfig = ComponentConfig & {
+  /** Bitmap font key. */
   font: string;
+  /** Initial text content. Defaults to `""`. */
   text?: string;
+  /** Text color. */
   color?: number;
+  /** Text alignment. Defaults to `"left"`. */
   align?: TextAlign;
 };
 
+/** Horizontal text alignment. */
 export type TextAlign = "left" | "center" | "right";
 
+/**
+ * Displays bitmap text. Sizes itself to fit the text, wrapping lines when
+ * constrained by available width.
+ */
 export class Text extends PhaserObject<GameObjects.BitmapText> {
   constructor(parent: Component, cfg: TextConfig) {
     super(
@@ -34,6 +44,7 @@ export class Text extends PhaserObject<GameObjects.BitmapText> {
     }
   }
 
+  /** Current text content. Changing it schedules layout resolution before rendering the frame. */
   get text(): string {
     return this.internal.text;
   }
@@ -42,6 +53,7 @@ export class Text extends PhaserObject<GameObjects.BitmapText> {
     this.resolveLayout();
   }
 
+  /** Sets text color tint. */
   setColor(color: number): void {
     this.internal.setTint(color).setTintMode(TintModes.FILL);
   }
