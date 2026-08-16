@@ -85,6 +85,10 @@ export class Ui extends ResponsiveScene {
         bottom: 32,
       });
 
+      // Regression case: a mount without a target must stay hidden.
+      const orphanMount = new GameObjectMount(this);
+      orphanMount.add(chat_bubble, "You shouldn't see me!", { right: 32, bottom: 32 });
+
       if (testMode) return;
 
       this.time.addEvent({

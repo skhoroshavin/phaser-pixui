@@ -20,6 +20,7 @@ export class GameObjectMount extends Mount {
     super(scene);
     this._scene = scene;
     this._host = scene.add.container(0, 0);
+    this._host.setVisible(false);
     scene.game.events.on("poststep", this._update, this);
     this.target = target;
   }
