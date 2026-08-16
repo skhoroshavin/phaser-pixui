@@ -39,7 +39,8 @@ export function place(node: Node, bounds?: Rect): Rect {
   }
   const mainFreeSpace = mainLen - mainContentSize;
   const absorbFreeSpace = mainFreeSpace > 0 && autoMarginCount > 0;
-  const nextAutoMargin = distributeAutoMargins(mainFreeSpace, autoMarginCount);
+  const mainNonNegativeFreeSpace = Math.max(0, mainFreeSpace);
+  const nextAutoMargin = distributeAutoMargins(mainNonNegativeFreeSpace, autoMarginCount);
 
   // Pass 2: position each item
   let pos = mainBase + (absorbFreeSpace ? 0 : alignOffset(mainFreeSpace, l.justifyContent));
@@ -214,9 +215,9 @@ function union(a: Rect, b: Rect): Rect {
 }
 
 function distributeAutoMargins(freeSpace: number, count: number): () => number {
-  const active = count > 0 && freeSpace > 0;
-  const q = active ? Math.floor(freeSpace / count) : 0;
-  const r = active ? freeSpace % count : 0;
+  if (count <= 0) return () => 0;
+  const q = Math.floor(freeSpace / count);
+  const r = freeSpace - q * count;
   let i = 0;
   return () => q + (i++ < r ? 1 : 0);
 }

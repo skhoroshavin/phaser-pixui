@@ -316,6 +316,21 @@ describe("flex", () => {
     expect(child.availableRect).toEqual({ x: 0, y: 0, width: 200, height: 50 });
   });
 
+  it("clamps auto margins to zero on negative free space (CSS flexbox)", () => {
+    const root = new Node({ layout: { width: 100, height: 50 } });
+    const flex = new Node({ layout: { direction: "row", width: 100, height: 50 } });
+    const child = new Node({
+      layout: { width: 120, height: 20, marginLeft: "auto" },
+    });
+    flex.add(child);
+    root.add(flex);
+
+    resolve(root);
+
+    // free space is -20 ⇒ auto margin stays zero per flexbox spec; overflow goes to the end
+    expect(child.rect.x).toBe(0);
+  });
+
   it("stretches flex items on the cross axis by default (align-items: stretch)", () => {
     const root = new Node({ layout: { width: 320, height: 240 } });
     const flex = new Node({

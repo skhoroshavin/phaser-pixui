@@ -13,6 +13,8 @@ import { Node, resolve } from "./";
 //    to it. When padding exceeds the intrinsic size, the padding box still wins.
 // 6. An auto-sized element with both edges and an auto margin uses fit-content size,
 //    so the margin can center or offset it instead of stretching.
+// 7. An absolutely positioned element can be centered using auto margins even if it is
+//    larger than its parent.
 
 describe("deviations", () => {
   it("a flex child with a positional edge is taken out of flow", () => {
@@ -100,5 +102,23 @@ describe("deviations", () => {
     // availableRect spans the x edge box (intrinsic size); y pinned (no edges)
     expect(centered.availableRect).toEqual({ x: 0, y: 0, width: 320, height: 10 });
     expect(pushedEnd.availableRect).toEqual({ x: 0, y: 0, width: 320, height: 10 });
+  });
+
+  it("a positioned child wider than its parent stays centered, overflowing both sides", () => {
+    const root = new Node({ layout: { width: 100, height: 60 } });
+    const wide = new Node({
+      layout: { left: 0, right: 0, top: 0, width: 120, height: 20, marginX: "auto" },
+    });
+    const odd = new Node({
+      layout: { left: 0, right: 0, top: 30, width: 111, height: 20, marginX: "auto" },
+    });
+    root.add(wide, odd);
+    resolve(root);
+
+    // CSS 2.1 §10.3.7 clamps the start margin to zero on negative free space;
+    // we split it evenly instead — "center me" means center me, even into overflow
+    expect(wide.rect).toEqual({ x: -10, y: 0, width: 120, height: 20 });
+    // odd split -5/-6: the extra pixel overflows on the end side, like alignItems: center
+    expect(odd.rect).toEqual({ x: -5, y: 30, width: 111, height: 20 });
   });
 });
