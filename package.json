@@ -1,6 +1,6 @@
 {
   "name": "phaser-pixui",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "description": "A UI library for Phaser game engine that provides responsive and customizable UI components, tailored specifically for pixel art games",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
