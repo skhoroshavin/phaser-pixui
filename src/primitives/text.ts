@@ -11,7 +11,7 @@ export type TextConfig = ComponentConfig & {
   text?: string;
   /** Text color. */
   color?: number;
-  /** Text alignment. Defaults to `"left"`. */
+  /** Horizontal alignment of text within its block width. Defaults to `"left"`. */
   align?: TextAlign;
 };
 

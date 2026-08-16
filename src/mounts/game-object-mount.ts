@@ -6,8 +6,10 @@ import { Mount } from "./mount";
 /** A Phaser game object that can be tracked by a {@link GameObjectMount}. */
 export type GameObjectTarget = GameObjects.GameObject &
   GameObjects.Components.Transform &
-  GameObjects.Components.Origin &
-  GameObjects.Components.Size;
+  GameObjects.Components.Origin & {
+    displayWidth: number;
+    displayHeight: number;
+  };
 
 /**
  * Mounts a component tree that follows a target game object, converting between
@@ -20,6 +22,7 @@ export class GameObjectMount extends Mount {
     super(scene);
     this._scene = scene;
     this._host = scene.add.container(0, 0);
+    this._host.setVisible(false);
     scene.game.events.on("poststep", this._update, this);
     this.target = target;
   }
